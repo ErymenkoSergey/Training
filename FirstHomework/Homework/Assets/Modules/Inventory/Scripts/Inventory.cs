@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Modules.Inventories
@@ -15,46 +16,40 @@ namespace Modules.Inventories
         public int Width => throw new NotImplementedException();
         public int Height => throw new NotImplementedException();
         public int Count => throw new NotImplementedException();
+        
+        private Dictionary<Vector2Int, Item> items = new Dictionary<Vector2Int, Item>();
+        private Vector2 sizeInventory; // размер инвентаря по x и y 
 
+        #region Constructors
+        
         public Inventory(int width, int height)
         {
-            throw new NotImplementedException();
+            sizeInventory.x = width;
+            sizeInventory.y = height;
         }
 
-        public Inventory(
-            int width,
-            int height,
-            params KeyValuePair<Item, Vector2Int>[] items
-        )
+        public Inventory(int width, int height, params KeyValuePair<Item, Vector2Int>[] items)
         {
-            throw new NotImplementedException();
+            sizeInventory.x = width;
+            sizeInventory.y = height;
         }
 
-        public Inventory(
-            int width,
-            int height,
-            params Item[] items
-        )
+        public Inventory(int width, int height, params Item[] items)
         {
-            throw new NotImplementedException();
+            sizeInventory.x = width;
+            sizeInventory.y = height;
         }
 
-        public Inventory(
-            int width,
-            int height,
-            IEnumerable<KeyValuePair<Item, Vector2Int>> items
-        )
+        public Inventory(int width, int height, IEnumerable<KeyValuePair<Item, Vector2Int>> items)
         {
-            throw new NotImplementedException();
+            sizeInventory.x = width;
+            sizeInventory.y = height;
         }
 
-        public Inventory(
-            int width,
-            int height,
-            IEnumerable<Item> items
-        )
+        public Inventory(int width, int height, IEnumerable<Item> items)
         {
-            throw new NotImplementedException();
+            sizeInventory.x = width;
+            sizeInventory.y = height;
         }
 
         /// <summary>
@@ -62,15 +57,18 @@ namespace Modules.Inventories
         /// </summary>
         public Inventory(Inventory inventory)
         {
-            throw new NotImplementedException();
+            //??
         }
+        
+        #endregion
 
         /// <summary>
         /// Checks for adding an item on a specified position
         /// </summary>
         public bool CanAddItem(Item item, Vector2Int position)
         {
-            throw new NotImplementedException();
+            items.Add(position, item);
+            return true;
         }
 
         public bool CanAddItem(Item item, int startX, int startY)
@@ -135,7 +133,10 @@ namespace Modules.Inventories
         /// </summary>
         public bool Contains(Item item)
         {
-            throw new NotImplementedException();
+            if (items.ContainsValue(item))
+                return true;
+            else
+                return false;
         }
 
         /// <summary>
