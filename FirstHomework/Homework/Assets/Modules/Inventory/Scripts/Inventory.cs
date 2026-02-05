@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Modules.Inventories
@@ -13,12 +12,12 @@ namespace Modules.Inventories
         public event Action<Item, Vector2Int> OnMoved;
         public event Action OnCleared;
 
-        public int Width => throw new NotImplementedException();
-        public int Height => throw new NotImplementedException();
-        public int Count => throw new NotImplementedException();
+        public int Width => sizeInventory.x;
+        public int Height => sizeInventory.y;
+        public int Count => sizeInventory.x * sizeInventory.y;
         
         private Dictionary<Vector2Int, Item> items = new Dictionary<Vector2Int, Item>();
-        private Vector2 sizeInventory; // размер инвентаря по x и y 
+        private Vector2Int sizeInventory; // размер инвентаря по x и y 
 
         #region Constructors
         
@@ -67,13 +66,18 @@ namespace Modules.Inventories
         /// </summary>
         public bool CanAddItem(Item item, Vector2Int position)
         {
-            items.Add(position, item);
-            return true;
+            if (!items.ContainsKey(position))
+            {
+                items.Add(position, item);
+                return true;
+            }
+            else
+                return false;
         }
 
         public bool CanAddItem(Item item, int startX, int startY)
         {
-            throw new NotImplementedException();
+           return CanAddItem(item, new Vector2Int(startX, startY));
         }
 
         /// <summary>
@@ -81,12 +85,12 @@ namespace Modules.Inventories
         /// </summary>
         public bool AddItem(Item item, Vector2Int position)
         {
-            throw new NotImplementedException();
+            return CanAddItem(item, position);
         }
 
         public bool AddItem(Item item, int startX, int startY)
         {
-            throw new NotImplementedException();
+            return CanAddItem(item, new Vector2Int(startX, startY));
         }
 
         /// <summary>
@@ -144,12 +148,18 @@ namespace Modules.Inventories
         /// </summary>
         public bool IsOccupied(Vector2Int position)
         {
-            throw new NotImplementedException();
+            if (items.ContainsKey(position))
+                return true;
+            else
+                return false;
         }
 
         public bool IsOccupied(int x, int y)
         {
-            throw new NotImplementedException();
+            if (items.ContainsKey(new Vector2Int(x, y)))
+                return true;
+            else
+                return false;
         }
 
         /// <summary>
@@ -157,12 +167,15 @@ namespace Modules.Inventories
         /// </summary>
         public bool IsFree(Vector2Int position)
         {
-            throw new NotImplementedException();
+            if (!items.ContainsKey(position))
+                return true;
+            else
+                return false;
         }
 
         public bool IsFree(int x, int y)
         {
-            throw new NotImplementedException();
+            return IsFree(new Vector2Int(x, y));
         }
 
         /// <summary>
@@ -170,6 +183,11 @@ namespace Modules.Inventories
         /// </summary>
         public bool RemoveItem(Item item)
         {
+            // if (items.ContainsValue(item))
+            // {
+            //     // var key = items.ContainsKey()
+            //     items.Remove(new Vector2Int())
+            // }
             throw new NotImplementedException();
         }
 
