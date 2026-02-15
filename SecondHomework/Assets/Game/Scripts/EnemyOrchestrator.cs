@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Game.Mechanics.BulletsSystem;
 using Modules.UI;
 using Modules.Utils;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Game
+namespace Game.Mechanics
 {
     // +
     public sealed class EnemyOrchestrator : MonoBehaviour, IEnemyDespawner
@@ -45,7 +46,9 @@ namespace Game
         
         [Header("Bullets")]
         [SerializeField]
-        private BulletWorldGO _bulletWorld;
+        private BulletHandler _bulletWorld;
+
+        [SerializeField] private string enemyMask = "EnemyBullet";
         
         [Header("UI")]
         [SerializeField]
@@ -79,7 +82,8 @@ namespace Game
             enemy.transform.position = this.NextSpawnPosition();
             enemy.destination = this.NextDestination();
             enemy.currentHealth = enemy.config.Health;
-
+  
+            Debug.Log($"FixedUpdate Target Update??");
             enemy.target = _player;
             enemy.SetDespawner(this);
             enemy.OnFire += this.OnFire;
@@ -109,16 +113,23 @@ namespace Game
         
         private void OnFire(ShipController enemy)
         {
+            _bulletWorld.Spawn(GetBulletConfiguration(enemy));
+        }
+        
+        private BulletConfiguration GetBulletConfiguration(ShipController enemy)
+        {
             Vector2 position = enemy.firePoint.position;
             Vector2 target = _player.transform.position;
             Vector2 direction = (target - position).normalized;
-            _bulletWorld.Spawn(
-                enemy.firePoint.position,
-                direction,
-                enemy.bulletSpeed,
-                enemy.bulletDamage,
-                TeamType.Enemy
-            );
+            
+            BulletConfiguration bulletConfiguration = new BulletConfiguration();
+            bulletConfiguration.Position = position;
+            bulletConfiguration.Direction = direction;
+            bulletConfiguration.Speed = enemy.bulletSpeed;
+            bulletConfiguration.Damage = enemy.bulletDamage;
+            bulletConfiguration.Team = TeamType.Enemy;
+            bulletConfiguration.BulletNameMask = enemyMask;
+            return bulletConfiguration;
         }
         
         private Vector3 NextSpawnPosition()

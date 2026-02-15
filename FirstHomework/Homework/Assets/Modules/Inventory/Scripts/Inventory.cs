@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Modules.Inventories
@@ -16,13 +17,22 @@ namespace Modules.Inventories
         public int Height => sizeInventory.y;
         public int Count => sizeInventory.x * sizeInventory.y;
         
-        private Dictionary<Vector2Int, Item> items = new Dictionary<Vector2Int, Item>();
-        private Vector2Int sizeInventory; // размер инвентаря по x и y 
+        private Dictionary<Vector2Int, Item> items = new Dictionary<Vector2Int, Item>(); // Ключ - положение, значение - предмет 
+        
+        public Dictionary<Vector2Int, Item> Items => items;
+        
+        private Vector2Int sizeInventory; // размер инвентаря текщуего по x и y 
 
         #region Constructors
         
         public Inventory(int width, int height)
         {
+            if (width <= 0 || height <= 0)
+            {
+                Debug.LogError($"{nameof(width)} and {nameof(height)} must be greater than 0");
+                return;
+            }
+            
             sizeInventory.x = width;
             sizeInventory.y = height;
         }
@@ -56,7 +66,17 @@ namespace Modules.Inventories
         /// </summary>
         public Inventory(Inventory inventory)
         {
-            //??
+            if (inventory == null)
+            {
+                Debug.LogError($"{nameof(inventory)} is null");
+                return;
+            }
+
+            sizeInventory.x = inventory.Width;
+            sizeInventory.y = inventory.Height;
+            
+            items = inventory.Items;
+
         }
         
         #endregion
@@ -66,18 +86,12 @@ namespace Modules.Inventories
         /// </summary>
         public bool CanAddItem(Item item, Vector2Int position)
         {
-            if (!items.ContainsKey(position))
-            {
-                items.Add(position, item);
-                return true;
-            }
-            else
-                return false;
+            return AddItem(item, position.x, position.y);
         }
 
         public bool CanAddItem(Item item, int startX, int startY)
         {
-           return CanAddItem(item, new Vector2Int(startX, startY));
+           return AddItem(item, startX, startY);
         }
 
         /// <summary>
@@ -85,12 +99,21 @@ namespace Modules.Inventories
         /// </summary>
         public bool AddItem(Item item, Vector2Int position)
         {
-            return CanAddItem(item, position);
+            return AddItem(item, position.x, position.y);
         }
 
         public bool AddItem(Item item, int startX, int startY)
         {
-            return CanAddItem(item, new Vector2Int(startX, startY));
+            var position = new Vector2Int(startX, startY);
+            
+            if (!items.ContainsKey(position))
+            {
+                items.Add(position, item);
+                OnAdded?.Invoke(item, position);
+                return true;
+            }
+            else
+                return false;
         }
 
         /// <summary>
@@ -183,12 +206,19 @@ namespace Modules.Inventories
         /// </summary>
         public bool RemoveItem(Item item)
         {
-            // if (items.ContainsValue(item))
-            // {
-            //     // var key = items.ContainsKey()
-            //     items.Remove(new Vector2Int())
-            // }
-            throw new NotImplementedException();
+            if (items.ContainsValue(item))
+            {
+                var keysToDelete = items.Where(x => x.Value == item)
+                    .Select(x => x.Key)
+                    .ToList();
+
+                foreach (var key in keysToDelete)
+                {
+                    items.Remove(key);
+                    return true;
+                }
+            }
+            return false;
         }
 
         public bool RemoveItem(Item item, out Vector2Int position)
@@ -280,6 +310,7 @@ namespace Modules.Inventories
         public void CopyTo(Item[,] matrix)
         {
             throw new NotImplementedException();
+            //Array.Copy(items, matrix, items.Count);
         }
 
         /// <summary>

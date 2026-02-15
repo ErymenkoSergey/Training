@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using Game.Data;
 using UnityEngine;
 
 namespace Game
@@ -12,7 +13,8 @@ namespace Game
 
         public event Action<ShipController> OnFire;
 
-        public ShipControllerSO config;
+        [field: SerializeField]
+        public ShipControllerSO config { get; private set; }
 
         [Header("Health")]
         public int currentHealth;
@@ -20,8 +22,8 @@ namespace Game
         [Header("Combat")]
         public Transform firePoint;
         public float bulletSpeed;
-        public int bulletDamage;
-        private float _fireTime;
+        public int bulletDamage; 
+        public float _fireTime;
 
         [Header("Movement")]
         [SerializeField]
@@ -53,8 +55,7 @@ namespace Game
 
         private Material _material;
         private Tweener _damageAnimation;
-
-
+        
         private void Awake()
         {
             this.currentHealth = config.Health;
@@ -64,7 +65,7 @@ namespace Game
             _renderer.material = _material;
         }
 
-        protected virtual void FixedUpdate() => _motor.FixedUpdate();
+        protected virtual void FixedUpdate() => _motor?.FixedUpdate();
 
         protected void Fire()
         {
@@ -108,10 +109,8 @@ namespace Game
 
         public void NotifyAboutDead()
         {
-            // Instantiate particle vfx 
             ParticleSystem prefab = _viewConfig.DestroyEffectPrefab;
             Instantiate(prefab, _viewTransform.position, prefab.transform.rotation);
-
             this.OnDead?.Invoke();
         }
 

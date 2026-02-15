@@ -7,45 +7,41 @@ namespace Game
     // +
     public sealed class PlayerShip : ShipController
     {
-        [SerializeField]
-        private TransformBounds _playerArea;
+        [SerializeField] private TransformBounds _playerArea;
 
-        [SerializeField]
-        private CameraShaker _cameraShaker;
+        [SerializeField] private CameraShaker _cameraShaker;
 
-        [Header("UI")]
-        [SerializeField]
-        private GameOverView _gameOverView;
+        [Header("UI")] [SerializeField] private GameOverView _gameOverView;
 
-        [SerializeField]
-        private HealthView _healthView;
+        [SerializeField] private HealthView _healthView;
 
         private void OnEnable()
         {
-            this.OnHealthChanged += health =>
+            OnHealthChanged += health =>
             {
                 _healthView.SetHealth(health, this.config.Health);
                 _cameraShaker.Shake();
             };
-            this.OnDead += _gameOverView.Show;
+            OnDead += _gameOverView.Show;
         }
 
         private void OnDisable()
         {
-            this.OnHealthChanged -= health =>
+            OnHealthChanged -= health =>
             {
                 _healthView.SetHealth(health, this.config.Health);
                 _cameraShaker.Shake();
             };
-            this.OnDead -= _gameOverView.Show;
+            OnDead -= _gameOverView.Show;
         }
 
         public void Update()
         {
+            // if stop game =?? time scail
             if (Input.GetKeyDown(KeyCode.Space))
                 this.Fire();
 
-            float dx = Input.GetAxisRaw("Horizontal");
+            float dx = Input.GetAxisRaw("Horizontal"); // Go to input service// 
             float dy = Input.GetAxisRaw("Vertical");
             this.moveDirection = new Vector2(dx, dy);
 
