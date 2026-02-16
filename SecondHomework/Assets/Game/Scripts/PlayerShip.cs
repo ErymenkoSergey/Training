@@ -1,10 +1,11 @@
+using Game.Interface;
 using Modules.UI;
 using Modules.Utils;
 using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
-    public sealed class PlayerShip : BaseShip
+    public sealed class PlayerShip : BaseShip, IPlayer
     {
         [SerializeField] private TransformBounds _playerArea;
 

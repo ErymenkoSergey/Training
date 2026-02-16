@@ -2,6 +2,7 @@ using System;
 using DG.Tweening;
 using Game.Data;
 using Game.Interface;
+using Game.Mechanics.BulletsSystem.Data;
 using UnityEngine;
 
 namespace Game.Mechanics.Ship
@@ -16,17 +17,21 @@ namespace Game.Mechanics.Ship
         [field: SerializeField]
         public ShipData config { get; private set; }
 
+        [field: SerializeField]
+        public  Gunner Gunner;
+        
         [Header("Health")]
         [field: SerializeField]
         public int CurrentHealth { get; set; }
 
+        public int DeadValueHealth { get; private set; } = 0;
+        
         public int CurrentMaxHealth
         {
             get
             {
                 return config.Health;
             }
-            set{}
         }
 
         [Header("Combat")]
@@ -68,7 +73,7 @@ namespace Game.Mechanics.Ship
         
         private void Awake()
         {
-            this.CurrentHealth = config.Health;
+            CurrentHealth = config.Health;
             _motor.SetSpeed(config.MoveSpeed);
 
             _material = new Material(_viewConfig.MaterialPrefab);
@@ -80,7 +85,7 @@ namespace Game.Mechanics.Ship
         protected void Fire()
         {
             float time = Time.time;
-            if (time - _fireTime < config.FireCooldown || this.CurrentHealth <= 0)
+            if (time - _fireTime < config.FireCooldown || this.CurrentHealth <= DeadValueHealth)
                 return;
 
             if (_fireSFX)

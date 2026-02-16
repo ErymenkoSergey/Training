@@ -1,3 +1,5 @@
+using Game.Mechanics.BulletsSystem.Data;
+using Game.Mechanics.Ship;
 using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem
@@ -5,13 +7,10 @@ namespace Game.Mechanics.BulletsSystem
     public sealed class PlayerBulletInstantiator : MonoBehaviour
     {
         [SerializeField]
-        private BulletHandler _bulletWorld;
-
-        [SerializeField]
         private string playerMask = "PlayerBullet";
 
         [SerializeField]
-        private PlayerShip _player;
+        private BaseShip _player;
 
         private void OnEnable()
         {
@@ -23,9 +22,9 @@ namespace Game.Mechanics.BulletsSystem
             _player.OnFire -= this.OnFire;
         }
 
-        private void OnFire(ShipController _)
+        private void OnFire(BaseShip _)
         {
-            _bulletWorld.Spawn(GetBulletConfiguration());
+            _player.Gunner.Spawn(GetBulletConfiguration());
         }
 
         private BulletConfiguration GetBulletConfiguration()

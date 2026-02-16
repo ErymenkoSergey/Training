@@ -1,12 +1,11 @@
 using Game.Interface;
-using Game.Mechanics.Ship;
 using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
     public sealed class Enemy : BaseShip
     {
-        [Header("Enemy")] public BaseShip target;
+        public IHealth hpTarget;
         public Vector2 destination;
 
         [SerializeField] private float _fireCooldown = 1.25f;
@@ -27,7 +26,7 @@ namespace Game.Mechanics.Ship
         {
             base.FixedUpdate();
 
-            if (this.CurrentHealth <= 0 || this.target == null || this.target.CurrentHealth <= 0)
+            if (this.CurrentHealth <= DeadValueHealth || this.hpTarget == null || this.hpTarget.CurrentHealth <= DeadValueHealth)
                 return;
 
             Vector2 distance = destination - (Vector2)this.transform.position;
@@ -44,7 +43,7 @@ namespace Game.Mechanics.Ship
                 float time = Time.time;
                 if (time - _fireTime >= _fireCooldown)
                 {
-                    this.Fire();
+                    Fire();
                     _fireTime = time;
                 }
             }

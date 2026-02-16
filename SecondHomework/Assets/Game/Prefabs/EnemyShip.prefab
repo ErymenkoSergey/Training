@@ -113,7 +113,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <config>k__BackingField: {fileID: 11400000, guid: 342eb63e507d644daae6ffc27bd8fc71, type: 2}
-  currentHealth: 2
+  Gunner: {fileID: 11400000, guid: 2b6d79ed1dfe127479b71efcd37a96b5, type: 2}
+  <CurrentHealth>k__BackingField: 0
   firePoint: {fileID: 3195880656587174614}
   bulletSpeed: 3
   bulletDamage: 1
@@ -128,7 +129,6 @@ MonoBehaviour:
   _fireVFX: {fileID: 1792961037914348205}
   _fireSFX: {fileID: 0}
   _damageSFX: {fileID: 0}
-  target: {fileID: 0}
   destination: {x: 0, y: 0}
   _fireCooldown: 1.25
   _stoppingDistance: 0.25

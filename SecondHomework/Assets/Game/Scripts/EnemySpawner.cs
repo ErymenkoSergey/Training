@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Game.Interface;
 using Game.Mechanics.BulletsSystem;
+using Game.Mechanics.BulletsSystem.Data;
 using Game.Mechanics.Ship;
 using Modules.UI;
 using Modules.Utils;
@@ -33,7 +34,9 @@ namespace Game.Mechanics.Spawner
 
         [Header("Target")]
         [SerializeField]
-        private BaseShip _player;
+        private PlayerShip _playerShip;
+        private IPlayer _player;
+        private IHealth _healthPlayer;
         
         [Header("Points")]
         [SerializeField]
@@ -45,9 +48,9 @@ namespace Game.Mechanics.Spawner
         private int _spawnIndex;
         private int _attackIndex;
         
-        [Header("Bullets")]
-        [SerializeField]
-        private BulletHandler _bulletWorld;
+        // [Header("Bullets")]
+        // [SerializeField]
+        // private Gunner _bulletWorld;
 
         [SerializeField] private string enemyMask = "EnemyBullet";
         
@@ -59,6 +62,7 @@ namespace Game.Mechanics.Spawner
         
         private void Awake()
         {
+            TargetConfiguration();
             _spawnPositions.Shuffle();
             _attackPositions.Shuffle();
             _scoreView.SetValue(_destroyedEnemies);
@@ -69,10 +73,10 @@ namespace Game.Mechanics.Spawner
             this.ResetSpawnCooldown();
         }
 
-        private void FixedUpdate()
+        private void FixedUpdate() // create corutine?? 
         {
             float time = Time.fixedTime;
-            if (time - _spawnTime < _spawnCooldown || _player.CurrentHealth <= 0)
+            if (time - _spawnTime < _spawnCooldown || _healthPlayer.CurrentHealth <= _healthPlayer.DeadValueHealth)
                 return;
             
             if (_pool.TryDequeue(out Enemy enemy))
@@ -80,18 +84,26 @@ namespace Game.Mechanics.Spawner
             else
                 enemy = Instantiate(_prefab, _container);
 
+            // create config 
             enemy.transform.position = this.NextSpawnPosition();
             enemy.destination = this.NextDestination();
             enemy.CurrentHealth = enemy.config.Health;
-  
-            Debug.Log($"FixedUpdate Target Update??");
-            enemy.target = _player;
+            enemy.hpTarget = _healthPlayer;
             enemy.SetRespawn(this);
             enemy.OnFire += this.OnFire;
                 
             this.ResetSpawnCooldown();
         }
 
+        private void TargetConfiguration()
+        {
+            if (_playerShip == null)
+                Debug.LogError($"{nameof(_playerShip)} is null!!!");
+
+            _player = _playerShip;
+            _healthPlayer = _playerShip;
+        }
+        
         private void ResetSpawnCooldown()
         {
             _spawnCooldown = Random.Range(_minSpawnCooldown, _maxSpawnCooldown);
@@ -114,7 +126,7 @@ namespace Game.Mechanics.Spawner
         
         private void OnFire(BaseShip enemy)
         {
-            _bulletWorld.Spawn(GetBulletConfiguration(enemy));
+            enemy.Gunner.Spawn(GetBulletConfiguration(enemy));
         }
         
         private BulletConfiguration GetBulletConfiguration(BaseShip enemy)

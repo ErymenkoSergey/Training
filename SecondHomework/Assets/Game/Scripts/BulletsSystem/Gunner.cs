@@ -1,41 +1,42 @@
 using System.Collections.Generic;
 using Game.Data;
 using Game.Interface;
-using Modules.Utils;
 using UnityEngine;
 
-namespace Game.Mechanics.BulletsSystem
+namespace Game.Mechanics.BulletsSystem.Data
 {
-    public sealed class BulletHandler : MonoBehaviour
+    [CreateAssetMenu(menuName = "Game/Gunner", order = 2)]
+    public sealed class Gunner : ScriptableObject
     {
         [SerializeField] private BulletUnit _prefab;
-        [SerializeField] private Transform _container;
-        [SerializeField] private ExplosionVFXEffectData _configView;
-        [SerializeField] private TransformBounds _levelBounds; 
+        [SerializeField] private ExplosionVFXEffectData _configView; 
+        private BulletField bulletField;
 
         private readonly Stack<BulletUnit> _pool = new();
         [SerializeField, Range(1, 100)] private int startSizePool = 15;
         private readonly List<BulletUnit> _bullets = new();
         
-        private void Awake()
+        public void Init(BulletField bulletField)
         {
-            if (_prefab == null || _container == null)
+            this.bulletField = bulletField;
+            
+            if (_prefab == null || bulletField == null)
             {
-                Debug.LogError("BulletHandler: prefab or container cannot be null!");
+                Debug.LogError("null");
                 return;
             }
             
             for (var i = 0; i < startSizePool; i++)
             {
-                BulletUnit bullet = Instantiate(_prefab, _container);
+                BulletUnit bullet = Instantiate(_prefab, bulletField.Container);
                 bullet.gameObject.SetActive(false);
                 _pool.Push(bullet);
             }
         }
 
-        private void FixedUpdate()
+        public void FixedUpdate()
         {
-            if (_bullets.Count == 0)
+            if (_bullets.Count == 0 && bulletField != null)
                 return;
             
             for (int i = _bullets.Count - 1; i >= 0; i--)
@@ -44,7 +45,7 @@ namespace Game.Mechanics.BulletsSystem
                 Vector3 moveStep = bullet.direction * bullet.speed * Time.fixedDeltaTime;
                 bullet.transform.position += moveStep;
 
-                if (!_levelBounds.InBounds(bullet.transform.position))
+                if (!bulletField.LevelBounds.InBounds(bullet.transform.position))
                 {
                     _bullets.RemoveAt(i);
 
@@ -66,7 +67,7 @@ namespace Game.Mechanics.BulletsSystem
             if (_pool.TryPop(out BulletUnit bullet))
                 bullet.gameObject.SetActive(true);
             else
-                bullet = Instantiate(_prefab, _container);
+                bullet = Instantiate(_prefab, bulletField.Container);
 
             bullet.SetData(config);
             bullet.OnTriggerEntered += this.OnTriggerEntered;
@@ -84,10 +85,7 @@ namespace Game.Mechanics.BulletsSystem
                 ship.NotifyAboutHealthChanged(ship.CurrentHealth);
 
                 if (ship.CurrentHealth <= 0)
-                {
                     ship.NotifyAboutDead();
-                    // ship.gameObject.SetActive(false);
-                }
             }
 
             bullet.OnTriggerEntered -= this.OnTriggerEntered;
@@ -100,15 +98,5 @@ namespace Game.Mechanics.BulletsSystem
             GameObject prefab = bullet.GetTeam() == TeamType.Player ? _configView.BlueVFX : _configView.RedVFX;
             Instantiate(prefab, bullet.transform.position, prefab.transform.rotation);
         }
-    }
-
-    public class BulletConfiguration
-    {
-        public Vector2 Position;
-        public Vector2 Direction;
-        public float Speed;
-        public int Damage;
-        public TeamType Team;
-        public string BulletNameMask;
     }
 }
