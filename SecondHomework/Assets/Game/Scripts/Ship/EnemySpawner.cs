@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Game.Interface;
 using Game.Mechanics.BulletsSystem;
-using Game.Mechanics.BulletsSystem.Data;
+using Game.Mechanics.Config;
 using Game.Mechanics.Ship;
 using Modules.UI;
 using Modules.Utils;
@@ -48,10 +48,6 @@ namespace Game.Mechanics.Spawner
         private int _spawnIndex;
         private int _attackIndex;
         
-        // [Header("Bullets")]
-        // [SerializeField]
-        // private Gunner _bulletWorld;
-
         [SerializeField] private string enemyMask = "EnemyBullet";
         
         [Header("UI")]
@@ -70,10 +66,38 @@ namespace Game.Mechanics.Spawner
         
         private void Start()
         {
-            this.ResetSpawnCooldown();
+            ResetSpawnCooldown();
+            //StartCoroutine(CreateEnemy());
         }
 
-        private void FixedUpdate() // create corutine?? 
+        // private IEnumerator CreateEnemy()
+        // {
+        //     while (_healthPlayer.CurrentHealth > _healthPlayer.DeadValueHealth)
+        //     {
+        //         if (_pool.TryDequeue(out Enemy enemy))
+        //             enemy.gameObject.SetActive(true);
+        //         else
+        //             enemy = Instantiate(_prefab, _container);
+        //
+        //         enemy.SetData(GetConfiguration());
+        //         enemy.OnFire += this.OnFire;
+        //         
+        //         ResetSpawnCooldown();
+        //         yield return new WaitForSeconds(_spawnCooldown);
+        //     }
+        // }
+
+        private EnemyConfiguration GetConfiguration()
+        {
+            EnemyConfiguration config = new EnemyConfiguration();
+            config.SpawnPosition = NextSpawnPosition();
+            config.AttackPosition = NextDestination();
+            config.TargetHealth = _healthPlayer;
+            config.Respawn = this;
+            return config;
+        }
+
+        private void FixedUpdate()
         {
             float time = Time.fixedTime;
             if (time - _spawnTime < _spawnCooldown || _healthPlayer.CurrentHealth <= _healthPlayer.DeadValueHealth)
@@ -84,15 +108,10 @@ namespace Game.Mechanics.Spawner
             else
                 enemy = Instantiate(_prefab, _container);
 
-            // create config 
-            enemy.transform.position = this.NextSpawnPosition();
-            enemy.destination = this.NextDestination();
-            enemy.CurrentHealth = enemy.config.Health;
-            enemy.hpTarget = _healthPlayer;
-            enemy.SetRespawn(this);
+            enemy.SetData(GetConfiguration());
             enemy.OnFire += this.OnFire;
                 
-            this.ResetSpawnCooldown();
+            ResetSpawnCooldown();
         }
 
         private void TargetConfiguration()
@@ -126,7 +145,7 @@ namespace Game.Mechanics.Spawner
         
         private void OnFire(BaseShip enemy)
         {
-            enemy.Gunner.Spawn(GetBulletConfiguration(enemy));
+            enemy.Gunner.Shoot(GetBulletConfiguration(enemy));
         }
         
         private BulletConfiguration GetBulletConfiguration(BaseShip enemy)

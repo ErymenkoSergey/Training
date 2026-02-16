@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem
 {
-    public class BulletField : MonoBehaviour
+    public sealed class BulletField : MonoBehaviour
     {
         [SerializeField] private Gunner gunner;
         public Transform Container;

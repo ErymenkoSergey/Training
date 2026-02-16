@@ -18,7 +18,7 @@ namespace Game.Mechanics.Ship
         public ShipData config { get; private set; }
 
         [field: SerializeField]
-        public  Gunner Gunner;
+        public Gunner Gunner;
         
         [Header("Health")]
         [field: SerializeField]
@@ -38,7 +38,7 @@ namespace Game.Mechanics.Ship
         public Transform firePoint;
         public float bulletSpeed;
         public int bulletDamage; 
-        public float _fireTime;
+        public float FireTime;
 
         [Header("Movement")]
         [SerializeField]
@@ -85,7 +85,7 @@ namespace Game.Mechanics.Ship
         protected void Fire()
         {
             float time = Time.time;
-            if (time - _fireTime < config.FireCooldown || this.CurrentHealth <= DeadValueHealth)
+            if (time - FireTime < config.FireCooldown || this.CurrentHealth <= DeadValueHealth)
                 return;
 
             if (_fireSFX)
@@ -95,7 +95,7 @@ namespace Game.Mechanics.Ship
                 _fireVFX.Play();
 
             this.OnFire?.Invoke(this);
-            _fireTime = time;
+            FireTime = time;
         }
         
         protected virtual void LateUpdate()

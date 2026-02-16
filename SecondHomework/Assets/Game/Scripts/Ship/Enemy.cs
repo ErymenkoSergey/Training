@@ -1,32 +1,36 @@
 using Game.Interface;
+using Game.Mechanics.Config;
 using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
     public sealed class Enemy : BaseShip
     {
-        public IHealth hpTarget;
-        public Vector2 destination;
-
         [SerializeField] private float _fireCooldown = 1.25f;
-
         [SerializeField] private float _stoppingDistance = 0.25f;
+        private Vector2 destination;
+        private IHealth hpTarget;
+        private IEnemyRespawn respawn;
 
-        private IEnemyRespawn _despawner;
-
-        public void SetRespawn(IEnemyRespawn respawn) => _despawner = respawn;
+        public void SetData(EnemyConfiguration config)
+        {
+            transform.position = config.SpawnPosition;
+            destination = config.AttackPosition;
+            hpTarget = config.TargetHealth;
+            respawn = config.Respawn;
+        }
 
         private void OnEnable() => OnDead += OnCharacterDead;
 
         private void OnDisable() => OnDead -= OnCharacterDead;
 
-        private void OnCharacterDead() => _despawner.Respawn(this);
+        private void OnCharacterDead() => respawn.Respawn(this);
 
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
 
-            if (this.CurrentHealth <= DeadValueHealth || this.hpTarget == null || this.hpTarget.CurrentHealth <= DeadValueHealth)
+            if (CurrentHealth <= DeadValueHealth || hpTarget == null || hpTarget.CurrentHealth <= DeadValueHealth)
                 return;
 
             Vector2 distance = destination - (Vector2)this.transform.position;
@@ -41,10 +45,10 @@ namespace Game.Mechanics.Ship
             else
             {
                 float time = Time.time;
-                if (time - _fireTime >= _fireCooldown)
+                if (time - FireTime >= _fireCooldown)
                 {
                     Fire();
-                    _fireTime = time;
+                    FireTime = time;
                 }
             }
         }

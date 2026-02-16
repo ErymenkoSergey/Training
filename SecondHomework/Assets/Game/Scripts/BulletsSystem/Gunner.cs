@@ -56,7 +56,7 @@ namespace Game.Mechanics.BulletsSystem.Data
             }
         }
 
-        public void Spawn(BulletConfiguration config)
+        public void Shoot(BulletConfiguration config)
         {
             if (config.Team == TeamType.None)
             {
@@ -81,10 +81,10 @@ namespace Game.Mechanics.BulletsSystem.Data
             
             if (bullet.damage > 0)
             {
-                ship.CurrentHealth = Mathf.Clamp(ship.CurrentHealth - bullet.damage, 0, ship.CurrentMaxHealth);
+                ship.CurrentHealth = Mathf.Clamp(ship.CurrentHealth - bullet.damage, ship.DeadValueHealth, ship.CurrentMaxHealth);
                 ship.NotifyAboutHealthChanged(ship.CurrentHealth);
 
-                if (ship.CurrentHealth <= 0)
+                if (ship.CurrentHealth <= ship.DeadValueHealth)
                     ship.NotifyAboutDead();
             }
 

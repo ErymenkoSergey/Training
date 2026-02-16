@@ -24,7 +24,7 @@ namespace Game.Mechanics.BulletsSystem
 
         private void OnFire(BaseShip _)
         {
-            _player.Gunner.Spawn(GetBulletConfiguration());
+            _player.Gunner.Shoot(GetBulletConfiguration());
         }
 
         private BulletConfiguration GetBulletConfiguration()
