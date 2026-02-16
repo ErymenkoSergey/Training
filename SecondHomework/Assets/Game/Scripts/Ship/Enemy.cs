@@ -14,6 +14,7 @@ namespace Game.Mechanics.Ship
 
         public void SetData(EnemyConfiguration config)
         {
+            Debug.Log($"SetData: {config.SpawnPosition}");
             transform.position = config.SpawnPosition;
             destination = config.AttackPosition;
             hpTarget = config.TargetHealth;

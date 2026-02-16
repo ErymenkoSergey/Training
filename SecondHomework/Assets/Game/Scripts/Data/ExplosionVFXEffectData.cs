@@ -9,5 +9,6 @@ namespace Game.Data
         [field: SerializeField] public GameObject RedVFX { get; private set; }
 
         [field: SerializeField] public GameObject ExplosionVFX { get; private set; }
+        [field: SerializeField] public GameObject BigExplosionVFX { get; private set; }
     }
 }

@@ -8,34 +8,36 @@ namespace Game.Mechanics.Ship
     public sealed class PlayerShip : BaseShip, IPlayer
     {
         [SerializeField] private TransformBounds _playerArea;
-
         [SerializeField] private CameraShaker _cameraShaker;
 
-        [Header("UI")] [SerializeField] private GameOverView _gameOverView;
-
+        [Header("UI")] 
+        [SerializeField] private GameOverView _gameOverView;
         [SerializeField] private HealthView _healthView;
 
         private void OnEnable()
         {
-            OnHealthChanged += health =>
-            {
-                _healthView.SetHealth(health, this.config.Health);
-                _cameraShaker.Shake();
-            };
-            OnDead += _gameOverView.Show;
+            OnHealthChanged += ChangeHealth;
+            OnDead += GameOver;
         }
 
         private void OnDisable()
         {
-            OnHealthChanged -= health =>
-            {
-                _healthView.SetHealth(health, this.config.Health);
-                _cameraShaker.Shake();
-            };
-            OnDead -= _gameOverView.Show;
+            OnHealthChanged -= ChangeHealth;
+            OnDead -= GameOver;
         }
 
-        public void Update()
+        private void ChangeHealth(int health)
+        {
+            _healthView.SetHealth(health, this.config.Health);
+            _cameraShaker.Shake();
+        }
+
+        private void GameOver()
+        {
+            _gameOverView.Show();
+        }
+
+        public void Update() //go to input system
         {
             if (Input.GetKeyDown(KeyCode.Space))
                 this.Fire();
@@ -44,7 +46,7 @@ namespace Game.Mechanics.Ship
             float dy = Input.GetAxisRaw("Vertical");
             this.moveDirection = new Vector2(dx, dy);
 
-            if (this.CurrentHealth > 0)
+            if (CurrentHealth > 0)
             {
                 _motor.MoveStep(this.moveDirection);
             }

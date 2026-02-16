@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.Data;
+using Game.Enums;
 using Game.Interface;
 using UnityEngine;
 
@@ -79,13 +80,18 @@ namespace Game.Mechanics.BulletsSystem.Data
             if (!other.TryGetComponent(out IHealth ship))
                 return;
             
+            bool isDead = false;
+            
             if (bullet.damage > 0)
             {
                 ship.CurrentHealth = Mathf.Clamp(ship.CurrentHealth - bullet.damage, ship.DeadValueHealth, ship.CurrentMaxHealth);
                 ship.NotifyAboutHealthChanged(ship.CurrentHealth);
 
                 if (ship.CurrentHealth <= ship.DeadValueHealth)
+                {
                     ship.NotifyAboutDead();
+                    isDead = true;
+                }
             }
 
             bullet.OnTriggerEntered -= this.OnTriggerEntered;
@@ -95,8 +101,21 @@ namespace Game.Mechanics.BulletsSystem.Data
             bullet.gameObject.SetActive(false);
             _pool.Push(bullet);
 
-            GameObject prefab = bullet.GetTeam() == TeamType.Player ? _configView.BlueVFX : _configView.RedVFX;
-            Instantiate(prefab, bullet.transform.position, prefab.transform.rotation);
+            SpawnVFX(bullet.transform, bullet.GetTeam(), isDead);
+        }
+
+        private void SpawnVFX(Transform point, TeamType team, bool isDead = false)
+        {
+            if (isDead)
+            {
+                GameObject prefab = team == TeamType.Player ? _configView.BigExplosionVFX : _configView.ExplosionVFX;
+                Instantiate(prefab, point.position, prefab.transform.rotation);
+            }
+            else
+            {
+                GameObject prefab = team == TeamType.Player ? _configView.BlueVFX : _configView.RedVFX;
+                Instantiate(prefab, point.position, prefab.transform.rotation);
+            }
         }
     }
 }

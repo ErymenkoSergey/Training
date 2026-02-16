@@ -1,6 +1,5 @@
-﻿namespace Game
+﻿namespace Game.Enums
 {
-    // +
     public enum TeamType
     {
         None = 0,

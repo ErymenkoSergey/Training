@@ -9828,6 +9828,7 @@ GameObject:
   - component: {fileID: 4067627537098944}
   - component: {fileID: 198129222264133152}
   - component: {fileID: 199542680518246522}
+  - component: {fileID: 5180116891706867427}
   m_Layer: 0
   m_Name: ProjectileVFX (Red)
   m_TagString: Untagged
@@ -9860,14 +9861,14 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1552236684049608}
   serializedVersion: 8
-  lengthInSec: 0.25
+  lengthInSec: 2
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 3
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 0
-  looping: 1
+  looping: 0
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
@@ -14734,3 +14735,16 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &5180116891706867427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1552236684049608}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abdb5ef6a8201ff4b9d962d243424bf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Game.Mechanics.Other.AutoDestroyObject
+  destroyTime: 3

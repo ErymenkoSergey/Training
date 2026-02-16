@@ -1,3 +1,4 @@
+using Game.Enums;
 using Game.Mechanics.BulletsSystem.Data;
 using Game.Mechanics.Ship;
 using UnityEngine;

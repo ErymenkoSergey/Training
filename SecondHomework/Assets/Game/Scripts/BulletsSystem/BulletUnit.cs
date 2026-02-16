@@ -1,4 +1,5 @@
 using System;
+using Game.Enums;
 using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem

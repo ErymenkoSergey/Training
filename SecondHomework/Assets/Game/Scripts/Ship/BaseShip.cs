@@ -73,11 +73,15 @@ namespace Game.Mechanics.Ship
         
         private void Awake()
         {
-            CurrentHealth = config.Health;
-            _motor.SetSpeed(config.MoveSpeed);
-
+            ResetData();
             _material = new Material(_viewConfig.MaterialPrefab);
             _renderer.material = _material;
+        }
+
+        public void ResetData()
+        {
+            CurrentHealth = config.Health;
+            _motor.SetSpeed(config.MoveSpeed);
         }
 
         protected virtual void FixedUpdate() => _motor?.FixedUpdate();
@@ -126,8 +130,7 @@ namespace Game.Mechanics.Ship
         {
             ParticleSystem prefab = _viewConfig.DestroyEffectPrefab;
             Instantiate(prefab, _viewTransform.position, prefab.transform.rotation);
-            this.OnDead?.Invoke();
-            gameObject.SetActive(false);
+            OnDead?.Invoke();
         }
 
         private void AnimateDamage()

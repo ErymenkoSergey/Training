@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Game.Enums;
 using Game.Interface;
 using Game.Mechanics.BulletsSystem;
 using Game.Mechanics.Config;
@@ -67,25 +68,7 @@ namespace Game.Mechanics.Spawner
         private void Start()
         {
             ResetSpawnCooldown();
-            //StartCoroutine(CreateEnemy());
         }
-
-        // private IEnumerator CreateEnemy()
-        // {
-        //     while (_healthPlayer.CurrentHealth > _healthPlayer.DeadValueHealth)
-        //     {
-        //         if (_pool.TryDequeue(out Enemy enemy))
-        //             enemy.gameObject.SetActive(true);
-        //         else
-        //             enemy = Instantiate(_prefab, _container);
-        //
-        //         enemy.SetData(GetConfiguration());
-        //         enemy.OnFire += this.OnFire;
-        //         
-        //         ResetSpawnCooldown();
-        //         yield return new WaitForSeconds(_spawnCooldown);
-        //     }
-        // }
 
         private EnemyConfiguration GetConfiguration()
         {
@@ -131,15 +114,19 @@ namespace Game.Mechanics.Spawner
 
         public void Respawn(Enemy enemy)
         {
+            enemy.OnFire -= this.OnFire;
+            Debug.Log($"R1 espawn enemy {enemy.gameObject.name}");
             _destroyedEnemies++;
             _scoreView.SetValue(_destroyedEnemies);
-            this.StartCoroutine(DespawnInNextFrame(enemy));
+            StartCoroutine(DespawnInNextFrame(enemy));
         }
 
         private IEnumerator DespawnInNextFrame(Enemy enemy)
         {
             yield return null;
+            Debug.Log($"R2 espawn enemy {enemy.gameObject.name}");
             enemy.gameObject.SetActive(false);
+            enemy.ResetData();
             _pool.Enqueue(enemy);
         }
         
