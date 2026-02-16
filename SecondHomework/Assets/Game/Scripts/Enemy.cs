@@ -1,32 +1,33 @@
+using Game.Interface;
+using Game.Mechanics.Ship;
 using UnityEngine;
 
-namespace Game
+namespace Game.Mechanics.Ship
 {
-    // +
-    public sealed class Enemy : ShipController
+    public sealed class Enemy : BaseShip
     {
-        [Header("Enemy")] public ShipController target;
+        [Header("Enemy")] public BaseShip target;
         public Vector2 destination;
 
         [SerializeField] private float _fireCooldown = 1.25f;
 
         [SerializeField] private float _stoppingDistance = 0.25f;
 
-        private IEnemyDespawner _despawner;
+        private IEnemyRespawn _despawner;
 
-        public void SetDespawner(IEnemyDespawner despawner) => _despawner = despawner;
+        public void SetRespawn(IEnemyRespawn respawn) => _despawner = respawn;
 
-        private void OnEnable() => this.OnDead += this.OnCharacterDead;
+        private void OnEnable() => OnDead += OnCharacterDead;
 
-        private void OnDisable() => this.OnDead -= this.OnCharacterDead;
+        private void OnDisable() => OnDead -= OnCharacterDead;
 
-        private void OnCharacterDead() => _despawner.Despawn(this);
+        private void OnCharacterDead() => _despawner.Respawn(this);
 
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
 
-            if (this.currentHealth <= 0 || this.target == null || this.target.currentHealth <= 0)
+            if (this.CurrentHealth <= 0 || this.target == null || this.target.CurrentHealth <= 0)
                 return;
 
             Vector2 distance = destination - (Vector2)this.transform.position;

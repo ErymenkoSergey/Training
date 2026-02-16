@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
+using Game.Interface;
 using Game.Mechanics.BulletsSystem;
+using Game.Mechanics.Ship;
 using Modules.UI;
 using Modules.Utils;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Game.Mechanics
+namespace Game.Mechanics.Spawner
 {
-    // +
-    public sealed class EnemyOrchestrator : MonoBehaviour, IEnemyDespawner
+    public sealed class EnemySpawner : MonoBehaviour, IEnemyRespawn
     {
-        [Header("Spawn")]
+        [Header("Spawn Settings")]
         [SerializeField]
         private float _minSpawnCooldown = 2;
 
@@ -32,7 +33,7 @@ namespace Game.Mechanics
 
         [Header("Target")]
         [SerializeField]
-        private ShipController _player;
+        private BaseShip _player;
         
         [Header("Points")]
         [SerializeField]
@@ -71,7 +72,7 @@ namespace Game.Mechanics
         private void FixedUpdate()
         {
             float time = Time.fixedTime;
-            if (time - _spawnTime < _spawnCooldown || _player.currentHealth <= 0)
+            if (time - _spawnTime < _spawnCooldown || _player.CurrentHealth <= 0)
                 return;
             
             if (_pool.TryDequeue(out Enemy enemy))
@@ -81,11 +82,11 @@ namespace Game.Mechanics
 
             enemy.transform.position = this.NextSpawnPosition();
             enemy.destination = this.NextDestination();
-            enemy.currentHealth = enemy.config.Health;
+            enemy.CurrentHealth = enemy.config.Health;
   
             Debug.Log($"FixedUpdate Target Update??");
             enemy.target = _player;
-            enemy.SetDespawner(this);
+            enemy.SetRespawn(this);
             enemy.OnFire += this.OnFire;
                 
             this.ResetSpawnCooldown();
@@ -97,7 +98,7 @@ namespace Game.Mechanics
             _spawnTime = Time.fixedTime;
         }
 
-        public void Despawn(Enemy enemy)
+        public void Respawn(Enemy enemy)
         {
             _destroyedEnemies++;
             _scoreView.SetValue(_destroyedEnemies);
@@ -111,12 +112,12 @@ namespace Game.Mechanics
             _pool.Enqueue(enemy);
         }
         
-        private void OnFire(ShipController enemy)
+        private void OnFire(BaseShip enemy)
         {
             _bulletWorld.Spawn(GetBulletConfiguration(enemy));
         }
         
-        private BulletConfiguration GetBulletConfiguration(ShipController enemy)
+        private BulletConfiguration GetBulletConfiguration(BaseShip enemy)
         {
             Vector2 position = enemy.firePoint.position;
             Vector2 target = _player.transform.position;

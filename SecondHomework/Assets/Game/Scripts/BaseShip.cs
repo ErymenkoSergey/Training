@@ -1,23 +1,33 @@
 using System;
 using DG.Tweening;
 using Game.Data;
+using Game.Interface;
 using UnityEngine;
 
-namespace Game
+namespace Game.Mechanics.Ship
 {
-    // +
-    public abstract class ShipController : MonoBehaviour
+    public abstract class BaseShip : MonoBehaviour, IHealth
     {
         public event Action<int> OnHealthChanged;
         public event Action OnDead;
 
-        public event Action<ShipController> OnFire;
+        public event Action<BaseShip> OnFire;
 
         [field: SerializeField]
-        public ShipControllerSO config { get; private set; }
+        public ShipData config { get; private set; }
 
         [Header("Health")]
-        public int currentHealth;
+        [field: SerializeField]
+        public int CurrentHealth { get; set; }
+
+        public int CurrentMaxHealth
+        {
+            get
+            {
+                return config.Health;
+            }
+            set{}
+        }
 
         [Header("Combat")]
         public Transform firePoint;
@@ -58,7 +68,7 @@ namespace Game
         
         private void Awake()
         {
-            this.currentHealth = config.Health;
+            this.CurrentHealth = config.Health;
             _motor.SetSpeed(config.MoveSpeed);
 
             _material = new Material(_viewConfig.MaterialPrefab);
@@ -70,7 +80,7 @@ namespace Game
         protected void Fire()
         {
             float time = Time.time;
-            if (time - _fireTime < config.FireCooldown || this.currentHealth <= 0)
+            if (time - _fireTime < config.FireCooldown || this.CurrentHealth <= 0)
                 return;
 
             if (_fireSFX)
@@ -112,6 +122,7 @@ namespace Game
             ParticleSystem prefab = _viewConfig.DestroyEffectPrefab;
             Instantiate(prefab, _viewTransform.position, prefab.transform.rotation);
             this.OnDead?.Invoke();
+            gameObject.SetActive(false);
         }
 
         private void AnimateDamage()

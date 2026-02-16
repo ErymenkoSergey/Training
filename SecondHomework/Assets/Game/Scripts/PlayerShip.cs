@@ -2,10 +2,9 @@ using Modules.UI;
 using Modules.Utils;
 using UnityEngine;
 
-namespace Game
+namespace Game.Mechanics.Ship
 {
-    // +
-    public sealed class PlayerShip : ShipController
+    public sealed class PlayerShip : BaseShip
     {
         [SerializeField] private TransformBounds _playerArea;
 
@@ -37,7 +36,6 @@ namespace Game
 
         public void Update()
         {
-            // if stop game =?? time scail
             if (Input.GetKeyDown(KeyCode.Space))
                 this.Fire();
 
@@ -45,7 +43,7 @@ namespace Game
             float dy = Input.GetAxisRaw("Vertical");
             this.moveDirection = new Vector2(dx, dy);
 
-            if (this.currentHealth > 0)
+            if (this.CurrentHealth > 0)
             {
                 _motor.MoveStep(this.moveDirection);
             }

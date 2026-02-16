@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem
 {
-    public sealed class BulletData : MonoBehaviour
+    public sealed class BulletUnit : MonoBehaviour
     {
-        public event Action<BulletData, Collider2D> OnTriggerEntered;
+        public event Action<BulletUnit, Collider2D> OnTriggerEntered;
         public Vector2 direction { get; private set; }
         public int damage { get; private set; }
         public float speed { get; private set; }

@@ -2,9 +2,8 @@ using UnityEngine;
 
 namespace Game.Data
 {
-    // +
-    [CreateAssetMenu(menuName = "Game/ShipControllerInfo", order = 0)]
-    public sealed class ShipControllerSO : ScriptableObject
+    [CreateAssetMenu(menuName = "Game/ShipData", order = 0)]
+    public class ShipData : ScriptableObject
     {
         [Header("Core")]
         [field: SerializeField]
