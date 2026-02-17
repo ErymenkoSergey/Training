@@ -10,12 +10,14 @@ namespace Game.Mechanics.Ship
         [SerializeField] private float _stoppingDistance = 0.25f;
         private Vector2 destination;
         private IHealth hpTarget;
+        private IPlayer _playerTransform;
         private IEnemyRespawn respawn;
 
         public void SetData(EnemyConfiguration config)
         {
             transform.position = config.SpawnPosition;
             destination = config.AttackPosition;
+            _playerTransform = config.Target;
             hpTarget = config.TargetHealth;
             respawn = config.Respawn;
         }
@@ -23,9 +25,7 @@ namespace Game.Mechanics.Ship
         private void OnEnable() => OnDead += OnCharacterDead;
 
         private void OnDisable() => OnDead -= OnCharacterDead;
-
-        private void OnCharacterDead() => respawn.Respawn(this);
-
+        
         protected override void FixedUpdate()
         {
             base.FixedUpdate();
@@ -47,10 +47,20 @@ namespace Game.Mechanics.Ship
                 float time = Time.time;
                 if (time - FireTime >= _fireCooldown)
                 {
-                    Fire();
+                    Fire(GetTarget());
                     FireTime = time;
                 }
             }
+        }
+        
+        private void OnCharacterDead() => respawn.Respawn(this);
+
+        private Vector3 GetTarget()
+        {
+            Vector2 position = firePoint.position;
+            Vector2 target = _playerTransform.transform.position;
+            Vector2 direction = (target - position).normalized;
+            return direction;
         }
     }
 }

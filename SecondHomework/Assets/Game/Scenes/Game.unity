@@ -996,11 +996,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32dae85f8264479bac19d85418d92392, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _minSpawnCooldown: 2
-  _maxSpawnCooldown: 3
-  _prefab: {fileID: 102605417607457000, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
+  minSpawnCooldown: 2
+  maxSpawnCooldown: 3
+  prefab: {fileID: 102605417607457000, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
   _container: {fileID: 1052031097}
-  _playerShip: {fileID: 4414282821800802410}
+  playerShip: {fileID: 4414282821800802410}
   _spawnPositions:
   - {fileID: 5098186055898699330}
   - {fileID: 3822857799868723767}
@@ -1018,7 +1018,7 @@ MonoBehaviour:
   - {fileID: 1549378007}
   - {fileID: 78117031}
   - {fileID: 883274640}
-  _scoreView: {fileID: 895558708}
+  scoreView: {fileID: 895558708}
 --- !u!1 &574514311
 GameObject:
   m_ObjectHideFlags: 0
@@ -3132,6 +3132,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 739865810}
     m_Modifications:
+    - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
+      propertyPath: config
+      value: 
+      objectReference: {fileID: 11400000, guid: 0b9a4576e5f0a4babb44b3c82e6480d0, type: 2}
+    - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
+      propertyPath: gunner
+      value: 
+      objectReference: {fileID: 11400000, guid: 2b6d79ed1dfe127479b71efcd37a96b5, type: 2}
     - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
       propertyPath: _healthView
       value: 

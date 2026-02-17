@@ -1,6 +1,4 @@
-using Game.Enums;
 using Game.Interface;
-using Game.Mechanics.BulletsSystem;
 using Modules.UI;
 using Modules.Utils;
 using UnityEngine;
@@ -32,7 +30,7 @@ namespace Game.Mechanics.Ship
 
         private void ChangeHealth(int health)
         {
-            _healthView.SetHealth(health, this.config.Health);
+            _healthView.SetHealth(health, CurrentMaxHealth);
             _cameraShaker.Shake();
         }
 
@@ -44,11 +42,7 @@ namespace Game.Mechanics.Ship
 
         public void ChangeDirection(Vector2 direction) => moveDirection = direction;
 
-        public void Fire()
-        {
-            base.Fire();
-            Gunner.Shoot(GetBulletConfiguration(TeamType.Player, transform.up));
-        }
+        public void Shoot() => base.Fire(firePoint.up);
 
         private void Update()
         {
@@ -67,7 +61,5 @@ namespace Game.Mechanics.Ship
         }
         
         #endregion
-        
-        
     }
 }

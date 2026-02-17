@@ -17,6 +17,7 @@ namespace Game.Mechanics.BulletsSystem.Data
         [SerializeField] private string enemyMask = "EnemyBullet";
 
         private readonly Stack<BulletUnit> _pool = new();
+        [Tooltip("The number of bullets in the pool at the start of the games")]
         [SerializeField, Range(1, 100)] private int startSizePool = 15;
         private readonly List<BulletUnit> _bullets = new();
 

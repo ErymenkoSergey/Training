@@ -8,6 +8,7 @@ using Game.Mechanics.Ship;
 using Modules.UI;
 using Modules.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 // func: spawn enemy and shoot to cooldown.
@@ -17,28 +18,29 @@ namespace Game.Mechanics.Spawner
     {
         [Header("Spawn Settings")]
         [SerializeField]
-        private float _minSpawnCooldown = 2;
+        private float minSpawnCooldown = 2;
 
         [SerializeField]
-        private float _maxSpawnCooldown = 3;
+        private float maxSpawnCooldown = 3;
         
-        private float _spawnCooldown;
-        private float _spawnTime;
+        private float spawnCooldown;
+        private float spawnTime;
         
+        [FormerlySerializedAs("_prefab")]
         [Header("Pool")]
         [SerializeField]
-        private Enemy _prefab;
+        private Enemy prefab;
 
         [SerializeField]
         private Transform _container;
         
-        private readonly Queue<Enemy> _pool = new();
+        private readonly Queue<Enemy> pool = new();
 
         [Header("Target")]
         [SerializeField]
-        private PlayerShip _playerShip;
-        private IPlayer _player;
-        private IHealth _healthPlayer;
+        private PlayerShip playerShip;
+        private IPlayer target;
+        private IHealth healthPlayer;
         
         [Header("Points")]
         [SerializeField]
@@ -47,21 +49,21 @@ namespace Game.Mechanics.Spawner
         [SerializeField]
         private Transform[] _attackPositions;
         
-        private int _spawnIndex;
-        private int _attackIndex;
+        private int spawnIndex;
+        private int attackIndex;
         
         [Header("UI")]
         [SerializeField]
-        private ScoreView _scoreView;
+        private ScoreView scoreView;
         
-        private int _destroyedEnemies;
+        private int destroyedEnemies;
         
         private void Awake()
         {
             TargetConfiguration();
             _spawnPositions.Shuffle();
             _attackPositions.Shuffle();
-            _scoreView.SetValue(_destroyedEnemies);
+            scoreView.SetValue(destroyedEnemies);
             ResetSpawnCooldown();
         }
         
@@ -70,7 +72,8 @@ namespace Game.Mechanics.Spawner
             EnemyConfiguration config = new EnemyConfiguration();
             config.SpawnPosition = NextSpawnPosition();
             config.AttackPosition = NextDestination();
-            config.TargetHealth = _healthPlayer;
+            config.Target = target;
+            config.TargetHealth = healthPlayer;
             config.Respawn = this;
             return config;
         }
@@ -78,40 +81,39 @@ namespace Game.Mechanics.Spawner
         private void FixedUpdate()
         {
             float time = Time.fixedTime;
-            if (time - _spawnTime < _spawnCooldown || _healthPlayer.CurrentHealth <= _healthPlayer.DeadValueHealth)
+            if (time - spawnTime < spawnCooldown || healthPlayer.CurrentHealth <= healthPlayer.DeadValueHealth)
                 return;
             
-            if (_pool.TryDequeue(out Enemy enemy))
+            if (pool.TryDequeue(out Enemy enemy))
                 enemy.gameObject.SetActive(true);
             else
-                enemy = Instantiate(_prefab, _container);
+                enemy = Instantiate(prefab, _container);
 
             enemy.SetData(GetConfiguration());
-            enemy.OnFire += this.OnFire;
                 
             ResetSpawnCooldown();
         }
 
         private void TargetConfiguration()
         {
-            if (_playerShip == null)
-                Debug.LogError($"{nameof(_playerShip)} is null!!!");
+            if (playerShip == null)
+                Debug.LogError($"{nameof(playerShip)} is null!!!");
 
-            _player = _playerShip;
-            _healthPlayer = _playerShip;
+            target = playerShip;
+            healthPlayer = playerShip;
         }
         
         private void ResetSpawnCooldown()
         {
-            _spawnCooldown = Random.Range(_minSpawnCooldown, _maxSpawnCooldown);
-            _spawnTime = Time.fixedTime;
+            spawnCooldown = Random.Range(minSpawnCooldown, maxSpawnCooldown);
+            spawnTime = Time.fixedTime;
         }
 
         public void Respawn(Enemy enemy)
         {
-            enemy.OnFire -= this.OnFire;
-            _destroyedEnemies++;
-            _scoreView.SetValue(_destroyedEnemies);
+            // enemy.OnFire -= this.OnFire;
+            destroyedEnemies++;
+            scoreView.SetValue(destroyedEnemies);
             StartCoroutine(DespawnInNextFrame(enemy));
         }
 
@@ -120,16 +122,16 @@ namespace Game.Mechanics.Spawner
             yield return null;
             enemy.gameObject.SetActive(false);
             enemy.ResetData();
-            _pool.Enqueue(enemy);
+            pool.Enqueue(enemy);
         }
         
-        private void OnFire(BaseShip enemy)
-        {
-            Vector2 position = enemy.transform.position;
-            Vector2 target = _player.transform.position;
-            Vector2 direction = (target - position).normalized;
-            enemy.Gunner.Shoot(enemy.GetBulletConfiguration(TeamType.Enemy, direction));
-        }
+        // private void OnFire(BaseShip enemy)
+        // {
+        //     Vector2 position = enemy.transform.position;
+        //     Vector2 target = _player.transform.position;
+        //     Vector2 direction = (target - position).normalized;
+        //     // enemy.Gunner.Shoot(enemy.GetBulletConfiguration(TeamType.Enemy, direction));
+        // }
         
         
         
@@ -150,24 +152,24 @@ namespace Game.Mechanics.Spawner
         
         private Vector3 NextSpawnPosition()
         {
-            if (_spawnIndex >= _spawnPositions.Length)
+            if (spawnIndex >= _spawnPositions.Length)
             {
                 _spawnPositions.Shuffle();
-                _spawnIndex = 0;
+                spawnIndex = 0;
             }
 
-            return _spawnPositions[_spawnIndex++].position;
+            return _spawnPositions[spawnIndex++].position;
         }
 
         private Vector3 NextDestination()
         {
-            if (_attackIndex >= _attackPositions.Length)
+            if (attackIndex >= _attackPositions.Length)
             {
                 _attackPositions.Shuffle();
-                _attackIndex = 0;
+                attackIndex = 0;
             }
 
-            return _attackPositions[_attackIndex++].position;
+            return _attackPositions[attackIndex++].position;
         }
     }
 }

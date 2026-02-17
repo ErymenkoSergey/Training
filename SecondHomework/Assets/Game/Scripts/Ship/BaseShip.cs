@@ -14,13 +14,10 @@ namespace Game.Mechanics.Ship
     {
         public event Action<int> OnHealthChanged;
         public event Action OnDead;
-        public event Action<BaseShip> OnFire;
 
         [Header("Data")]
-        [field: SerializeField]
-        public ShipData config { get; private set; }
-
-        [field: SerializeField] public Gunner Gunner;
+        [SerializeField] private ShipData config;
+        [SerializeField] private Gunner gunner;
         [SerializeField] private VisualConfig visualConfig;
 
         [Header("Health")]
@@ -31,10 +28,9 @@ namespace Game.Mechanics.Ship
 
         public int CurrentMaxHealth => config.Health;
 
-        [Header("Combat")] [SerializeField] private Transform firePoint;
-        [SerializeField] private float bulletSpeed;
-        [SerializeField] private int bulletDamage;
-        public float FireTime = 0f;
+        [Header("Combat")] 
+        public Transform firePoint; //?
+        public float FireTime = 0f; //??
 
         [FormerlySerializedAs("_motor")] [Header("Movement")] [SerializeField]
         protected Engine engine;
@@ -74,7 +70,7 @@ namespace Game.Mechanics.Ship
             engine.SetSpeed(config.MoveSpeed);
         }
 
-        protected void Fire()
+        protected void Fire(Vector3 direction)
         {
             float time = Time.time;
             if (time - FireTime < config.FireCooldown || CurrentHealth <= DeadValueHealth)
@@ -85,11 +81,12 @@ namespace Game.Mechanics.Ship
                 Debug.Log($"_fireSFX {_fireSFX.name}");
                 _audioSource.PlayOneShot(_fireSFX);
             }
-            // Gunner.Shoot(GetBulletConfiguration(TeamType.Player, transform.up));
+            
+            gunner.Shoot(GetBulletConfiguration(config.Team, direction));
+            
             if (_fireVFX)
                 _fireVFX.Play();
 
-            OnFire?.Invoke(this);
             FireTime = time;
         }
 
@@ -136,13 +133,13 @@ namespace Game.Mechanics.Ship
                 _audioSource.PlayOneShot(_damageSFX);
         }
 
-        public BulletConfiguration GetBulletConfiguration(TeamType type, Vector3 direction)
+        private BulletConfiguration GetBulletConfiguration(TeamType type, Vector3 direction)
         {
             BulletConfiguration bulletConfiguration = new BulletConfiguration();
             bulletConfiguration.Position = firePoint.position;
             bulletConfiguration.Direction = direction;
-            bulletConfiguration.Speed = bulletSpeed;
-            bulletConfiguration.Damage = bulletDamage;
+            bulletConfiguration.Speed = config.BulletSpeed;
+            bulletConfiguration.Damage = config.BulletDamage;
             bulletConfiguration.Team = type;
             return bulletConfiguration;
         }

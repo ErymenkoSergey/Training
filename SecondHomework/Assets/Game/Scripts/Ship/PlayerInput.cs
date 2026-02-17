@@ -26,7 +26,7 @@ namespace Game.Mechanics.Inputs
                 return;
 
             if (Input.GetKeyDown(KeyCode.Space))
-                iPlayer.Fire();
+                iPlayer.Shoot();
 
             float dx = Input.GetAxisRaw("Horizontal");
             float dy = Input.GetAxisRaw("Vertical");

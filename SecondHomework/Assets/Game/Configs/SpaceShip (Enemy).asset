@@ -12,6 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 072d2ba2b8554d2f9cee8304b9932c09, type: 3}
   m_Name: SpaceShip (Enemy)
   m_EditorClassIdentifier: 
+  team: 2
   <Health>k__BackingField: 2
   <MoveSpeed>k__BackingField: 3
   <FireCooldown>k__BackingField: 0.25
+  bulletSpeed: 3
+  bulletDamage: 1
