@@ -1,11 +1,13 @@
+using Game.Enums;
 using Game.Interface;
+using Game.Mechanics.BulletsSystem;
 using Modules.UI;
 using Modules.Utils;
 using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
-    public sealed class PlayerShip : BaseShip, IPlayer
+    public sealed class PlayerShip : BaseShip, IPlayer, IMovable
     {
         [SerializeField] private TransformBounds _playerArea;
         [SerializeField] private CameraShaker _cameraShaker;
@@ -26,36 +28,46 @@ namespace Game.Mechanics.Ship
             OnDead -= GameOver;
         }
 
+        #region UI process
+
         private void ChangeHealth(int health)
         {
             _healthView.SetHealth(health, this.config.Health);
             _cameraShaker.Shake();
         }
 
-        private void GameOver()
+        private void GameOver() => _gameOverView.Show();
+
+        #endregion
+
+        #region Movement process
+
+        public void ChangeDirection(Vector2 direction) => moveDirection = direction;
+
+        public void Fire()
         {
-            _gameOverView.Show();
+            base.Fire();
+            Gunner.Shoot(GetBulletConfiguration(TeamType.Player, transform.up));
         }
 
-        public void Update() //go to input system
+        private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-                this.Fire();
-
-            float dx = Input.GetAxisRaw("Horizontal"); // Go to input service// 
-            float dy = Input.GetAxisRaw("Vertical");
-            this.moveDirection = new Vector2(dx, dy);
-
-            if (CurrentHealth > 0)
-            {
-                _motor.MoveStep(this.moveDirection);
-            }
+            if (CurrentHealth <= DeadValueHealth)
+                return;
+            
+            engine.MoveStep(this.moveDirection);
         }
 
         protected override void LateUpdate()
         {
+            if (CurrentHealth <= DeadValueHealth)
+                return;
             base.LateUpdate();
-            this.transform.position = _playerArea.ClampInBounds(this.transform.position);
+            transform.position = _playerArea.ClampInBounds(transform.position);
         }
+        
+        #endregion
+        
+        
     }
 }

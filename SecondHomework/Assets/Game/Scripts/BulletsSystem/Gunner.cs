@@ -10,23 +10,26 @@ namespace Game.Mechanics.BulletsSystem.Data
     public sealed class Gunner : ScriptableObject
     {
         [SerializeField] private BulletUnit _prefab;
-        [SerializeField] private ExplosionVFXEffectData _configView; 
+        [SerializeField] private ExplosionVFXEffectData _configView;
         private BulletField bulletField;
+
+        [SerializeField] private string playerMask = "PlayerBullet";
+        [SerializeField] private string enemyMask = "EnemyBullet";
 
         private readonly Stack<BulletUnit> _pool = new();
         [SerializeField, Range(1, 100)] private int startSizePool = 15;
         private readonly List<BulletUnit> _bullets = new();
-        
+
         public void Init(BulletField bulletField)
         {
             this.bulletField = bulletField;
-            
+
             if (_prefab == null || bulletField == null)
             {
                 Debug.LogError("null");
                 return;
             }
-            
+
             for (var i = 0; i < startSizePool; i++)
             {
                 BulletUnit bullet = Instantiate(_prefab, bulletField.Container);
@@ -39,11 +42,11 @@ namespace Game.Mechanics.BulletsSystem.Data
         {
             if (_bullets.Count == 0 && bulletField != null)
                 return;
-            
+
             for (int i = _bullets.Count - 1; i >= 0; i--)
             {
                 BulletUnit bullet = _bullets[i];
-                Vector3 moveStep = bullet.direction * bullet.speed * Time.fixedDeltaTime;
+                Vector3 moveStep = bullet.Direction * bullet.Speed * Time.fixedDeltaTime;
                 bullet.transform.position += moveStep;
 
                 if (!bulletField.LevelBounds.InBounds(bullet.transform.position))
@@ -64,35 +67,41 @@ namespace Game.Mechanics.BulletsSystem.Data
                 Debug.LogError($"Spawn bullet => team: {config.Team}");
                 return;
             }
-            
+
             if (_pool.TryPop(out BulletUnit bullet))
                 bullet.gameObject.SetActive(true);
             else
                 bullet = Instantiate(_prefab, bulletField.Container);
 
+            config.BulletNameMask = SetBulletType(config.Team);
             bullet.SetData(config);
             bullet.OnTriggerEntered += this.OnTriggerEntered;
             _bullets.Add(bullet);
         }
 
-        private void OnTriggerEntered(BulletUnit bullet, Collider2D other) 
+        private string SetBulletType(TeamType team)
+        {
+            switch (team)
+            {
+                case TeamType.Player:
+                    return playerMask;
+                case TeamType.Enemy:
+                    return enemyMask;
+                case TeamType.None:
+                default:
+                    Debug.LogError($"Spawn bullet => team: {team}");
+                    break;
+            }
+
+            return string.Empty;
+        }
+
+        private void OnTriggerEntered(BulletUnit bullet, Collider2D other)
         {
             if (!other.TryGetComponent(out IHealth ship))
                 return;
-            
-            bool isDead = false;
-            
-            if (bullet.damage > 0)
-            {
-                ship.CurrentHealth = Mathf.Clamp(ship.CurrentHealth - bullet.damage, ship.DeadValueHealth, ship.CurrentMaxHealth);
-                ship.NotifyAboutHealthChanged(ship.CurrentHealth);
 
-                if (ship.CurrentHealth <= ship.DeadValueHealth)
-                {
-                    ship.NotifyAboutDead();
-                    isDead = true;
-                }
-            }
+            bool isDead = TakeDamage(bullet.Damage, ship);
 
             bullet.OnTriggerEntered -= this.OnTriggerEntered;
 
@@ -104,18 +113,34 @@ namespace Game.Mechanics.BulletsSystem.Data
             SpawnVFX(bullet.transform, bullet.GetTeam(), isDead);
         }
 
+        private bool TakeDamage(int damage, IHealth ship)
+        {
+            if (damage > 0)
+            {
+                ship.CurrentHealth =
+                    Mathf.Clamp(ship.CurrentHealth - damage, ship.DeadValueHealth, ship.CurrentMaxHealth);
+                ship.NotifyAboutHealthChanged(ship.CurrentHealth);
+
+                if (ship.CurrentHealth <= ship.DeadValueHealth)
+                {
+                    ship.NotifyAboutDead();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private void SpawnVFX(Transform point, TeamType team, bool isDead = false)
         {
+            GameObject prefab = null;
+
             if (isDead)
-            {
-                GameObject prefab = team == TeamType.Player ? _configView.BigExplosionVFX : _configView.ExplosionVFX;
-                Instantiate(prefab, point.position, prefab.transform.rotation);
-            }
+                prefab = team == TeamType.Player ? _configView.BigExplosionVFX : _configView.ExplosionVFX;
             else
-            {
-                GameObject prefab = team == TeamType.Player ? _configView.BlueVFX : _configView.RedVFX;
-                Instantiate(prefab, point.position, prefab.transform.rotation);
-            }
+                prefab = team == TeamType.Player ? _configView.BlueVFX : _configView.RedVFX;
+
+            Instantiate(prefab, point.position, prefab.transform.rotation);
         }
     }
 }

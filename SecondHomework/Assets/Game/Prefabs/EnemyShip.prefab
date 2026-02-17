@@ -114,22 +114,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <config>k__BackingField: {fileID: 11400000, guid: 342eb63e507d644daae6ffc27bd8fc71, type: 2}
   Gunner: {fileID: 11400000, guid: 2b6d79ed1dfe127479b71efcd37a96b5, type: 2}
+  visualConfig: {fileID: 11400000, guid: f6ecf0b3d1d004b3893cc42c64995303, type: 2}
   <CurrentHealth>k__BackingField: 0
   firePoint: {fileID: 3195880656587174614}
   bulletSpeed: 3
   bulletDamage: 1
-  _fireTime: 0
-  _motor:
+  FireTime: 0
+  engine:
     _rigidbody: {fileID: 659620479434099170}
     _speed: 2
   _renderer: {fileID: 1333951631294404335}
   _viewTransform: {fileID: 2570692159425164225}
   _audioSource: {fileID: 4560017961611896118}
-  _viewConfig: {fileID: 11400000, guid: f6ecf0b3d1d004b3893cc42c64995303, type: 2}
   _fireVFX: {fileID: 1792961037914348205}
-  _fireSFX: {fileID: 0}
-  _damageSFX: {fileID: 0}
-  destination: {x: 0, y: 0}
+  _fireSFX: {fileID: 8300000, guid: 4b0fadb8fc7bdaf489e9f7879d3c71bb, type: 3}
+  _damageSFX: {fileID: 8300000, guid: 9d2f129290cb1a6489928f3dde8dbb39, type: 3}
   _fireCooldown: 1.25
   _stoppingDistance: 0.25
 --- !u!82 &4560017961611896118

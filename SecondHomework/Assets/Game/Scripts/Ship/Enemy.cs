@@ -14,7 +14,6 @@ namespace Game.Mechanics.Ship
 
         public void SetData(EnemyConfiguration config)
         {
-            Debug.Log($"SetData: {config.SpawnPosition}");
             transform.position = config.SpawnPosition;
             destination = config.AttackPosition;
             hpTarget = config.TargetHealth;
@@ -41,7 +40,7 @@ namespace Game.Mechanics.Ship
 
             if (isNotReached)
             {
-                _motor.MoveStep(distance.normalized);
+                engine.MoveStep(distance.normalized);
             }
             else
             {

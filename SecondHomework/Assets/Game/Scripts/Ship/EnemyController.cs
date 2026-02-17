@@ -10,9 +10,10 @@ using Modules.Utils;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+// func: spawn enemy and shoot to cooldown.
 namespace Game.Mechanics.Spawner
 {
-    public sealed class EnemySpawner : MonoBehaviour, IEnemyRespawn
+    public sealed class EnemyController : MonoBehaviour, IEnemyRespawn
     {
         [Header("Spawn Settings")]
         [SerializeField]
@@ -49,8 +50,6 @@ namespace Game.Mechanics.Spawner
         private int _spawnIndex;
         private int _attackIndex;
         
-        [SerializeField] private string enemyMask = "EnemyBullet";
-        
         [Header("UI")]
         [SerializeField]
         private ScoreView _scoreView;
@@ -63,13 +62,9 @@ namespace Game.Mechanics.Spawner
             _spawnPositions.Shuffle();
             _attackPositions.Shuffle();
             _scoreView.SetValue(_destroyedEnemies);
-        }
-        
-        private void Start()
-        {
             ResetSpawnCooldown();
         }
-
+        
         private EnemyConfiguration GetConfiguration()
         {
             EnemyConfiguration config = new EnemyConfiguration();
@@ -115,7 +110,6 @@ namespace Game.Mechanics.Spawner
         public void Respawn(Enemy enemy)
         {
             enemy.OnFire -= this.OnFire;
-            Debug.Log($"R1 espawn enemy {enemy.gameObject.name}");
             _destroyedEnemies++;
             _scoreView.SetValue(_destroyedEnemies);
             StartCoroutine(DespawnInNextFrame(enemy));
@@ -124,7 +118,6 @@ namespace Game.Mechanics.Spawner
         private IEnumerator DespawnInNextFrame(Enemy enemy)
         {
             yield return null;
-            Debug.Log($"R2 espawn enemy {enemy.gameObject.name}");
             enemy.gameObject.SetActive(false);
             enemy.ResetData();
             _pool.Enqueue(enemy);
@@ -132,24 +125,28 @@ namespace Game.Mechanics.Spawner
         
         private void OnFire(BaseShip enemy)
         {
-            enemy.Gunner.Shoot(GetBulletConfiguration(enemy));
-        }
-        
-        private BulletConfiguration GetBulletConfiguration(BaseShip enemy)
-        {
-            Vector2 position = enemy.firePoint.position;
+            Vector2 position = enemy.transform.position;
             Vector2 target = _player.transform.position;
             Vector2 direction = (target - position).normalized;
-            
-            BulletConfiguration bulletConfiguration = new BulletConfiguration();
-            bulletConfiguration.Position = position;
-            bulletConfiguration.Direction = direction;
-            bulletConfiguration.Speed = enemy.bulletSpeed;
-            bulletConfiguration.Damage = enemy.bulletDamage;
-            bulletConfiguration.Team = TeamType.Enemy;
-            bulletConfiguration.BulletNameMask = enemyMask;
-            return bulletConfiguration;
+            enemy.Gunner.Shoot(enemy.GetBulletConfiguration(TeamType.Enemy, direction));
         }
+        
+        
+        
+        // private BulletConfiguration GetBulletConfiguration(BaseShip enemy)
+        // {
+        //     Vector2 position = enemy.firePoint.position;
+        //     Vector2 target = _player.transform.position;
+        //     Vector2 direction = (target - position).normalized;
+        //     
+        //     BulletConfiguration bulletConfiguration = new BulletConfiguration();
+        //     bulletConfiguration.Position = position;
+        //     bulletConfiguration.Direction = direction;
+        //     bulletConfiguration.Speed = enemy.bulletSpeed;
+        //     bulletConfiguration.Damage = enemy.bulletDamage;
+        //     bulletConfiguration.Team = TeamType.Enemy;
+        //     return bulletConfiguration;
+        // }
         
         private Vector3 NextSpawnPosition()
         {

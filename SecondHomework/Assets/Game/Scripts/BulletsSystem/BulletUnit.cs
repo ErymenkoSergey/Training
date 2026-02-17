@@ -7,21 +7,21 @@ namespace Game.Mechanics.BulletsSystem
     public sealed class BulletUnit : MonoBehaviour
     {
         public event Action<BulletUnit, Collider2D> OnTriggerEntered;
-        public Vector2 direction { get; private set; }
-        public int damage { get; private set; }
-        public float speed { get; private set; }
-        
+        public Vector2 Direction { get; private set; }
+        public int Damage { get; private set; }
+        public float Speed { get; private set; }
+
         private TeamType team = TeamType.None;
         [SerializeField] private GameObject blueVFX;
         [SerializeField] private GameObject redVFX;
-        
+
         public TeamType GetTeam() => team;
 
         public void SetData(BulletConfiguration config)
         {
-            direction = config.Direction;
-            speed = config.Speed;
-            damage = config.Damage;
+            Direction = config.Direction;
+            Speed = config.Speed;
+            Damage = config.Damage;
             team = config.Team;
             transform.position = config.Position;
             transform.rotation = Quaternion.LookRotation(config.Direction, Vector3.forward);

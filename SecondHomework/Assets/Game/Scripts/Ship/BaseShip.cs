@@ -1,9 +1,12 @@
 using System;
 using DG.Tweening;
 using Game.Data;
+using Game.Enums;
 using Game.Interface;
+using Game.Mechanics.BulletsSystem;
 using Game.Mechanics.BulletsSystem.Data;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Mechanics.Ship
 {
@@ -11,113 +14,96 @@ namespace Game.Mechanics.Ship
     {
         public event Action<int> OnHealthChanged;
         public event Action OnDead;
-
         public event Action<BaseShip> OnFire;
 
+        [Header("Data")]
         [field: SerializeField]
         public ShipData config { get; private set; }
 
-        [field: SerializeField]
-        public Gunner Gunner;
-        
+        [field: SerializeField] public Gunner Gunner;
+        [SerializeField] private VisualConfig visualConfig;
+
         [Header("Health")]
         [field: SerializeField]
         public int CurrentHealth { get; set; }
 
         public int DeadValueHealth { get; private set; } = 0;
-        
-        public int CurrentMaxHealth
-        {
-            get
-            {
-                return config.Health;
-            }
-        }
 
-        [Header("Combat")]
-        public Transform firePoint;
-        public float bulletSpeed;
-        public int bulletDamage; 
-        public float FireTime;
+        public int CurrentMaxHealth => config.Health;
 
-        [Header("Movement")]
-        [SerializeField]
-        protected Motor _motor;
-        
+        [Header("Combat")] [SerializeField] private Transform firePoint;
+        [SerializeField] private float bulletSpeed;
+        [SerializeField] private int bulletDamage;
+        public float FireTime = 0f;
+
+        [FormerlySerializedAs("_motor")] [Header("Movement")] [SerializeField]
+        protected Engine engine;
+
         protected Vector3 moveDirection;
 
-        [Header("Visual")]
-        [SerializeField]
-        private Renderer _renderer;
-
-        [SerializeField]
-        private Transform _viewTransform;
-
-        [SerializeField]
-        private AudioSource _audioSource;
-
-        [SerializeField]
-        private ShipControllerViewConfig _viewConfig;
-
-        [SerializeField]
-        private ParticleSystem _fireVFX;
-
-        [SerializeField]
-        private AudioClip _fireSFX;
-
-        [SerializeField]
-        private AudioClip _damageSFX;
+        [Header("Visual")] [SerializeField] private Renderer _renderer;
+        [SerializeField] private Transform _viewTransform;
+        [SerializeField] private AudioSource _audioSource;
+        [SerializeField] private ParticleSystem _fireVFX;
+        [SerializeField] private AudioClip _fireSFX;
+        [SerializeField] private AudioClip _damageSFX;
 
         private Material _material;
         private Tweener _damageAnimation;
-        
+
         private void Awake()
         {
             ResetData();
-            _material = new Material(_viewConfig.MaterialPrefab);
+            _material = new Material(visualConfig.MaterialPrefab);
             _renderer.material = _material;
+        }
+
+        protected virtual void FixedUpdate() => engine?.FixedUpdate();
+
+        protected virtual void LateUpdate()
+        {
+            if (CurrentHealth <= DeadValueHealth)
+                return;
+
+            AnimateMovement(Time.deltaTime);
         }
 
         public void ResetData()
         {
             CurrentHealth = config.Health;
-            _motor.SetSpeed(config.MoveSpeed);
+            engine.SetSpeed(config.MoveSpeed);
         }
-
-        protected virtual void FixedUpdate() => _motor?.FixedUpdate();
 
         protected void Fire()
         {
             float time = Time.time;
-            if (time - FireTime < config.FireCooldown || this.CurrentHealth <= DeadValueHealth)
+            if (time - FireTime < config.FireCooldown || CurrentHealth <= DeadValueHealth)
                 return;
 
             if (_fireSFX)
+            {
+                Debug.Log($"_fireSFX {_fireSFX.name}");
                 _audioSource.PlayOneShot(_fireSFX);
-
+            }
+            // Gunner.Shoot(GetBulletConfiguration(TeamType.Player, transform.up));
             if (_fireVFX)
                 _fireVFX.Play();
 
-            this.OnFire?.Invoke(this);
+            OnFire?.Invoke(this);
             FireTime = time;
-        }
-        
-        protected virtual void LateUpdate()
-        {
-            this.AnimateMovement(Time.deltaTime);
         }
 
         private void AnimateMovement(float deltaTime)
         {
             Vector3 shipAngles = _viewTransform.localEulerAngles;
-            shipAngles.x = _viewConfig.MoveRotationAngle * moveDirection.y;
-            shipAngles.y = _viewConfig.MoveRotationAngle / 2 * moveDirection.x * -1f;
-            
+            shipAngles.x = visualConfig.MoveRotationAngle * moveDirection.y;
+            shipAngles.y = visualConfig.MoveRotationAngle / 2 * moveDirection.x * -1f;
+
             Quaternion shipRotation = Quaternion.Euler(shipAngles);
-            float t = _viewConfig.MoveSpeed * deltaTime;
+            float t = visualConfig.MoveSpeed * deltaTime;
             _viewTransform.localRotation = Quaternion.Lerp(_viewTransform.localRotation, shipRotation, t);
         }
-        
+
         public void NotifyAboutHealthChanged(int health)
         {
             if (health > 0)
@@ -128,7 +114,7 @@ namespace Game.Mechanics.Ship
 
         public void NotifyAboutDead()
         {
-            ParticleSystem prefab = _viewConfig.DestroyEffectPrefab;
+            ParticleSystem prefab = visualConfig.DestroyEffectPrefab;
             Instantiate(prefab, _viewTransform.position, prefab.transform.rotation);
             OnDead?.Invoke();
         }
@@ -141,13 +127,24 @@ namespace Game.Mechanics.Ship
             _damageAnimation = DOVirtual.Float(
                 0f,
                 1f,
-                _viewConfig.HitDuration,
-                progress => _material?.SetFloat(_viewConfig.HitPropertyName,
-                    _viewConfig.HitAnimationCurve.Evaluate(progress))
+                visualConfig.HitDuration,
+                progress => _material?.SetFloat(visualConfig.HitPropertyName,
+                    visualConfig.HitAnimationCurve.Evaluate(progress))
             ).SetLink(_renderer.gameObject);
 
             if (_damageSFX)
                 _audioSource.PlayOneShot(_damageSFX);
+        }
+
+        public BulletConfiguration GetBulletConfiguration(TeamType type, Vector3 direction)
+        {
+            BulletConfiguration bulletConfiguration = new BulletConfiguration();
+            bulletConfiguration.Position = firePoint.position;
+            bulletConfiguration.Direction = direction;
+            bulletConfiguration.Speed = bulletSpeed;
+            bulletConfiguration.Damage = bulletDamage;
+            bulletConfiguration.Team = type;
+            return bulletConfiguration;
         }
     }
 }
