@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Game.Enums;
 using Game.Interface;
-using Game.Mechanics.BulletsSystem;
 using Game.Mechanics.Config;
 using Game.Mechanics.Ship;
 using Modules.UI;
@@ -11,7 +9,6 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-// func: spawn enemy and shoot to cooldown.
 namespace Game.Mechanics.Spawner
 {
     public sealed class EnemyController : MonoBehaviour, IEnemyRespawn
@@ -111,7 +108,6 @@ namespace Game.Mechanics.Spawner
 
         public void Respawn(Enemy enemy)
         {
-            // enemy.OnFire -= this.OnFire;
             destroyedEnemies++;
             scoreView.SetValue(destroyedEnemies);
             StartCoroutine(DespawnInNextFrame(enemy));
@@ -124,31 +120,6 @@ namespace Game.Mechanics.Spawner
             enemy.ResetData();
             pool.Enqueue(enemy);
         }
-        
-        // private void OnFire(BaseShip enemy)
-        // {
-        //     Vector2 position = enemy.transform.position;
-        //     Vector2 target = _player.transform.position;
-        //     Vector2 direction = (target - position).normalized;
-        //     // enemy.Gunner.Shoot(enemy.GetBulletConfiguration(TeamType.Enemy, direction));
-        // }
-        
-        
-        
-        // private BulletConfiguration GetBulletConfiguration(BaseShip enemy)
-        // {
-        //     Vector2 position = enemy.firePoint.position;
-        //     Vector2 target = _player.transform.position;
-        //     Vector2 direction = (target - position).normalized;
-        //     
-        //     BulletConfiguration bulletConfiguration = new BulletConfiguration();
-        //     bulletConfiguration.Position = position;
-        //     bulletConfiguration.Direction = direction;
-        //     bulletConfiguration.Speed = enemy.bulletSpeed;
-        //     bulletConfiguration.Damage = enemy.bulletDamage;
-        //     bulletConfiguration.Team = TeamType.Enemy;
-        //     return bulletConfiguration;
-        // }
         
         private Vector3 NextSpawnPosition()
         {

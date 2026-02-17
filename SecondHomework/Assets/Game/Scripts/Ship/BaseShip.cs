@@ -122,7 +122,7 @@ namespace Game.Mechanics.Ship
                 _damageAnimation.Kill();
 
             _damageAnimation = DOVirtual.Float(
-                0f,
+                0f, // есть смысл выносить в поля?)
                 1f,
                 visualConfig.HitDuration,
                 progress => _material?.SetFloat(visualConfig.HitPropertyName,

@@ -31,6 +31,6 @@ namespace Game.Mechanics.BulletsSystem
             redVFX?.SetActive(team == TeamType.Player ? false : true);
         }
 
-        private void OnTriggerEnter2D(Collider2D other) => this.OnTriggerEntered?.Invoke(this, other);
+        private void OnTriggerEnter2D(Collider2D other) => OnTriggerEntered?.Invoke(this, other);
     }
 }
