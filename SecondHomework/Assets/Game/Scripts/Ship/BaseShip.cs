@@ -77,10 +77,7 @@ namespace Game.Mechanics.Ship
                 return;
 
             if (_fireSFX)
-            {
-                Debug.Log($"_fireSFX {_fireSFX.name}");
                 _audioSource.PlayOneShot(_fireSFX);
-            }
             
             gunner.Shoot(GetBulletConfiguration(config.Team, direction));
             
