@@ -1,11 +1,11 @@
-using Game.Interface;
+using Game.Interfaces;
 using Modules.UI;
 using Modules.Utils;
 using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
-    public sealed class PlayerShip : BaseShip, IPlayer, IMovable
+    public sealed class PlayerShip : BaseShip, IPlayer, IMovable, IShootable
     {
         [SerializeField] private TransformBounds _playerArea;
         [SerializeField] private CameraShaker _cameraShaker;
@@ -34,7 +34,11 @@ namespace Game.Mechanics.Ship
             _cameraShaker.Shake();
         }
 
-        private void GameOver() => _gameOverView.Show();
+        private void GameOver()
+        {
+            _gameOverView.Show(); // ui
+            gameObject.SetActive(false); // core
+        }
 
         #endregion
 

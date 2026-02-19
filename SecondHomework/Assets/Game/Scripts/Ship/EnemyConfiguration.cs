@@ -1,4 +1,4 @@
-using Game.Interface;
+using Game.Interfaces;
 using UnityEngine;
 
 namespace Game.Mechanics.Config

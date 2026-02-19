@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Game.Data;
 using Game.Enums;
-using Game.Interface;
+using Game.Interfaces;
 using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem.Data

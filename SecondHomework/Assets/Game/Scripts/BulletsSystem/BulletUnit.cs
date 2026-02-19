@@ -27,8 +27,18 @@ namespace Game.Mechanics.BulletsSystem
             transform.rotation = Quaternion.LookRotation(config.Direction, Vector3.forward);
             gameObject.layer = LayerMask.NameToLayer(config.BulletNameMask);
 
-            blueVFX?.SetActive(team == TeamType.Player ? true : false);
-            redVFX?.SetActive(team == TeamType.Player ? false : true);
+            bool isPlayer = team == TeamType.Player ? true : false;
+
+            if (isPlayer)
+            {
+                blueVFX.SetActive(true);
+                redVFX.SetActive(false);
+            }
+            else
+            {
+                blueVFX.SetActive(false);
+                redVFX.SetActive(true);
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other) => OnTriggerEntered?.Invoke(this, other);

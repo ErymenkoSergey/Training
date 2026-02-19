@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Game.Interface;
+using Game.Interfaces;
 using Game.Mechanics.Config;
 using Game.Mechanics.Ship;
 using Modules.UI;

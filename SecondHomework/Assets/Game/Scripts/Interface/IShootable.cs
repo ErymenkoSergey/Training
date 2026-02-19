@@ -2,9 +2,8 @@ using UnityEngine;
 
 namespace Game.Interfaces
 {
-    public interface IMovable
+    public interface IShootable
     {
-        void ChangeDirection(Vector2 direction);
         void Shoot();
     }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Game.Interface
+namespace Game.Interfaces
 {
     public interface IPlayer
     {

@@ -1,6 +1,6 @@
 using Game.Mechanics.Ship;
 
-namespace Game.Interface
+namespace Game.Interfaces
 {
     public interface IEnemyRespawn
     {

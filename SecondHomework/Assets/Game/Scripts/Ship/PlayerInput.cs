@@ -1,4 +1,4 @@
-using Game.Interface;
+using Game.Interfaces;
 using Game.Mechanics.Ship;
 using UnityEngine;
 
@@ -8,7 +8,8 @@ namespace Game.Mechanics.Inputs
     {
         [SerializeField] private PlayerShip player;
 
-        private IMovable iPlayer;
+        private IMovable iMovable;
+        private IShootable iShootable;
         private IHealth ihealth;
 
         private void Awake()
@@ -16,8 +17,12 @@ namespace Game.Mechanics.Inputs
             if (player == null)
                 Debug.LogError($" No Player !!");
 
-            iPlayer = player;
-            ihealth = player;
+            if (player.TryGetComponent(out IMovable movable))
+                iMovable = movable;
+            if (player.TryGetComponent(out IHealth health))
+                ihealth = health;
+            if (player.TryGetComponent(out IShootable shootable))
+                iShootable = shootable;
         }
 
         public void Update()
@@ -26,12 +31,12 @@ namespace Game.Mechanics.Inputs
                 return;
 
             if (Input.GetKeyDown(KeyCode.Space))
-                iPlayer.Shoot();
+                iShootable.Shoot();
 
             float dx = Input.GetAxisRaw("Horizontal");
             float dy = Input.GetAxisRaw("Vertical");
 
-            iPlayer.ChangeDirection(new Vector2(dx, dy));
+            iMovable.ChangeDirection(new Vector2(dx, dy));
         }
     }
 }

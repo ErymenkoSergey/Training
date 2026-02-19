@@ -2,7 +2,7 @@ using System;
 using DG.Tweening;
 using Game.Data;
 using Game.Enums;
-using Game.Interface;
+using Game.Interfaces;
 using Game.Mechanics.BulletsSystem;
 using Game.Mechanics.BulletsSystem.Data;
 using UnityEngine;
@@ -108,6 +108,7 @@ namespace Game.Mechanics.Ship
 
         public void NotifyAboutDead()
         {
+            //vfx effect
             ParticleSystem prefab = visualConfig.DestroyEffectPrefab;
             Instantiate(prefab, _viewTransform.position, prefab.transform.rotation);
             OnDead?.Invoke();
