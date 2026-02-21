@@ -593,9 +593,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fc7ba463742f5c4f9f0e58dbf9be45f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::BulletField
-  gunner: {fileID: 11400000, guid: 2b6d79ed1dfe127479b71efcd37a96b5, type: 2}
-  Container: {fileID: 363245576}
-  LevelBounds: {fileID: 2572952653776768186}
+  ammoData: {fileID: 11400000, guid: 2b6d79ed1dfe127479b71efcd37a96b5, type: 2}
+  _configView: {fileID: 11400000, guid: f2107b212e6a245009f8ae9313cc81bb, type: 2}
+  container: {fileID: 363245576}
+  levelBounds: {fileID: 2572952653776768186}
 --- !u!1 &404085825
 GameObject:
   m_ObjectHideFlags: 0
@@ -996,6 +997,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32dae85f8264479bac19d85418d92392, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bulletManager: {fileID: 363245578}
   minSpawnCooldown: 2
   maxSpawnCooldown: 3
   prefab: {fileID: 102605417607457000, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
@@ -3138,6 +3140,10 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 0b9a4576e5f0a4babb44b3c82e6480d0, type: 2}
     - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
       propertyPath: gunner
+      value: 
+      objectReference: {fileID: 11400000, guid: 2b6d79ed1dfe127479b71efcd37a96b5, type: 2}
+    - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
+      propertyPath: ammoData
       value: 
       objectReference: {fileID: 11400000, guid: 2b6d79ed1dfe127479b71efcd37a96b5, type: 2}
     - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}

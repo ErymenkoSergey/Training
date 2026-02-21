@@ -1,21 +1,22 @@
-using System;
 using Game.Enums;
+using Game.Interfaces;
+using Modules.Utils;
 using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem
 {
+    // нехватает information expert
     public sealed class BulletUnit : MonoBehaviour
     {
-        public event Action<BulletUnit, Collider2D> OnTriggerEntered;
-        public Vector2 Direction { get; private set; }
-        public int Damage { get; private set; }
-        public float Speed { get; private set; }
-
+        private Vector2 Direction;
+        private int Damage;
+        private float Speed;
         private TeamType team = TeamType.None;
+        private TransformBounds levelBounds;
+        private IPoolable poolable;
+
         [SerializeField] private GameObject blueVFX;
         [SerializeField] private GameObject redVFX;
-
-        public TeamType GetTeam() => team;
 
         public void SetData(BulletConfiguration config)
         {
@@ -26,7 +27,13 @@ namespace Game.Mechanics.BulletsSystem
             transform.position = config.Position;
             transform.rotation = Quaternion.LookRotation(config.Direction, Vector3.forward);
             gameObject.layer = LayerMask.NameToLayer(config.BulletNameMask);
+            levelBounds = config.Bounds;
+            poolable = config.Pool;
+            ShowVFX(team);
+        }
 
+        private void ShowVFX(TeamType team)
+        {
             bool isPlayer = team == TeamType.Player ? true : false;
 
             if (isPlayer)
@@ -41,6 +48,44 @@ namespace Game.Mechanics.BulletsSystem
             }
         }
 
-        private void OnTriggerEnter2D(Collider2D other) => OnTriggerEntered?.Invoke(this, other);
+        public void FixedUpdate()
+        {
+            Vector3 moveStep = Direction * Speed * Time.fixedDeltaTime;
+            transform.position += moveStep;
+
+            if (!levelBounds.InBounds(transform.position))
+            {
+                gameObject.SetActive(false);
+                poolable.ReturnToPool(this);
+            }
+        }
+
+        public TeamType GetTeam() => team;
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (!other.TryGetComponent(out IHealth ship))
+                return;
+
+            poolable.ReturnToPool(this, TakeDamage(Damage, ship));
+        }
+
+        private bool TakeDamage(int damage, IHealth ship)
+        {
+            if (damage > 0)
+            {
+                ship.CurrentHealth =
+                    Mathf.Clamp(ship.CurrentHealth - damage, ship.DeadValueHealth, ship.CurrentMaxHealth);
+                ship.NotifyAboutHealthChanged(ship.CurrentHealth);
+
+                if (ship.CurrentHealth <= ship.DeadValueHealth)
+                {
+                    ship.NotifyAboutDead();
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }

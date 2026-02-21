@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using Game.Interfaces;
+using Game.Mechanics.BulletsSystem;
+using Game.Mechanics.BulletsSystem.Data;
 using Game.Mechanics.Config;
 using Game.Mechanics.Ship;
 using Modules.UI;
@@ -13,6 +15,10 @@ namespace Game.Mechanics.Spawner
 {
     public sealed class EnemyController : MonoBehaviour, IEnemyRespawn
     {
+        // подразбить на несколько классов 
+        [SerializeField] private BulletManager bulletManager;
+        private IShootable shootable => bulletManager;
+        
         [Header("Spawn Settings")]
         [SerializeField]
         private float minSpawnCooldown = 2;
@@ -72,6 +78,7 @@ namespace Game.Mechanics.Spawner
             config.Target = target;
             config.TargetHealth = healthPlayer;
             config.Respawn = this;
+            config.Shootable = shootable;
             return config;
         }
 
@@ -82,9 +89,9 @@ namespace Game.Mechanics.Spawner
                 return;
             
             if (pool.TryDequeue(out Enemy enemy))
-                enemy.gameObject.SetActive(true);
+                enemy.gameObject.SetActive(true); // если он уже есть, то активируем
             else
-                enemy = Instantiate(prefab, _container);
+                enemy = Instantiate(prefab, _container); // если его нету, то создаем
 
             enemy.SetData(GetConfiguration());
                 

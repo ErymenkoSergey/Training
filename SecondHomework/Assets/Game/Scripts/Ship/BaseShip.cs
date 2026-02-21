@@ -10,14 +10,16 @@ using UnityEngine.Serialization;
 
 namespace Game.Mechanics.Ship
 {
+    // этот занимается и логикой системы и вьюшной логикой - подразбить 
     public abstract class BaseShip : MonoBehaviour, IHealth
     {
         public event Action<int> OnHealthChanged;
         public event Action OnDead;
 
+        protected IShootable shootable;
+        
         [Header("Data")]
         [SerializeField] private ShipData config;
-        [SerializeField] private Gunner gunner;
         [SerializeField] private VisualConfig visualConfig;
 
         [Header("Health")]
@@ -79,7 +81,7 @@ namespace Game.Mechanics.Ship
             if (_fireSFX)
                 _audioSource.PlayOneShot(_fireSFX);
             
-            gunner.Shoot(GetBulletConfiguration(config.Team, direction));
+            shootable.Shoot(GetBulletConfiguration(config.Team, direction));
             
             if (_fireVFX)
                 _fireVFX.Play();

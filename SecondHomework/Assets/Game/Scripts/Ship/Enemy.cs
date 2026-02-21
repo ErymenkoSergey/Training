@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
-    public sealed class Enemy : BaseShip
+    public sealed class Enemy : BaseShip // неправильный дизай, тут должно быть делегирование (лисков)  - не должен вызывать базовае методы?
     {
         [SerializeField] private float _fireCooldown = 1.25f;
         [SerializeField] private float _stoppingDistance = 0.25f;
@@ -20,6 +20,7 @@ namespace Game.Mechanics.Ship
             _playerTransform = config.Target;
             hpTarget = config.TargetHealth;
             respawn = config.Respawn;
+            shootable = config.Shootable;
         }
 
         private void OnEnable() => OnDead += OnCharacterDead;

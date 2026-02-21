@@ -10,5 +10,6 @@ namespace Game.Mechanics.Config
       public IPlayer Target;
       public IHealth TargetHealth;
       public IEnemyRespawn Respawn;
+      public IShootable Shootable;
    }
 }

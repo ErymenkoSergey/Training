@@ -21,8 +21,8 @@ namespace Game.Mechanics.Inputs
                 iMovable = movable;
             if (player.TryGetComponent(out IHealth health))
                 ihealth = health;
-            if (player.TryGetComponent(out IShootable shootable))
-                iShootable = shootable;
+            // if (player.TryGetComponent(out IShootable shootable))
+            //     iShootable = shootable;
         }
 
         public void Update()
@@ -30,8 +30,8 @@ namespace Game.Mechanics.Inputs
             if (ihealth.CurrentHealth <= ihealth.DeadValueHealth)
                 return;
 
-            if (Input.GetKeyDown(KeyCode.Space))
-                iShootable.Shoot();
+            // if (Input.GetKeyDown(KeyCode.Space))
+            //     iShootable.Shoot();
 
             float dx = Input.GetAxisRaw("Horizontal");
             float dy = Input.GetAxisRaw("Vertical");

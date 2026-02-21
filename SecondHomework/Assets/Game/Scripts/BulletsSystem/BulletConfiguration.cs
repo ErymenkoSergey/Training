@@ -1,4 +1,6 @@
 using Game.Enums;
+using Game.Interfaces;
+using Modules.Utils;
 using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem
@@ -11,5 +13,7 @@ namespace Game.Mechanics.BulletsSystem
         public int Damage;
         public TeamType Team;
         public string BulletNameMask;
+        public TransformBounds Bounds;
+        public IPoolable Pool;
     }
 }

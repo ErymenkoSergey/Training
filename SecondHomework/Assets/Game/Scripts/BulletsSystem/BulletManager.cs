@@ -1,0 +1,93 @@
+using Game.Mechanics.BulletsSystem.Data;
+using Modules.Utils;
+using UnityEngine;
+using System.Collections.Generic;
+using Game.Data;
+using Game.Enums;
+using Game.Interfaces;
+
+namespace Game.Mechanics.BulletsSystem
+{
+    public sealed class BulletManager : MonoBehaviour, IShootable, IPoolable
+    {
+        [Header("Data")] [SerializeField] private AmmoData ammoData;
+        [SerializeField] private ExplosionVFXEffectData _configView;
+
+        [SerializeField] private Transform container;
+        [SerializeField] private TransformBounds levelBounds;
+
+        private readonly Stack<BulletUnit> bulletPool = new(); // сделать общйий пул для пуль и противников
+
+        public void Awake()
+        {
+            if (ammoData == null || _configView == null)
+            {
+                Debug.LogError("No Data Configuration SO");
+                return;
+            }
+
+            for (var i = 0; i < ammoData.SizePool; i++)
+            {
+                BulletUnit bullet = Instantiate(ammoData.Prefab, container);
+                bullet.gameObject.SetActive(false);
+                bulletPool.Push(bullet);
+            }
+        }
+
+        public void Shoot(BulletConfiguration config)
+        {
+            if (config.Team == TeamType.None)
+            {
+                Debug.LogError($"Spawn bullet => team: {config.Team}");
+                return;
+            }
+
+            if (bulletPool.TryPop(out BulletUnit bullet))
+                bullet.gameObject.SetActive(true);
+            else
+                bullet = Instantiate(ammoData.Prefab, container);
+
+            config.BulletNameMask = SetBulletType(config.Team);
+            config.Bounds = levelBounds;
+            config.Pool = this;
+
+            bullet.SetData(config);
+        }
+        
+        public void ReturnToPool(BulletUnit bullet, bool isDead = false)
+        {
+            bullet.gameObject.SetActive(false);
+            bulletPool.Push(bullet);
+            SpawnVFX(bullet.transform, bullet.GetTeam(), isDead);
+        }
+
+        private string SetBulletType(TeamType team)
+        {
+            switch (team)
+            {
+                case TeamType.Player:
+                    return ammoData.PlayerMask;
+                case TeamType.Enemy:
+                    return ammoData.EnemyMask;
+                case TeamType.None:
+                default:
+                    Debug.LogError($"Spawn bullet => team: {team}");
+                    break;
+            }
+
+            return string.Empty;
+        }
+        
+        private void SpawnVFX(Transform point, TeamType team, bool isDead)
+        {
+            GameObject prefab = null;
+
+            if (isDead)
+                prefab = team == TeamType.Player ? _configView.BigExplosionVFX : _configView.ExplosionVFX;
+            else
+                prefab = team == TeamType.Player ? _configView.BlueVFX : _configView.RedVFX;
+
+            Instantiate(prefab, point.position, prefab.transform.rotation);
+        }
+    }
+}

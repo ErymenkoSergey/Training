@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
-    public sealed class PlayerShip : BaseShip, IPlayer, IMovable, IShootable
+    // нарушение срп тк подразбить тк тут рабоата с ui и камерой  - слишком много ответственности , отключить от базового корабля
+    public sealed class PlayerShip : BaseShip, IPlayer, IMovable//, IShootable
     {
         [SerializeField] private TransformBounds _playerArea;
         [SerializeField] private CameraShaker _cameraShaker;
