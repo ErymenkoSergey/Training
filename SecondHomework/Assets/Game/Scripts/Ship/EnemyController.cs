@@ -1,11 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using Game.Interfaces;
-using Game.Mechanics.BulletsSystem;
-using Game.Mechanics.BulletsSystem.Data;
 using Game.Mechanics.Config;
 using Game.Mechanics.Ship;
-using Modules.UI;
 using Modules.Utils;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -16,10 +13,13 @@ namespace Game.Mechanics.Spawner
     public sealed class EnemyController : MonoBehaviour, IEnemyRespawn
     {
         // подразбить на несколько классов 
-        [SerializeField] private BulletManager bulletManager;
-        private IShootable shootable => bulletManager;
-        
-        [Header("Spawn Settings")]
+        private IShootable iShootable;
+        private ITarget iTarget;
+        private IScore iScore;
+
+        #region Logic Cooldown
+
+        [Header("Spawn Settings")] // new so? 
         [SerializeField]
         private float minSpawnCooldown = 2;
 
@@ -28,7 +28,10 @@ namespace Game.Mechanics.Spawner
         
         private float spawnCooldown;
         private float spawnTime;
-        
+
+        #endregion
+       
+        // logic spawn 
         [FormerlySerializedAs("_prefab")]
         [Header("Pool")]
         [SerializeField]
@@ -38,12 +41,6 @@ namespace Game.Mechanics.Spawner
         private Transform _container;
         
         private readonly Queue<Enemy> pool = new();
-
-        [Header("Target")]
-        [SerializeField]
-        private PlayerShip playerShip;
-        private IPlayer target;
-        private IHealth healthPlayer;
         
         [Header("Points")]
         [SerializeField]
@@ -55,18 +52,63 @@ namespace Game.Mechanics.Spawner
         private int spawnIndex;
         private int attackIndex;
         
-        [Header("UI")]
-        [SerializeField]
-        private ScoreView scoreView;
-        
         private int destroyedEnemies;
+        
+        private IGameOver iGameOver;
+        private bool isGameOver;
+        
+        public void Construct(IShootable iShootable, ITarget iTarget, IScore iScore, IGameOver gameOver)
+        {
+            this.iShootable = iShootable;
+            this.iTarget = iTarget;
+            this.iScore = iScore;
+            iGameOver = gameOver;
+            iGameOver.OnGameOver += SetGameOver;
+        }
+
+        private void OnDisable()
+        {
+            iGameOver.OnGameOver -= SetGameOver;
+        }
+        
+        private void SetGameOver(bool isOver) => isGameOver = isOver;
         
         private void Awake()
         {
-            TargetConfiguration();
             _spawnPositions.Shuffle();
             _attackPositions.Shuffle();
-            scoreView.SetValue(destroyedEnemies);
+            iScore.ChangeScore(destroyedEnemies);
+            ResetSpawnCooldown();
+        }
+        
+        public void Respawn(Enemy enemy)
+        {
+            destroyedEnemies++;
+            iScore.ChangeScore(destroyedEnemies);
+            StartCoroutine(DespawnInNextFrame(enemy));
+        }
+        
+        private void FixedUpdate()
+        {
+            if (isGameOver)
+                return;
+
+            float time = Time.fixedTime;
+            if (time - spawnTime < spawnCooldown)
+                return;
+
+            CreateEnemy();
+        }
+
+        private void CreateEnemy()
+        {
+            if (pool.TryDequeue(out Enemy enemy))
+                enemy.gameObject.SetActive(true);
+            else
+                enemy = Instantiate(prefab, _container);
+
+            enemy.SetData(GetConfiguration());
+                
             ResetSpawnCooldown();
         }
         
@@ -75,36 +117,11 @@ namespace Game.Mechanics.Spawner
             EnemyConfiguration config = new EnemyConfiguration();
             config.SpawnPosition = NextSpawnPosition();
             config.AttackPosition = NextDestination();
-            config.Target = target;
-            config.TargetHealth = healthPlayer;
+            config.Target = iTarget;
             config.Respawn = this;
-            config.Shootable = shootable;
+            config.Shootable = iShootable;
+            config.GameOver = iGameOver;
             return config;
-        }
-
-        private void FixedUpdate()
-        {
-            float time = Time.fixedTime;
-            if (time - spawnTime < spawnCooldown || healthPlayer.CurrentHealth <= healthPlayer.DeadValueHealth)
-                return;
-            
-            if (pool.TryDequeue(out Enemy enemy))
-                enemy.gameObject.SetActive(true); // если он уже есть, то активируем
-            else
-                enemy = Instantiate(prefab, _container); // если его нету, то создаем
-
-            enemy.SetData(GetConfiguration());
-                
-            ResetSpawnCooldown();
-        }
-
-        private void TargetConfiguration()
-        {
-            if (playerShip == null)
-                Debug.LogError($"{nameof(playerShip)} is null!!!");
-
-            target = playerShip;
-            healthPlayer = playerShip;
         }
         
         private void ResetSpawnCooldown()
@@ -112,14 +129,7 @@ namespace Game.Mechanics.Spawner
             spawnCooldown = Random.Range(minSpawnCooldown, maxSpawnCooldown);
             spawnTime = Time.fixedTime;
         }
-
-        public void Respawn(Enemy enemy)
-        {
-            destroyedEnemies++;
-            scoreView.SetValue(destroyedEnemies);
-            StartCoroutine(DespawnInNextFrame(enemy));
-        }
-
+        
         private IEnumerator DespawnInNextFrame(Enemy enemy)
         {
             yield return null;

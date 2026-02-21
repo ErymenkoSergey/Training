@@ -1,19 +1,22 @@
 using Game.Interfaces;
-using Modules.UI;
 using Modules.Utils;
 using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
     // нарушение срп тк подразбить тк тут рабоата с ui и камерой  - слишком много ответственности , отключить от базового корабля
-    public sealed class PlayerShip : BaseShip, IPlayer, IMovable//, IShootable
+    public sealed class TargetShip : BaseShip, ITarget, IMovable, IShot
     {
         [SerializeField] private TransformBounds _playerArea;
-        [SerializeField] private CameraShaker _cameraShaker;
+        private IViewHealth viewHealth;
 
-        [Header("UI")] 
-        [SerializeField] private GameOverView _gameOverView;
-        [SerializeField] private HealthView _healthView;
+        public void Construct(IShootable iShootable, IViewHealth viewHealth, IGameOver gameOver)
+        {
+            base.iShootable = iShootable;
+            this.viewHealth = viewHealth;
+            base.gameOver = gameOver;
+            base.StartShip();
+        }
 
         private void OnEnable()
         {
@@ -27,33 +30,29 @@ namespace Game.Mechanics.Ship
             OnDead -= GameOver;
         }
 
-        #region UI process
-
         private void ChangeHealth(int health)
         {
-            _healthView.SetHealth(health, CurrentMaxHealth);
-            _cameraShaker.Shake();
+            viewHealth.ChangeHealth(health, CurrentMaxHealth);
         }
 
         private void GameOver()
         {
-            _gameOverView.Show(); // ui
-            gameObject.SetActive(false); // core
+            //viewHealth.GameOver();
+            gameOver.CallGameOver();
+            gameObject.SetActive(false);
         }
-
-        #endregion
 
         #region Movement process
 
         public void ChangeDirection(Vector2 direction) => moveDirection = direction;
 
-        public void Shoot() => base.Fire(firePoint.up);
+        public void Shot() => base.Fire(firePoint.up);
 
         private void Update()
         {
             if (CurrentHealth <= DeadValueHealth)
                 return;
-            
+
             engine.MoveStep(this.moveDirection);
         }
 
@@ -64,7 +63,7 @@ namespace Game.Mechanics.Ship
             base.LateUpdate();
             transform.position = _playerArea.ClampInBounds(transform.position);
         }
-        
+
         #endregion
     }
 }

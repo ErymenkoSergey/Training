@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem.Data
 {
-    // сделать инкапусляцию - тут только настройка пуль. а логика на монобехе 
     [CreateAssetMenu(menuName = "Game/Gunner", order = 2)]
     public sealed class AmmoData : ScriptableObject
     {

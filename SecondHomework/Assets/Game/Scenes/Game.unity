@@ -515,9 +515,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 177601766}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ba1c9bb6cda40859c2a722f818fdc94, type: 3}
+  m_Script: {fileID: 11500000, guid: c581f6ff59bbdd947b672f76d44121a5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Game::Game.UIController
+  m_EditorClassIdentifier: Game::Game.Mechanics.Ship.UIHandler
+  _cameraShaker: {fileID: 519420034}
+  scoreView: {fileID: 895558708}
+  _healthView: {fileID: 1243470931}
+  _gameOverView: {fileID: 1375492023}
 --- !u!1 &196756140
 GameObject:
   m_ObjectHideFlags: 0
@@ -997,12 +1001,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32dae85f8264479bac19d85418d92392, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletManager: {fileID: 363245578}
   minSpawnCooldown: 2
   maxSpawnCooldown: 3
   prefab: {fileID: 102605417607457000, guid: 87fe189881a524806800482ac8eaaa83, type: 3}
   _container: {fileID: 1052031097}
-  playerShip: {fileID: 4414282821800802410}
   _spawnPositions:
   - {fileID: 5098186055898699330}
   - {fileID: 3822857799868723767}
@@ -1020,7 +1022,6 @@ MonoBehaviour:
   - {fileID: 1549378007}
   - {fileID: 78117031}
   - {fileID: 883274640}
-  scoreView: {fileID: 895558708}
 --- !u!1 &574514311
 GameObject:
   m_ObjectHideFlags: 0
@@ -1180,6 +1181,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 739865810}
+  - component: {fileID: 739865811}
   m_Layer: 0
   m_Name: '[GameContext]'
   m_TagString: Untagged
@@ -1207,6 +1209,23 @@ Transform:
   - {fileID: 4414282821800802396}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &739865811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 739865809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d9dc11bfefa5a3458fd2019fcc873ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Game.Core.Gameplay
+  playerShip: {fileID: 4414282821800802410}
+  input: {fileID: 1879759790}
+  uiHandler: {fileID: 177601769}
+  enemyController: {fileID: 562298205}
+  bulletManager: {fileID: 363245578}
 --- !u!1 &770582453
 GameObject:
   m_ObjectHideFlags: 0
@@ -2552,7 +2571,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0d8a2134b32408a9ccae5fde8a74223, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::Game.PlayerBulletInstantiator
-  player: {fileID: 4414282821800802410}
 --- !u!1 &1954893900
 GameObject:
   m_ObjectHideFlags: 0
@@ -3146,6 +3164,10 @@ PrefabInstance:
       propertyPath: ammoData
       value: 
       objectReference: {fileID: 11400000, guid: 2b6d79ed1dfe127479b71efcd37a96b5, type: 2}
+    - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
+      propertyPath: uiHandler
+      value: 
+      objectReference: {fileID: 177601769}
     - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
       propertyPath: _healthView
       value: 

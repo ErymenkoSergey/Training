@@ -1,37 +1,38 @@
 using Game.Interfaces;
-using Game.Mechanics.Ship;
 using UnityEngine;
 
 namespace Game.Mechanics.Inputs
 {
     public sealed class PlayerInput : MonoBehaviour
     {
-        [SerializeField] private PlayerShip player;
-
         private IMovable iMovable;
-        private IShootable iShootable;
-        private IHealth ihealth;
-
-        private void Awake()
+        private IShot iShot;
+        private IGameOver iGameOver;
+        
+        private bool isGameOver;
+        
+        public void Construct(IMovable movable, IShot shot, IGameOver gameOver)
         {
-            if (player == null)
-                Debug.LogError($" No Player !!");
-
-            if (player.TryGetComponent(out IMovable movable))
-                iMovable = movable;
-            if (player.TryGetComponent(out IHealth health))
-                ihealth = health;
-            // if (player.TryGetComponent(out IShootable shootable))
-            //     iShootable = shootable;
+            iMovable = movable;
+            iShot = shot;
+            iGameOver = gameOver;
+            iGameOver.OnGameOver += SetGameOver;
         }
+
+        private void OnDisable()
+        {
+            iGameOver.OnGameOver -= SetGameOver;
+        }
+
+        private void SetGameOver(bool isOver) => isGameOver = isOver;
 
         public void Update()
         {
-            if (ihealth.CurrentHealth <= ihealth.DeadValueHealth)
+            if (isGameOver)
                 return;
 
-            // if (Input.GetKeyDown(KeyCode.Space))
-            //     iShootable.Shoot();
+            if (Input.GetKeyDown(KeyCode.Space))
+                iShot.Shot();
 
             float dx = Input.GetAxisRaw("Horizontal");
             float dy = Input.GetAxisRaw("Vertical");

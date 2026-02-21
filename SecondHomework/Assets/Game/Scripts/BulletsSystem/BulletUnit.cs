@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem
 {
-    // нехватает information expert
     public sealed class BulletUnit : MonoBehaviour
     {
         private Vector2 Direction;
@@ -31,6 +30,8 @@ namespace Game.Mechanics.BulletsSystem
             poolable = config.Pool;
             ShowVFX(team);
         }
+        
+        public TeamType GetTeam() => team;
 
         private void ShowVFX(TeamType team)
         {
@@ -48,7 +49,7 @@ namespace Game.Mechanics.BulletsSystem
             }
         }
 
-        public void FixedUpdate()
+        private void FixedUpdate()
         {
             Vector3 moveStep = Direction * Speed * Time.fixedDeltaTime;
             transform.position += moveStep;
@@ -59,9 +60,7 @@ namespace Game.Mechanics.BulletsSystem
                 poolable.ReturnToPool(this);
             }
         }
-
-        public TeamType GetTeam() => team;
-
+        
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!other.TryGetComponent(out IHealth ship))

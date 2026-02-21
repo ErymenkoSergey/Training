@@ -10,7 +10,8 @@ namespace Game.Mechanics.BulletsSystem
 {
     public sealed class BulletManager : MonoBehaviour, IShootable, IPoolable
     {
-        [Header("Data")] [SerializeField] private AmmoData ammoData;
+        [Header("Data")]
+        [SerializeField] private AmmoData ammoData;
         [SerializeField] private ExplosionVFXEffectData _configView;
 
         [SerializeField] private Transform container;
@@ -54,11 +55,12 @@ namespace Game.Mechanics.BulletsSystem
             bullet.SetData(config);
         }
         
-        public void ReturnToPool(BulletUnit bullet, bool isDead = false)
+        public void ReturnToPool(BulletUnit bullet, bool isUseVfx = false)
         {
             bullet.gameObject.SetActive(false);
             bulletPool.Push(bullet);
-            SpawnVFX(bullet.transform, bullet.GetTeam(), isDead);
+            if (isUseVfx)
+                SpawnVFX(bullet.transform, bullet.GetTeam());
         }
 
         private string SetBulletType(TeamType team)
@@ -78,15 +80,9 @@ namespace Game.Mechanics.BulletsSystem
             return string.Empty;
         }
         
-        private void SpawnVFX(Transform point, TeamType team, bool isDead)
+        private void SpawnVFX(Transform point, TeamType team) // вынести в класс с визуальными эффектами
         {
-            GameObject prefab = null;
-
-            if (isDead)
-                prefab = team == TeamType.Player ? _configView.BigExplosionVFX : _configView.ExplosionVFX;
-            else
-                prefab = team == TeamType.Player ? _configView.BlueVFX : _configView.RedVFX;
-
+            GameObject prefab = team == TeamType.Player ? _configView.BigExplosionVFX : _configView.ExplosionVFX;
             Instantiate(prefab, point.position, prefab.transform.rotation);
         }
     }

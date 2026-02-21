@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Game.Interfaces
 {
-    public interface IPlayer
+    public interface ITarget
     {
         Transform transform { get; }
     }

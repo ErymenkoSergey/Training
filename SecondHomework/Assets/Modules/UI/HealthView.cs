@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 namespace Modules.UI
 {
-    public class HealthView : MonoBehaviour
+    public sealed class HealthView : MonoBehaviour
     {
         [SerializeField]
         private Image[] blocks; 

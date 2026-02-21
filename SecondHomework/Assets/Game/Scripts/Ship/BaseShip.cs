@@ -4,9 +4,7 @@ using Game.Data;
 using Game.Enums;
 using Game.Interfaces;
 using Game.Mechanics.BulletsSystem;
-using Game.Mechanics.BulletsSystem.Data;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.Mechanics.Ship
 {
@@ -15,8 +13,10 @@ namespace Game.Mechanics.Ship
     {
         public event Action<int> OnHealthChanged;
         public event Action OnDead;
-
-        protected IShootable shootable;
+        
+        protected IGameOver gameOver;
+        private bool isGameOver;
+        protected IShootable iShootable;
         
         [Header("Data")]
         [SerializeField] private ShipData config;
@@ -26,62 +26,76 @@ namespace Game.Mechanics.Ship
         [field: SerializeField]
         public int CurrentHealth { get; set; }
 
-        public int DeadValueHealth { get; private set; } = 0;
+        public int DeadValueHealth { get; private set; } = 0; // Const?
 
         public int CurrentMaxHealth => config.Health;
 
         [Header("Combat")] 
         public Transform firePoint; //?
         public float FireTime = 0f; //??
-
-        [FormerlySerializedAs("_motor")] [Header("Movement")] [SerializeField]
+        
+        [Header("Movement")] [SerializeField]
         protected Engine engine;
 
         protected Vector3 moveDirection;
-
-        [Header("Visual")] [SerializeField] private Renderer _renderer;
+        
+        [Header("Visual")] 
+        [SerializeField] private Renderer _renderer;
         [SerializeField] private Transform _viewTransform;
         [SerializeField] private AudioSource _audioSource;
         [SerializeField] private ParticleSystem _fireVFX;
-        [SerializeField] private AudioClip _fireSFX;
+        [SerializeField] private AudioClip _fireSFX; // урать в конфигурацию so
         [SerializeField] private AudioClip _damageSFX;
 
         private Material _material;
         private Tweener _damageAnimation;
 
-        private void Awake()
+        protected void StartShip()
         {
             ResetData();
             _material = new Material(visualConfig.MaterialPrefab);
             _renderer.material = _material;
         }
 
-        protected virtual void FixedUpdate() => engine?.FixedUpdate();
+        private void OnDisable()
+        {
+            gameOver.OnGameOver -= SetGameOver;
+        }
+
+        protected virtual void FixedUpdate()
+        {
+            if (isGameOver)
+                return;
+            
+            engine?.FixedUpdate(); // Этот двигатель должен двигать корабли 
+        }
 
         protected virtual void LateUpdate()
         {
-            if (CurrentHealth <= DeadValueHealth)
+            if (CurrentHealth <= DeadValueHealth || isGameOver)
                 return;
 
             AnimateMovement(Time.deltaTime);
         }
 
+        private void SetGameOver(bool isOver) => isGameOver = isOver;
+        
         public void ResetData()
         {
             CurrentHealth = config.Health;
-            engine.SetSpeed(config.MoveSpeed);
+            gameOver.OnGameOver += SetGameOver;
         }
 
         protected void Fire(Vector3 direction)
         {
             float time = Time.time;
-            if (time - FireTime < config.FireCooldown || CurrentHealth <= DeadValueHealth)
+            if (time - FireTime < config.FireCooldown || CurrentHealth <= DeadValueHealth  || isGameOver)
                 return;
 
             if (_fireSFX)
                 _audioSource.PlayOneShot(_fireSFX);
             
-            shootable.Shoot(GetBulletConfiguration(config.Team, direction));
+            iShootable.Shoot(GetBulletConfiguration(config.Team, direction));
             
             if (_fireVFX)
                 _fireVFX.Play();
@@ -89,7 +103,7 @@ namespace Game.Mechanics.Ship
             FireTime = time;
         }
 
-        private void AnimateMovement(float deltaTime)
+        private void AnimateMovement(float deltaTime) // логику в другой класс (анимации ) 
         {
             Vector3 shipAngles = _viewTransform.localEulerAngles;
             shipAngles.x = visualConfig.MoveRotationAngle * moveDirection.y;
@@ -111,7 +125,7 @@ namespace Game.Mechanics.Ship
         public void NotifyAboutDead()
         {
             //vfx effect
-            ParticleSystem prefab = visualConfig.DestroyEffectPrefab;
+            ParticleSystem prefab = visualConfig.DestroyEffectPrefab; // TODO Убрать в новый конфиг для vfx!!!
             Instantiate(prefab, _viewTransform.position, prefab.transform.rotation);
             OnDead?.Invoke();
         }

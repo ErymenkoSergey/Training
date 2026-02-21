@@ -4,6 +4,6 @@ namespace Game.Interfaces
 {
     public interface IPoolable
     {
-        void ReturnToPool(BulletUnit bullet, bool isDead = false);
+        void ReturnToPool(BulletUnit bullet, bool isUseVfx = false);
     }
 }
