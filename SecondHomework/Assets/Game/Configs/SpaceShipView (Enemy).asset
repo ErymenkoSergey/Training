@@ -50,4 +50,4 @@ MonoBehaviour:
   <HitDuration>k__BackingField: 0.2
   <MoveRotationAngle>k__BackingField: 30
   <MoveSpeed>k__BackingField: 5
-  <DestroyEffectPrefab>k__BackingField: {fileID: 198423008863891152, guid: 91acdbd2820f9ce418996a0a24d91079, type: 3}
+  <DestroyEffectPrefab>k__BackingField: {fileID: 198423008863891152, guid: 742ae5c3589574c4195065193e9181b5, type: 3}

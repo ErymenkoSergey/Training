@@ -5,7 +5,7 @@ namespace Game.Interfaces
         int CurrentHealth { get; set; }
         int CurrentMaxHealth { get; }
         int DeadValueHealth { get; }
-        void NotifyAboutHealthChanged(int health);
+        void SetDamage(int health);
         void NotifyAboutDead();
     }
 }

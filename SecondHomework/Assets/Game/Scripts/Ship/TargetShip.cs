@@ -8,39 +8,39 @@ namespace Game.Mechanics.Ship
     public sealed class TargetShip : BaseShip, ITarget, IMovable, IShot
     {
         [SerializeField] private TransformBounds _playerArea;
-        private IViewHealth viewHealth;
+        // private IViewHealth viewHealth;
 
         public void Construct(IShootable iShootable, IViewHealth viewHealth, IGameOver gameOver)
         {
             base.iShootable = iShootable;
-            this.viewHealth = viewHealth;
+            // this.viewHealth = viewHealth;
             base.gameOver = gameOver;
             base.StartShip();
         }
 
-        private void OnEnable()
-        {
-            OnHealthChanged += ChangeHealth;
-            OnDead += GameOver;
-        }
-
-        private void OnDisable()
-        {
-            OnHealthChanged -= ChangeHealth;
-            OnDead -= GameOver;
-        }
-
-        private void ChangeHealth(int health)
-        {
-            viewHealth.ChangeHealth(health, CurrentMaxHealth);
-        }
-
-        private void GameOver()
-        {
-            //viewHealth.GameOver();
-            gameOver.CallGameOver();
-            gameObject.SetActive(false);
-        }
+        // private void OnEnable()
+        // {
+        //     OnHealthChanged += ChangeHealth;
+        //     OnDead += GameOver;
+        // }
+        //
+        // private void OnDisable()
+        // {
+        //     OnHealthChanged -= ChangeHealth;
+        //     OnDead -= GameOver;
+        // }
+        //
+        // private void ChangeHealth(int health)
+        // {
+        //     viewHealth.ChangeHealth(health, CurrentMaxHealth);
+        // }
+        //
+        // private void GameOver()
+        // {
+        //     //viewHealth.GameOver();
+        //     gameOver.CallGameOver();
+        //     gameObject.SetActive(false);
+        // }
 
         #region Movement process
 

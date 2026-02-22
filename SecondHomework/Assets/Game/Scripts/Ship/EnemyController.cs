@@ -23,40 +23,33 @@ namespace Game.Mechanics.Spawner
         [SerializeField]
         private float minSpawnCooldown = 2;
 
-        [SerializeField]
-        private float maxSpawnCooldown = 3;
-        
+        [SerializeField] private float maxSpawnCooldown = 3;
+
         private float spawnCooldown;
         private float spawnTime;
 
         #endregion
-       
+
         // logic spawn 
-        [FormerlySerializedAs("_prefab")]
-        [Header("Pool")]
-        [SerializeField]
+        [FormerlySerializedAs("_prefab")] [Header("Pool")] [SerializeField]
         private Enemy prefab;
 
-        [SerializeField]
-        private Transform _container;
-        
+        [SerializeField] private Transform _container;
+
         private readonly Queue<Enemy> pool = new();
-        
-        [Header("Points")]
-        [SerializeField]
-        private Transform[] _spawnPositions;
-        
-        [SerializeField]
-        private Transform[] _attackPositions;
-        
+
+        [Header("Points")] [SerializeField] private Transform[] _spawnPositions;
+
+        [SerializeField] private Transform[] _attackPositions;
+
         private int spawnIndex;
         private int attackIndex;
-        
+
         private int destroyedEnemies;
-        
+
         private IGameOver iGameOver;
         private bool isGameOver;
-        
+
         public void Construct(IShootable iShootable, ITarget iTarget, IScore iScore, IGameOver gameOver)
         {
             this.iShootable = iShootable;
@@ -64,16 +57,10 @@ namespace Game.Mechanics.Spawner
             this.iScore = iScore;
             iGameOver = gameOver;
             iGameOver.OnGameOver += SetGameOver;
+            StartSystem();
         }
 
-        private void OnDisable()
-        {
-            iGameOver.OnGameOver -= SetGameOver;
-        }
-        
-        private void SetGameOver(bool isOver) => isGameOver = isOver;
-        
-        private void Awake()
+        private void StartSystem()
         {
             _spawnPositions.Shuffle();
             _attackPositions.Shuffle();
@@ -81,13 +68,21 @@ namespace Game.Mechanics.Spawner
             ResetSpawnCooldown();
         }
         
+        private void OnDisable()
+        {
+            if (iGameOver != null)
+                iGameOver.OnGameOver -= SetGameOver;
+        }
+
+        private void SetGameOver(bool isOver) => isGameOver = isOver;
+        
         public void Respawn(Enemy enemy)
         {
             destroyedEnemies++;
             iScore.ChangeScore(destroyedEnemies);
             StartCoroutine(DespawnInNextFrame(enemy));
         }
-        
+
         private void FixedUpdate()
         {
             if (isGameOver)
@@ -108,10 +103,10 @@ namespace Game.Mechanics.Spawner
                 enemy = Instantiate(prefab, _container);
 
             enemy.SetData(GetConfiguration());
-                
+
             ResetSpawnCooldown();
         }
-        
+
         private EnemyConfiguration GetConfiguration()
         {
             EnemyConfiguration config = new EnemyConfiguration();
@@ -123,13 +118,13 @@ namespace Game.Mechanics.Spawner
             config.GameOver = iGameOver;
             return config;
         }
-        
+
         private void ResetSpawnCooldown()
         {
             spawnCooldown = Random.Range(minSpawnCooldown, maxSpawnCooldown);
             spawnTime = Time.fixedTime;
         }
-        
+
         private IEnumerator DespawnInNextFrame(Enemy enemy)
         {
             yield return null;
@@ -137,7 +132,7 @@ namespace Game.Mechanics.Spawner
             enemy.ResetData();
             pool.Enqueue(enemy);
         }
-        
+
         private Vector3 NextSpawnPosition()
         {
             if (spawnIndex >= _spawnPositions.Length)

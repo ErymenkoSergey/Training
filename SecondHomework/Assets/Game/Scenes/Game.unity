@@ -3153,37 +3153,9 @@ PrefabInstance:
     m_TransformParent: {fileID: 739865810}
     m_Modifications:
     - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
-      propertyPath: config
-      value: 
-      objectReference: {fileID: 11400000, guid: 0b9a4576e5f0a4babb44b3c82e6480d0, type: 2}
-    - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
-      propertyPath: gunner
-      value: 
-      objectReference: {fileID: 11400000, guid: 2b6d79ed1dfe127479b71efcd37a96b5, type: 2}
-    - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
-      propertyPath: ammoData
-      value: 
-      objectReference: {fileID: 11400000, guid: 2b6d79ed1dfe127479b71efcd37a96b5, type: 2}
-    - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
-      propertyPath: uiHandler
-      value: 
-      objectReference: {fileID: 177601769}
-    - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
-      propertyPath: _healthView
-      value: 
-      objectReference: {fileID: 1243470931}
-    - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
       propertyPath: _playerArea
       value: 
       objectReference: {fileID: 1498479408}
-    - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
-      propertyPath: _cameraShaker
-      value: 
-      objectReference: {fileID: 519420034}
-    - target: {fileID: 328849090417711829, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
-      propertyPath: _gameOverView
-      value: 
-      objectReference: {fileID: 1375492023}
     - target: {fileID: 4109394316656653739, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
       propertyPath: m_Name
       value: <Player>

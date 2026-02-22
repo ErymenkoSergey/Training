@@ -75,15 +75,13 @@ namespace Game.Mechanics.BulletsSystem
             {
                 ship.CurrentHealth =
                     Mathf.Clamp(ship.CurrentHealth - damage, ship.DeadValueHealth, ship.CurrentMaxHealth);
-                ship.NotifyAboutHealthChanged(ship.CurrentHealth);
+                ship.SetDamage(ship.CurrentHealth);
 
                 if (ship.CurrentHealth <= ship.DeadValueHealth)
-                {
                     ship.NotifyAboutDead();
-                    return true;
-                }
+                
+                return true;
             }
-
             return false;
         }
     }

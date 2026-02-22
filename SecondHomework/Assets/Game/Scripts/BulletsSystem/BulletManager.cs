@@ -12,7 +12,7 @@ namespace Game.Mechanics.BulletsSystem
     {
         [Header("Data")]
         [SerializeField] private AmmoData ammoData;
-        [SerializeField] private ExplosionVFXEffectData _configView;
+        [SerializeField] private ExplosionVFXData _configView;
 
         [SerializeField] private Transform container;
         [SerializeField] private TransformBounds levelBounds;

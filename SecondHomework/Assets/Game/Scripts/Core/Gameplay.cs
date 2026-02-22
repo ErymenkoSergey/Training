@@ -29,8 +29,6 @@ namespace Game.Core
         [SerializeField] private BulletManager bulletManager;
         private IShootable iShootable => bulletManager;
         
-       
-        
         private void Awake()
         {
             SetRef();
@@ -42,11 +40,31 @@ namespace Game.Core
             input.Construct(iMovable, iShot, this);
             enemyController.Construct(iShootable, iTarget, iScore, this);
         }
+        
+        private void OnEnable()
+        {
+            playerShip.OnHealthChanged += ChangeHealth;
+            playerShip.OnDead += GameOver;
+        }
 
-        public void CallGameOver()
+        private void OnDisable()
+        {
+            playerShip.OnHealthChanged -= ChangeHealth;
+            playerShip.OnDead -= GameOver;
+        }
+
+        private void ChangeHealth(int health)
+        {
+            iViewHealth.ChangeHealth(health, playerShip.CurrentMaxHealth);
+        }
+
+        private void GameOver()
         {
             OnGameOver?.Invoke(true);
             uiHandler.GameOver();
+            //viewHealth.GameOver();
+            // gameOver.CallGameOver();
+            playerShip.gameObject.SetActive(false);
         }
     }
 }
