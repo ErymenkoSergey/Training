@@ -9,13 +9,13 @@ using UnityEngine;
 namespace Game.Mechanics.Ship
 {
     // этот занимается и логикой системы и вьюшной логикой - подразбить 
-    public abstract class BaseShip : MonoBehaviour, IHealth
+    public abstract class BaseShip : MonoBehaviour, IHealth, IMovable
     {
         public event Action<int> OnHealthChanged;
         public event Action OnDead; // избавиться от евентов 
 
         protected IGameOver gameOver;
-        private bool isGameOver;
+        protected bool isGameOver;
         protected IShootable iShootable;
 
         [Header("Data")] [SerializeField] private ShipData config;
@@ -27,22 +27,25 @@ namespace Game.Mechanics.Ship
         public int DeadValueHealth { get; private set; } = 0; // Const?
 
         public int CurrentMaxHealth => config.Health;
+        private Vector3 moveDirection;
 
         [Header("Combat")] public Transform firePoint; //?
         public float FireTime = 0f; //??
 
-        [Header("Movement")] [SerializeField] protected Engine engine;
+        [Header("Movement")]
+        [SerializeField] private Engine engine;
+        [Header("Visual")]
+        [SerializeField] private VisualConfiguration visual;
+        [Header("Sound")]
+        [SerializeField] private SoundConfiguration sound;
 
-        protected Vector3 moveDirection;
-
-        [Header("Visual")] [SerializeField] private VisualConfiguration visual;
-
-        [Header("Sound")] [SerializeField] private SoundConfiguration sound;
-
-        protected void StartShip()
+        protected void StartShip(bool isManualControl, Vector2 wayPoint = new Vector2())
         {
             ResetData();
             visual.VisualStart();
+            engine.isManualMode = isManualControl;
+            engine.SetWaypoint(wayPoint);
+            engine.MoveStep(wayPoint - (Vector2)transform.position);
         }
 
         private void OnDisable()
@@ -55,7 +58,7 @@ namespace Game.Mechanics.Ship
             if (isGameOver)
                 return;
 
-            engine?.FixedUpdate(); // Этот двигатель должен двигать корабли 
+            engine?.FixedUpdate(); // Этот двигатель - должен двигать корабли 
         }
 
         protected virtual void LateUpdate()
@@ -67,6 +70,12 @@ namespace Game.Mechanics.Ship
         }
 
         private void SetGameOver(bool isOver) => isGameOver = isOver;
+
+        public void ChangeDirection(Vector2 direction)
+        {
+            moveDirection = direction;
+            engine.MoveStep(moveDirection);
+        }
 
         public void ResetData()
         {

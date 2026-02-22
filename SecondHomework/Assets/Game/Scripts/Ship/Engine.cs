@@ -6,16 +6,19 @@ namespace Game.Mechanics.Ship
     [Serializable]
     public sealed class Engine
     {
-        [SerializeField]
-        private Rigidbody2D _rigidbody;
+        public bool isManualMode = false;
 
-        [SerializeField]
-        private float _speed;
+        [SerializeField] private Rigidbody2D _rigidbody;
+        [SerializeField] private float _speed;
 
         private Vector2? _direction;
+        private float _stoppingDistance = 0.25f;
+        private Vector2 waypoint;
 
         public void SetSpeed(float speed) => _speed = speed;
 
+        public void SetWaypoint(Vector2 point) => waypoint = point;
+        
         public void MoveStep(Vector2 direction) => _direction = direction;
 
         public void FixedUpdate()
@@ -23,10 +26,27 @@ namespace Game.Mechanics.Ship
             if (!_direction.HasValue)
                 return;
 
-            Vector2 direction = _direction.Value;
-            Vector2 newPosition = _rigidbody.position + direction * (_speed * Time.fixedDeltaTime);
-            _rigidbody.MovePosition(newPosition);
-            _direction = null;
+            if (isManualMode)
+            {
+                Vector2 direction = _direction.Value;
+                Vector2 newPosition = _rigidbody.position + direction * (_speed * Time.fixedDeltaTime);
+                _rigidbody.MovePosition(newPosition);
+                _direction = null;
+            }
+            else
+            {
+                Debug.Log($"FixedUpdate Speed: _direction {_direction} / speed {_speed} / {_stoppingDistance}");
+                //AttackPosition
+                Vector2 distance = waypoint - (Vector2)this._rigidbody.position; // enemy
+                bool isNotReached = distance.sqrMagnitude > _stoppingDistance * _stoppingDistance;
+                _direction = isNotReached ? distance.normalized : Vector3.zero;
+                if (isNotReached)
+                    MoveStep(distance.normalized);
+                else
+                {
+                    Debug.Log($"Корабль на месте, отключаем двигатель: {_rigidbody.position}");
+                }
+            }
         }
     }
 }

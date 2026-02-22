@@ -36,7 +36,7 @@ namespace Game.Core
 
         private void SetRef()
         {
-            playerShip.Construct(iShootable, iViewHealth, this);
+            playerShip.Construct(iShootable, this);
             input.Construct(iMovable, iShot, this);
             enemyController.Construct(iShootable, iTarget, iScore, this);
         }
