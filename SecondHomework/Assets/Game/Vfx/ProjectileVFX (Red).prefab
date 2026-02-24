@@ -9828,7 +9828,6 @@ GameObject:
   - component: {fileID: 4067627537098944}
   - component: {fileID: 198129222264133152}
   - component: {fileID: 199542680518246522}
-  - component: {fileID: 6359210771825056149}
   m_Layer: 0
   m_Name: ProjectileVFX (Red)
   m_TagString: Untagged
@@ -14735,15 +14734,3 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
---- !u!114 &6359210771825056149
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1552236684049608}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9860e915fc568ac459b3391588b126de, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Game::Game.Mechanics.Effects.AutoOff

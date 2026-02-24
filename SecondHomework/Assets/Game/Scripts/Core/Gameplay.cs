@@ -14,8 +14,8 @@ namespace Game.Core
     {
         public event Action<bool> OnGameOver;
         
-        [SerializeField] private TargetShip playerShip;
-        private ITarget iTarget => playerShip;
+        [SerializeField] private PlayerShip playerShip;
+        private Transform target => playerShip.transform;
         private IMovable iMovable => playerShip;
         private IShot iShot => playerShip;
 
@@ -38,7 +38,7 @@ namespace Game.Core
         {
             playerShip.Construct(iShootable, this);
             input.Construct(iMovable, iShot, this);
-            enemyController.Construct(iShootable, iTarget, iScore, this);
+            enemyController.Construct(iShootable, target, iScore, this);
         }
         
         private void OnEnable()
@@ -62,8 +62,6 @@ namespace Game.Core
         {
             OnGameOver?.Invoke(true);
             uiHandler.GameOver();
-            //viewHealth.GameOver();
-            // gameOver.CallGameOver();
             playerShip.gameObject.SetActive(false);
         }
     }

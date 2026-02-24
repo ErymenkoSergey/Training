@@ -5,7 +5,9 @@ namespace Game.Data
     [CreateAssetMenu(fileName = "ExplosionVFXData", menuName = "Game/New ExplosionVFXData", order = 1)]
     public sealed class ExplosionVFXData : ScriptableObject
     {
-        [field: SerializeField] public GameObject ExplosionVFX { get; private set; }
-        [field: SerializeField] public GameObject BigExplosionVFX { get; private set; }
+        [SerializeField] private GameObject enemyExplosionVFX;
+        public GameObject ExplosionVFX => enemyExplosionVFX;
+        [SerializeField] private GameObject playerExplosionVFX;
+        public GameObject PlayerExplosionVFX => playerExplosionVFX;
     }
 }

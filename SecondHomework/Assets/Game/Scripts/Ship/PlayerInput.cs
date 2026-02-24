@@ -32,7 +32,7 @@ namespace Game.Mechanics.Inputs
                 return;
 
             if (Input.GetKeyDown(KeyCode.Space))
-                iShot.Shot();
+                iShot.Fire(transform.up);
 
             float dx = Input.GetAxisRaw("Horizontal");
             float dy = Input.GetAxisRaw("Vertical");

@@ -17,7 +17,7 @@ namespace Game.Mechanics.BulletsSystem
         [SerializeField] private Transform container;
         [SerializeField] private TransformBounds levelBounds;
 
-        private readonly Stack<BulletUnit> bulletPool = new(); // сделать общйий пул для пуль и противников
+        private readonly Stack<BulletUnit> bulletPool = new();
 
         public void Awake()
         {
@@ -82,7 +82,7 @@ namespace Game.Mechanics.BulletsSystem
         
         private void SpawnVFX(Transform point, TeamType team) // вынести в класс с визуальными эффектами
         {
-            GameObject prefab = team == TeamType.Player ? _configView.BigExplosionVFX : _configView.ExplosionVFX;
+            GameObject prefab = team == TeamType.Enemy ? _configView.PlayerExplosionVFX : _configView.ExplosionVFX;
             Instantiate(prefab, point.position, prefab.transform.rotation);
         }
     }

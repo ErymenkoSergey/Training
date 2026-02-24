@@ -14,7 +14,7 @@ namespace Game.Mechanics.Spawner
     {
         // подразбить на несколько классов 
         private IShootable iShootable;
-        private ITarget iTarget;
+        private Transform target;
         private IScore iScore;
 
         #region Logic Cooldown
@@ -50,10 +50,10 @@ namespace Game.Mechanics.Spawner
         private IGameOver iGameOver;
         private bool isGameOver;
 
-        public void Construct(IShootable iShootable, ITarget iTarget, IScore iScore, IGameOver gameOver)
+        public void Construct(IShootable iShootable, Transform target, IScore iScore, IGameOver gameOver)
         {
             this.iShootable = iShootable;
-            this.iTarget = iTarget;
+            this.target = target;
             this.iScore = iScore;
             iGameOver = gameOver;
             iGameOver.OnGameOver += SetGameOver;
@@ -112,7 +112,7 @@ namespace Game.Mechanics.Spawner
             EnemyConfiguration config = new EnemyConfiguration();
             config.SpawnPosition = NextSpawnPosition();
             config.AttackPosition = NextDestination();
-            config.Target = iTarget;
+            config.Target = target;
             config.Respawn = this;
             config.Shootable = iShootable;
             config.GameOver = iGameOver;

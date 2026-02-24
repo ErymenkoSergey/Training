@@ -5,19 +5,11 @@ using UnityEngine;
 namespace Game.Mechanics.Ship
 {
     // нарушение срп тк подразбить тк тут рабоата с ui и камерой  - слишком много ответственности , отключить от базового корабля
-    public sealed class TargetShip : BaseShip, ITarget, IShot
+    public sealed class PlayerShip : BaseShip // Этот должен взаимодействовать с двигателем??? Он только чекат границы.. 
     {
         [SerializeField] private TransformBounds _playerArea;
-
-        public void Construct(IShootable iShootable, IGameOver gameOver)
-        {
-            base.iShootable = iShootable;
-            base.gameOver = gameOver;
-            base.StartShip(true);
-        }
-        
-        public void Shot() => Fire(firePoint.up);
-
+// надо подумать как сделать этот ограничитель на двигатель. видимо делам 2 вида двигателей, для ручного управления и для автоматического по вейпоинтам..
+      
         protected override void LateUpdate()
         {
             if (isGameOver)

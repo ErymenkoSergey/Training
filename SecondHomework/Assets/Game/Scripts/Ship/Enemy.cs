@@ -7,41 +7,38 @@ namespace Game.Mechanics.Ship
     public sealed class Enemy : BaseShip // неправильный дизай, тут должно быть делегирование (лисков)  - не должен вызывать базовае методы?
     {
         [SerializeField] private float _fireCooldown = 1.25f; // fire config 
-        // [SerializeField] private float _stoppingDistance = 0.25f;
-        // private Vector2 destination;
-        private ITarget targetTransform;
+        [SerializeField] private float _stoppingDistance = 0.25f;
+        private Vector2 destination;
+        private Transform targetTransform;
         private IEnemyRespawn respawn;
 
         public void SetData(EnemyConfiguration config)
         {
             transform.position = config.SpawnPosition;
-            // destination = config.AttackPosition;
+            destination = config.AttackPosition;
             targetTransform = config.Target;
             respawn = config.Respawn;
-            iShootable = config.Shootable;
-            gameOver = config.GameOver;
-            base.StartShip(false, config.AttackPosition);
+            base.Construct(config.Shootable, config.GameOver);
+            base.OnDead += OnCharacterDead;
         }
-
-        private void OnEnable() => OnDead += OnCharacterDead;
 
         private void OnDisable() => OnDead -= OnCharacterDead;
 
         protected override void FixedUpdate() // убрать логику движения и стрельбы в движёк!!!
         {
-            // base.FixedUpdate();
-            // Vector2 distance = destination - (Vector2)this.transform.position; // enemy
-            // bool isNotReached = distance.sqrMagnitude > _stoppingDistance * _stoppingDistance;
-            //
-            // moveDirection = isNotReached ? distance.normalized : Vector3.zero;
-
-            // if (isNotReached)
-            // {
-            //     ChangeDirection(distance.normalized);
-            // }
-            // else
+            base.FixedUpdate();
+            Vector2 distance = destination - (Vector2)this.transform.position; // enemy
+            bool isNotReached = distance.sqrMagnitude > _stoppingDistance * _stoppingDistance;
             
-            // получить сигнал на огонь. 
+            moveDirection = isNotReached ? distance.normalized : Vector3.zero;
+
+            if (isNotReached)
+            {
+                ChangeDirection(distance.normalized);
+            }
+            else
+            
+            // получить сигнал на огонь. когда на месте
             {
                 float time = Time.time;
                 if (time - FireTime >= _fireCooldown)
@@ -54,7 +51,7 @@ namespace Game.Mechanics.Ship
 
         private void OnCharacterDead() => respawn.Respawn(this);
 
-        private Vector3 GetTarget()
+        private Vector3 GetTarget() // точка получения цели - куда стреляем
         {
             Vector2 position = firePoint.position;
             Vector2 target = targetTransform.transform.position;

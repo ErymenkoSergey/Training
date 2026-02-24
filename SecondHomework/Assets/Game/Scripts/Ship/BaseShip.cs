@@ -9,14 +9,14 @@ using UnityEngine;
 namespace Game.Mechanics.Ship
 {
     // этот занимается и логикой системы и вьюшной логикой - подразбить 
-    public abstract class BaseShip : MonoBehaviour, IHealth, IMovable
+    public abstract class BaseShip : MonoBehaviour, IHealth, IMovable, IShot // реализую только логику системы - корабля
     {
         public event Action<int> OnHealthChanged;
         public event Action OnDead; // избавиться от евентов 
 
-        protected IGameOver gameOver;
+        private IShootable iShootable;
+        private IGameOver gameOver;
         protected bool isGameOver;
-        protected IShootable iShootable;
 
         [Header("Data")] [SerializeField] private ShipData config;
 
@@ -27,7 +27,7 @@ namespace Game.Mechanics.Ship
         public int DeadValueHealth { get; private set; } = 0; // Const?
 
         public int CurrentMaxHealth => config.Health;
-        private Vector3 moveDirection;
+        protected Vector3 moveDirection;
 
         [Header("Combat")] public Transform firePoint; //?
         public float FireTime = 0f; //??
@@ -39,13 +39,17 @@ namespace Game.Mechanics.Ship
         [Header("Sound")]
         [SerializeField] private SoundConfiguration sound;
 
-        protected void StartShip(bool isManualControl, Vector2 wayPoint = new Vector2())
+        public void Construct(IShootable iShootable, IGameOver gameOver)
+        {
+            this.iShootable = iShootable;
+            this.gameOver = gameOver;
+            StartShip();
+        }
+        
+        protected void StartShip() //Vector2 wayPoint = new Vector2()
         {
             ResetData();
             visual.VisualStart();
-            engine.isManualMode = isManualControl;
-            engine.SetWaypoint(wayPoint);
-            engine.MoveStep(wayPoint - (Vector2)transform.position);
         }
 
         private void OnDisable()
@@ -83,7 +87,7 @@ namespace Game.Mechanics.Ship
             gameOver.OnGameOver += SetGameOver;
         }
 
-        protected void Fire(Vector3 direction)
+        public void Fire(Vector3 direction)
         {
             float time = Time.time;
             if (time - FireTime < config.FireCooldown || CurrentHealth <= DeadValueHealth || isGameOver)

@@ -7,7 +7,7 @@ namespace Game.Mechanics.Config
    {
       public Vector3 SpawnPosition;
       public Vector3 AttackPosition;
-      public ITarget Target;
+      public Transform Target;
       public IEnemyRespawn Respawn;
       public IShootable Shootable;
       public IGameOver GameOver;
