@@ -1,11 +1,10 @@
 using Game.Interfaces;
 using Game.Mechanics.Config;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.Mechanics.Ship
 {
-    public sealed class Enemy : BaseShip // неправильный дизай, тут должно быть делегирование (лисков)  - не должен вызывать базовае методы?
+    public sealed class Enemy : BaseShip 
     {
         private IEnemyRespawn respawn;
         private Vector2 destination;
@@ -17,7 +16,6 @@ namespace Game.Mechanics.Ship
         {
             transform.position = config.SpawnPosition;
             destination = config.AttackPosition;
-            // targetTransform = config.Target;
             respawn = config.Respawn;
             cooldown.SetData(FirePoint, config.Target, fireTime, this);
             base.Construct(config.Shootable, config.GameOver);
@@ -26,7 +24,7 @@ namespace Game.Mechanics.Ship
 
         private void OnDisable() => OnDead -= OnCharacterDead;
 
-        protected override void FixedUpdate() // убрать логику движения и стрельбы в движёк!!!
+        protected override void FixedUpdate()
         {
             if (isGameOver)
                 return;

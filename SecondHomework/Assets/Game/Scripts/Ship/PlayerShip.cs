@@ -6,6 +6,7 @@ namespace Game.Mechanics.Ship
     public sealed class PlayerShip : BaseShip 
     {
         [SerializeField] private TransformBounds _playerArea;
+        
         protected override void LateUpdate()
         {
             if (isGameOver)

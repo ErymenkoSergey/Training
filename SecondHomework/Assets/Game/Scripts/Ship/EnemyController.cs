@@ -12,18 +12,18 @@ namespace Game.Mechanics.Spawner
 {
     public sealed class EnemyController : MonoBehaviour, IEnemyRespawn
     {
-        // подразбить на несколько классов 
         private IShootable iShootable;
         private Transform target;
         private IScore iScore;
 
         #region Logic Cooldown
 
-        [Header("Spawn Settings")] // new so? 
+        [Header("Spawn Settings")]
         [SerializeField]
         private float minSpawnCooldown = 2;
 
-        [SerializeField] private float maxSpawnCooldown = 3;
+        [SerializeField] 
+        private float maxSpawnCooldown = 3;
 
         private float spawnCooldown;
         private float spawnTime;
@@ -31,7 +31,7 @@ namespace Game.Mechanics.Spawner
         #endregion
 
         // logic spawn 
-        [FormerlySerializedAs("_prefab")] [Header("Pool")] [SerializeField]
+        [SerializeField]
         private Enemy prefab;
 
         [SerializeField] private Transform _container;

@@ -80,7 +80,7 @@ namespace Game.Mechanics.BulletsSystem
             return string.Empty;
         }
         
-        private void SpawnVFX(Transform point, TeamType team) // вынести в класс с визуальными эффектами
+        private void SpawnVFX(Transform point, TeamType team) // вынести в класс или so с визуальными эффектами?
         {
             GameObject prefab = team == TeamType.Enemy ? _configView.PlayerExplosionVFX : _configView.ExplosionVFX;
             Instantiate(prefab, point.position, prefab.transform.rotation);

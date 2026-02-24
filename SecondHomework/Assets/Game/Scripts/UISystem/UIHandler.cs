@@ -10,7 +10,7 @@ namespace Game.Mechanics.Ship
         [SerializeField] private CameraShaker _cameraShaker;
         [SerializeField] private ScoreView scoreView;
         [SerializeField] private HealthView _healthView;
-        [SerializeField] private GameOverView _gameOverView; // game processing
+        [SerializeField] private GameOverView _gameOverView;
 
         public void ChangeHealth(int health, int maxHealth)
         {

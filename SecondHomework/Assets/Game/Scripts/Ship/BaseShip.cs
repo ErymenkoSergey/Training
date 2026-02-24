@@ -5,11 +5,10 @@ using Game.Interfaces;
 using Game.Mechanics.BulletsSystem;
 using Game.Mechanics.Configuration;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.Mechanics.Ship
 {
-    public abstract class BaseShip : MonoBehaviour, IHealth, IMovable, IShot // реализую только логику системы - корабля
+    public abstract class BaseShip : MonoBehaviour, IHealth, IMovable, IShot
     {
         public event Action<int> OnHealthChanged;
         public event Action OnDead;
@@ -29,17 +28,13 @@ namespace Game.Mechanics.Ship
         public int CurrentMaxHealth => config.Health;
         private Vector3 moveDirection;
 
-        [Header("Combat")] 
-        [SerializeField] private Transform firePoint; //?
+        [Header("Combat")] [SerializeField] private Transform firePoint; //?
         protected Transform FirePoint => firePoint;
         protected float fireTime = 0f;
-        
-        [Header("Movement")]
-        [SerializeField] private Engine engine;
-        [Header("Visual")]
-        [SerializeField] private VisualConfiguration visual;
-        [Header("Sound")]
-        [SerializeField] private SoundConfiguration sound;
+
+        [Header("Movement")] [SerializeField] private Engine engine;
+        [Header("Visual")] [SerializeField] private VisualConfiguration visual;
+        [Header("Sound")] [SerializeField] private SoundConfiguration sound;
 
         public void Construct(IShootable iShootable, IGameOver gameOver)
         {
@@ -47,8 +42,8 @@ namespace Game.Mechanics.Ship
             this.gameOver = gameOver;
             StartShip();
         }
-        
-        private void StartShip() //Vector2 wayPoint = new Vector2()
+
+        private void StartShip()
         {
             ResetData();
             visual.VisualStart();
@@ -64,7 +59,7 @@ namespace Game.Mechanics.Ship
             if (CurrentHealth <= DeadValueHealth || isGameOver)
                 return;
 
-            engine.FixedUpdate(); // Этот двигатель - должен двигать корабли 
+            engine.FixedUpdate();
         }
 
         protected virtual void LateUpdate()
@@ -75,18 +70,18 @@ namespace Game.Mechanics.Ship
             visual.AnimateMovement(Time.deltaTime, moveDirection);
         }
 
+        public void ResetData()
+        {
+            CurrentHealth = config.Health;
+            gameOver.OnGameOver += SetGameOver;
+        }
+
         private void SetGameOver(bool isOver) => isGameOver = isOver;
 
         public void ChangeDirection(Vector2 direction)
         {
             moveDirection = direction;
             engine.MoveStep(moveDirection);
-        }
-
-        public void ResetData()
-        {
-            CurrentHealth = config.Health;
-            gameOver.OnGameOver += SetGameOver;
         }
 
         public void Fire(Vector3 direction)
