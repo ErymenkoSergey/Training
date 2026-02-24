@@ -52,10 +52,9 @@ MonoBehaviour:
   config: {fileID: 11400000, guid: 0b9a4576e5f0a4babb44b3c82e6480d0, type: 2}
   <CurrentHealth>k__BackingField: 0
   firePoint: {fileID: 8503432944885784460}
-  FireTime: 0
   engine:
-    _rigidbody: {fileID: 4575139502811685103}
-    _speed: 10
+    rigidbody: {fileID: 4575139502811685103}
+    speed: 7
   visual:
     visualConfig: {fileID: 11400000, guid: 9298f762411724a389beae656b1dfcaa, type: 2}
     _renderer: {fileID: 795037679980988590}

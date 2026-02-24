@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem.Data
 {
-    [CreateAssetMenu(menuName = "Game/Gunner", order = 2)]
+    [CreateAssetMenu(menuName = "Game/AmmoData", order = 2)]
     public sealed class AmmoData : ScriptableObject
     {
         [SerializeField] private BulletUnit _prefab;

@@ -8,8 +8,6 @@ using UnityEngine;
 
 namespace Game.Core
 {
-    // при паузе - можно в пуле врагов - сменить флаг на ытоп игра - перебором
-    // нужен момобех на сцене для ссылок на игрока - систему ui / и спавнер врагов, + в нем и будет ивент на стоп игры...
     public sealed class Gameplay : MonoBehaviour, IGameOver
     {
         public event Action<bool> OnGameOver;

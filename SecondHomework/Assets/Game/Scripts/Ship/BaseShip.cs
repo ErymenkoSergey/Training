@@ -5,14 +5,14 @@ using Game.Interfaces;
 using Game.Mechanics.BulletsSystem;
 using Game.Mechanics.Configuration;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Mechanics.Ship
 {
-    // этот занимается и логикой системы и вьюшной логикой - подразбить 
     public abstract class BaseShip : MonoBehaviour, IHealth, IMovable, IShot // реализую только логику системы - корабля
     {
         public event Action<int> OnHealthChanged;
-        public event Action OnDead; // избавиться от евентов 
+        public event Action OnDead;
 
         private IShootable iShootable;
         private IGameOver gameOver;
@@ -24,14 +24,16 @@ namespace Game.Mechanics.Ship
         [field: SerializeField]
         public int CurrentHealth { get; set; }
 
-        public int DeadValueHealth { get; private set; } = 0; // Const?
+        public int DeadValueHealth { get; private set; } = 0;
 
         public int CurrentMaxHealth => config.Health;
-        protected Vector3 moveDirection;
+        private Vector3 moveDirection;
 
-        [Header("Combat")] public Transform firePoint; //?
-        public float FireTime = 0f; //??
-
+        [Header("Combat")] 
+        [SerializeField] private Transform firePoint; //?
+        protected Transform FirePoint => firePoint;
+        protected float fireTime = 0f;
+        
         [Header("Movement")]
         [SerializeField] private Engine engine;
         [Header("Visual")]
@@ -46,7 +48,7 @@ namespace Game.Mechanics.Ship
             StartShip();
         }
         
-        protected void StartShip() //Vector2 wayPoint = new Vector2()
+        private void StartShip() //Vector2 wayPoint = new Vector2()
         {
             ResetData();
             visual.VisualStart();
@@ -59,10 +61,10 @@ namespace Game.Mechanics.Ship
 
         protected virtual void FixedUpdate()
         {
-            if (isGameOver)
+            if (CurrentHealth <= DeadValueHealth || isGameOver)
                 return;
 
-            engine?.FixedUpdate(); // Этот двигатель - должен двигать корабли 
+            engine.FixedUpdate(); // Этот двигатель - должен двигать корабли 
         }
 
         protected virtual void LateUpdate()
@@ -90,12 +92,12 @@ namespace Game.Mechanics.Ship
         public void Fire(Vector3 direction)
         {
             float time = Time.time;
-            if (time - FireTime < config.FireCooldown || CurrentHealth <= DeadValueHealth || isGameOver)
+            if (time - fireTime < config.FireCooldown || CurrentHealth <= DeadValueHealth || isGameOver)
                 return;
 
             ShowEffectFire();
             iShootable.Shoot(GetBulletConfiguration(config.Team, direction));
-            FireTime = time;
+            fireTime = time;
         }
 
         private void ShowEffectFire()
