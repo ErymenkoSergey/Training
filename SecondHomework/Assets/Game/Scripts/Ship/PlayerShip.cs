@@ -7,7 +7,7 @@ namespace Game.Mechanics.Ship
     {
         [SerializeField] private TransformBounds _playerArea;
         
-        protected override void LateUpdate()
+        private void LateUpdate()
         {
             if (isGameOver)
                 return;

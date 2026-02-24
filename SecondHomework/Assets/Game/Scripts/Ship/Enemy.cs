@@ -24,12 +24,11 @@ namespace Game.Mechanics.Ship
 
         private void OnDisable() => OnDead -= OnCharacterDead;
 
-        protected override void FixedUpdate()
+        private void FixedUpdate()
         {
             if (isGameOver)
                 return;
 
-            base.FixedUpdate();
             var info = waypointMoveble.MoveShipToWaypoint(destination);
 
             if (info.Item2)

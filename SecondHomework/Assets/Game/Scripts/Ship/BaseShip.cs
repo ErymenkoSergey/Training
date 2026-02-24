@@ -28,7 +28,7 @@ namespace Game.Mechanics.Ship
         public int CurrentMaxHealth => config.Health;
         private Vector3 moveDirection;
 
-        [Header("Combat")] [SerializeField] private Transform firePoint; //?
+        [Header("Combat")] [SerializeField] private Transform firePoint;
         protected Transform FirePoint => firePoint;
         protected float fireTime = 0f;
 
@@ -54,19 +54,10 @@ namespace Game.Mechanics.Ship
             gameOver.OnGameOver -= SetGameOver;
         }
 
-        protected virtual void FixedUpdate()
+        private void LateUpdate()
         {
             if (CurrentHealth <= DeadValueHealth || isGameOver)
                 return;
-
-            engine.FixedUpdate();
-        }
-
-        protected virtual void LateUpdate()
-        {
-            if (CurrentHealth <= DeadValueHealth || isGameOver)
-                return;
-
             visual.AnimateMovement(Time.deltaTime, moveDirection);
         }
 
@@ -80,8 +71,11 @@ namespace Game.Mechanics.Ship
 
         public void ChangeDirection(Vector2 direction)
         {
+            if (CurrentHealth <= DeadValueHealth || isGameOver)
+                return;
             moveDirection = direction;
             engine.MoveStep(moveDirection);
+            engine.FixedUpdate();
         }
 
         public void Fire(Vector3 direction)
