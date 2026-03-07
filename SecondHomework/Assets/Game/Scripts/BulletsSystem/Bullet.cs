@@ -5,29 +5,26 @@ using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem
 {
-    public sealed class BulletUnit : MonoBehaviour
+    public sealed class Bullet : MonoBehaviour
     {
-        private Vector2 Direction;
-        private int Damage;
-        private float Speed;
+        private Vector2 direction;
+        private int damage;
+        private float speed;
         private TeamType team = TeamType.None;
-        private TransformBounds levelBounds;
-        private IPoolable poolable;
-
-        [SerializeField] private GameObject blueVFX;
-        [SerializeField] private GameObject redVFX;
-
+        private TransformBounds levelBounds; // нужна фабрика для прокидывания зависимости!!!
+        private IPool pool; // Переделать на подписку) 
+        
         public void SetData(BulletConfiguration config)
         {
-            Direction = config.Direction;
-            Speed = config.Speed;
-            Damage = config.Damage;
+            direction = config.Direction;
+            speed = config.Speed;
+            damage = config.Damage;
             team = config.Team;
             transform.position = config.Position;
             transform.rotation = Quaternion.LookRotation(config.Direction, Vector3.forward);
-            gameObject.layer = LayerMask.NameToLayer(config.BulletNameMask);
+            gameObject.layer = LayerMask.NameToLayer(config.BulletNameMask); // Вынести в конфиг!! 
             levelBounds = config.Bounds;
-            poolable = config.Pool;
+            pool = config.Pool;
             ShowVFX(team);
         }
         
@@ -51,13 +48,13 @@ namespace Game.Mechanics.BulletsSystem
 
         private void FixedUpdate()
         {
-            Vector3 moveStep = Direction * Speed * Time.fixedDeltaTime;
+            Vector3 moveStep = direction * speed * Time.fixedDeltaTime;
             transform.position += moveStep;
 
             if (!levelBounds.InBounds(transform.position))
             {
                 gameObject.SetActive(false);
-                poolable.ReturnToPool(this);
+                pool.Return(this);
             }
         }
         
@@ -66,20 +63,15 @@ namespace Game.Mechanics.BulletsSystem
             if (!other.TryGetComponent(out IHealth ship))
                 return;
 
-            poolable.ReturnToPool(this, TakeDamage(Damage, ship));
+            bool wasDamage = TakeDamage(ship);
+            pool.Return(this, wasDamage);
         }
 
-        private bool TakeDamage(int damage, IHealth ship)
+        private bool TakeDamage(IHealth ship)
         {
             if (damage > 0)
             {
-                ship.CurrentHealth =
-                    Mathf.Clamp(ship.CurrentHealth - damage, ship.DeadValueHealth, ship.CurrentMaxHealth);
-                ship.SetDamage(ship.CurrentHealth);
-
-                if (ship.CurrentHealth <= ship.DeadValueHealth)
-                    ship.NotifyAboutDead();
-                
+               ship.SetDamage(damage);
                 return true;
             }
             return false;

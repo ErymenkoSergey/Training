@@ -9,7 +9,7 @@ namespace Game.Mechanics.Config
       public Vector3 AttackPosition;
       public Transform Target;
       public IEnemyRespawn Respawn;
-      public IShootable Shootable;
-      public IGameOver GameOver;
+      public IBulletSpawner BulletSpawner;
+      public IGameLoop GameLoop;
    }
 }

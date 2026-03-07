@@ -5,10 +5,14 @@ using Game.Mechanics.Inputs;
 using Game.Mechanics.Ship;
 using Game.Mechanics.Spawner;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Core
 {
-    public sealed class Gameplay : MonoBehaviour, IGameOver
+    public sealed class Gameplay : MonoBehaviour, IGameLoop // Нарушает срп 
+    
+    // вынести отдельный класс гейм луп
+    // 
     {
         public event Action<bool> OnGameOver;
         
@@ -24,19 +28,19 @@ namespace Game.Core
 
         [SerializeField] private EnemyController enemyController;
 
-        [SerializeField] private BulletManager bulletManager;
-        private IShootable iShootable => bulletManager;
+        [FormerlySerializedAs("manager")] [SerializeField] private BulletManager bulletManager;
+        private IBulletSpawner IBulletSpawner => bulletManager;
         
         private void Awake()
         {
             SetRef();
         }
 
-        private void SetRef()
+        private void SetRef() // отдельный компонент гейм инсталлер с этой логикой.  
         {
-            playerShip.Construct(iShootable, this);
+            playerShip.Construct(IBulletSpawner, this);
             input.Construct(iMovable, iShot, this);
-            enemyController.Construct(iShootable, target, iScore, this);
+            enemyController.Construct(IBulletSpawner, target, iScore, this);
         }
         
         private void OnEnable()

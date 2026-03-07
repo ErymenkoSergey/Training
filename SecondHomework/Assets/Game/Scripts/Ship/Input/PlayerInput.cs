@@ -7,24 +7,24 @@ namespace Game.Mechanics.Inputs
     {
         private IMovable iMovable;
         private IShot iShot;
-        private IGameOver iGameOver;
+        private IGameLoop iGameLoop;
         
         private bool isGameOver;
         
-        public void Construct(IMovable movable, IShot shot, IGameOver gameOver)
+        public void Construct(IMovable movable, IShot shot, IGameLoop gameLoop)
         {
             iMovable = movable;
             iShot = shot;
-            iGameOver = gameOver;
-            iGameOver.OnGameOver += SetGameOver;
+            iGameLoop = gameLoop;
+            iGameLoop.OnGameOver += SetGameLoop;
         }
 
         private void OnDisable()
         {
-            iGameOver.OnGameOver -= SetGameOver;
+            iGameLoop.OnGameOver -= SetGameLoop;
         }
 
-        private void SetGameOver(bool isOver) => isGameOver = isOver;
+        private void SetGameLoop(bool isOver) => isGameOver = isOver;
 
         public void Update()
         {

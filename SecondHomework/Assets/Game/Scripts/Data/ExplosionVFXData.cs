@@ -1,3 +1,4 @@
+using Game.Enums;
 using UnityEngine;
 
 namespace Game.Data
@@ -6,8 +7,16 @@ namespace Game.Data
     public sealed class ExplosionVFXData : ScriptableObject
     {
         [SerializeField] private GameObject enemyExplosionVFX;
-        public GameObject ExplosionVFX => enemyExplosionVFX;
         [SerializeField] private GameObject playerExplosionVFX;
-        public GameObject PlayerExplosionVFX => playerExplosionVFX;
+        [SerializeField] private GameObject blueVFX;
+        public GameObject BlueVFX => blueVFX;
+        [SerializeField] private GameObject redVFX;
+        public GameObject RedVFX => redVFX;
+        
+        public void SpawnVFX(Transform point, TeamType team) // вынести в класс или so с визуальными эффектами?
+        {
+            GameObject prefab = team == TeamType.Enemy ? playerExplosionVFX : enemyExplosionVFX;
+            Instantiate(prefab, point.position, prefab.transform.rotation);
+        }
     }
 }

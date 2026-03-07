@@ -13,9 +13,9 @@ namespace Game.Mechanics.Ship
         public event Action<int> OnHealthChanged;
         public event Action OnDead;
 
-        private IShootable iShootable;
-        private IGameOver gameOver;
-        protected bool isGameOver;
+        private IBulletSpawner iBulletSpawner;
+        // private IGameOver gameOver; // нарушение срп - зависит от геймовера
+        // protected bool isGameOver;
 
         [Header("Data")] [SerializeField] private ShipData config;
 
@@ -36,10 +36,10 @@ namespace Game.Mechanics.Ship
         [Header("Visual")] [SerializeField] private VisualConfiguration visual;
         [Header("Sound")] [SerializeField] private SoundConfiguration sound;
 
-        public void Construct(IShootable iShootable, IGameOver gameOver)
+        public void Construct(IBulletSpawner iBulletSpawner, IGameLoop gameLoop)
         {
-            this.iShootable = iShootable;
-            this.gameOver = gameOver;
+            this.iBulletSpawner = iBulletSpawner;
+            this.gameOver = gameLoop;
             StartShip();
         }
 
@@ -58,7 +58,7 @@ namespace Game.Mechanics.Ship
         {
             if (CurrentHealth <= DeadValueHealth || isGameOver)
                 return;
-            visual.AnimateMovement(Time.deltaTime, moveDirection);
+            visual.AnimateMovement(Time.deltaTime, moveDirection); // изуал - в отдельную часть корабля!!
         }
 
         public void ResetData()
@@ -85,7 +85,7 @@ namespace Game.Mechanics.Ship
                 return;
 
             ShowEffectFire();
-            iShootable.Shoot(GetBulletConfiguration(config.Team, direction));
+            iBulletSpawner.Spawn(GetBulletConfiguration(config.Team, direction));
             fireTime = time;
         }
 
@@ -95,14 +95,19 @@ namespace Game.Mechanics.Ship
             visual.ShowFireVFX();
         }
 
-        public void SetDamage(int health)
+        public void SetDamage(int damage)
         {
-            if (isGameOver)
-                return;
+            // if (isGameOver)
+            //     return;
 
+            CurrentHealth = Mathf.Clamp(CurrentHealth - damage, DeadValueHealth, CurrentMaxHealth);
+            
+            if (CurrentHealth <= DeadValueHealth)
+                NotifyAboutDead();
+            
             visual.AnimateDamage();
             sound.PlayDamageSFX();
-            OnHealthChanged?.Invoke(health);
+            OnHealthChanged?.Invoke(CurrentHealth);
         }
 
         public void NotifyAboutDead() => OnDead?.Invoke();

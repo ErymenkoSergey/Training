@@ -12,7 +12,7 @@ namespace Game.Mechanics.Spawner
 {
     public sealed class EnemyController : MonoBehaviour, IEnemyRespawn
     {
-        private IShootable iShootable;
+        private IBulletSpawner iBulletSpawner;
         private Transform target;
         private IScore iScore;
 
@@ -36,7 +36,7 @@ namespace Game.Mechanics.Spawner
 
         [SerializeField] private Transform _container;
 
-        private readonly Queue<Enemy> pool = new();
+        private readonly Queue<Enemy> pool = new(); // логика идет в общий класс
 
         [Header("Points")] [SerializeField] private Transform[] _spawnPositions;
 
@@ -47,16 +47,16 @@ namespace Game.Mechanics.Spawner
 
         private int destroyedEnemies;
 
-        private IGameOver iGameOver;
+        private IGameLoop iGameLoop;
         private bool isGameOver;
 
-        public void Construct(IShootable iShootable, Transform target, IScore iScore, IGameOver gameOver)
+        public void Construct(IBulletSpawner iBulletSpawner, Transform target, IScore iScore, IGameLoop gameLoop)
         {
-            this.iShootable = iShootable;
+            this.iBulletSpawner = iBulletSpawner;
             this.target = target;
             this.iScore = iScore;
-            iGameOver = gameOver;
-            iGameOver.OnGameOver += SetGameOver;
+            iGameLoop = gameLoop;
+            iGameLoop.OnGameOver += SetGameLoop;
             StartSystem();
         }
 
@@ -70,11 +70,11 @@ namespace Game.Mechanics.Spawner
         
         private void OnDisable()
         {
-            if (iGameOver != null)
-                iGameOver.OnGameOver -= SetGameOver;
+            if (iGameLoop != null)
+                iGameLoop.OnGameOver -= SetGameLoop;
         }
 
-        private void SetGameOver(bool isOver) => isGameOver = isOver;
+        private void SetGameLoop(bool isOver) => isGameOver = isOver;
         
         public void Respawn(Enemy enemy)
         {
@@ -114,8 +114,8 @@ namespace Game.Mechanics.Spawner
             config.AttackPosition = NextDestination();
             config.Target = target;
             config.Respawn = this;
-            config.Shootable = iShootable;
-            config.GameOver = iGameOver;
+            config.BulletSpawner = iBulletSpawner;
+            config.GameLoop = iGameLoop;
             return config;
         }
 

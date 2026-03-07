@@ -11,7 +11,7 @@ namespace Game.Mechanics.Ship
         [SerializeField] private ScoreView scoreView;
         [SerializeField] private HealthView _healthView;
         [SerializeField] private GameOverView _gameOverView;
-
+// Этот скрипт Сам должен подписываться на модель. (должен быть моделья между отрисовки и UI)
         public void ChangeHealth(int health, int maxHealth)
         {
             _healthView.SetHealth(health, maxHealth);

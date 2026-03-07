@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
-    public sealed class Enemy : BaseShip 
+    public sealed class Enemy : BaseShip // тут должно быть не наследование а дилигирование
     {
         private IEnemyRespawn respawn;
         private Vector2 destination;
@@ -18,7 +18,7 @@ namespace Game.Mechanics.Ship
             destination = config.AttackPosition;
             respawn = config.Respawn;
             cooldown.SetData(FirePoint, config.Target, fireTime, this);
-            base.Construct(config.Shootable, config.GameOver);
+            base.Construct(config.BulletSpawner, config.GameLoop);
             base.OnDead += OnCharacterDead;
         }
 

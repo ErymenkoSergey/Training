@@ -2,8 +2,9 @@ using System;
 
 namespace Game.Interfaces
 {
-    public interface IGameOver
+    public interface IGameLoop
     {
         event Action<bool> OnGameOver;
+        bool IsFinished { get; }// = OnGameOver
     }
 }
