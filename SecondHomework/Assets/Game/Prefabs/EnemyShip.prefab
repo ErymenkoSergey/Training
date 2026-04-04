@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5568771391735819375}
   - component: {fileID: 659620479434099170}
   - component: {fileID: 102605417607457000}
+  - component: {fileID: 5462646203519853770}
   - component: {fileID: 4560017961611896118}
   m_Layer: 11
   m_Name: EnemyShip
@@ -112,26 +113,40 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e09a324f54d94d6e84681731f36566c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  config: {fileID: 11400000, guid: 342eb63e507d644daae6ffc27bd8fc71, type: 2}
-  <CurrentHealth>k__BackingField: 0
-  firePoint: {fileID: 3195880656587174614}
-  engine:
-    rigidbody: {fileID: 659620479434099170}
-    speed: 2
-  visual:
-    visualConfig: {fileID: 11400000, guid: f6ecf0b3d1d004b3893cc42c64995303, type: 2}
-    _renderer: {fileID: 1333951631294404335}
-    _viewTransform: {fileID: 2570692159425164225}
-    _fireVFX: {fileID: 1792961037914348205}
-  sound:
-    _audioSource: {fileID: 4560017961611896118}
-    _fireSFX: {fileID: 8300000, guid: 4b0fadb8fc7bdaf489e9f7879d3c71bb, type: 3}
-    _damageSFX: {fileID: 8300000, guid: 9d2f129290cb1a6489928f3dde8dbb39, type: 3}
+  ship: {fileID: 5462646203519853770}
   waypointMoveble:
     rigidbody: {fileID: 659620479434099170}
     _stoppingDistance: 0.25
   cooldown:
     _fireCooldown: 1.25
+--- !u!114 &5462646203519853770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 559606060570185700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 558b312fd53c491ab69f3e55255aae3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Game.Mechanics.Ship.BaseShip
+  config: {fileID: 11400000, guid: 342eb63e507d644daae6ffc27bd8fc71, type: 2}
+  currentHealth: 2
+  firePoint: {fileID: 3195880656587174614}
+  fireTime: 2
+  _playerArea: {fileID: 0}
+  engine:
+    rigidbody: {fileID: 659620479434099170}
+    speed: 3
+  visual:
+    visualConfig: {fileID: 11400000, guid: f6ecf0b3d1d004b3893cc42c64995303, type: 2}
+    _renderer: {fileID: 1333951631294404335}
+    _viewTransform: {fileID: 2570692159425164225}
+    _fireVFX: {fileID: 5248985236346848164}
+  sound:
+    audioSource: {fileID: 4560017961611896118}
+    soundData: {fileID: 11400000, guid: 0769d70b8417ead4dac74079955c7bc7, type: 2}
 --- !u!82 &4560017961611896118
 AudioSource:
   m_ObjectHideFlags: 0
@@ -364,6 +379,11 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 1362117268098458908, guid: fa966f90370b8444eb8c3d68ddfaa574, type: 3}
   m_PrefabInstance: {fileID: 28168940994966515}
   m_PrefabAsset: {fileID: 0}
+--- !u!198 &5248985236346848164 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 5241125379997790295, guid: fa966f90370b8444eb8c3d68ddfaa574, type: 3}
+  m_PrefabInstance: {fileID: 28168940994966515}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1900076867361227821
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -429,11 +449,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: afb15b2c47760da419d51e3b253b9a97, type: 3}
---- !u!198 &1792961037914348205 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 198032251219402368, guid: afb15b2c47760da419d51e3b253b9a97, type: 3}
-  m_PrefabInstance: {fileID: 1900076867361227821}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1896272799918682171 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4089945042170902, guid: afb15b2c47760da419d51e3b253b9a97, type: 3}

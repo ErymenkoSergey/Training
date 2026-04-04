@@ -1,3 +1,4 @@
+using Game.Data.VFX;
 using Game.Enums;
 using Game.Interfaces;
 using Modules.Utils;
@@ -7,44 +8,57 @@ namespace Game.Mechanics.BulletsSystem
 {
     public sealed class Bullet : MonoBehaviour
     {
-        private Vector2 direction;
-        private int damage;
-        private float speed;
-        private TeamType team = TeamType.None;
-        private TransformBounds levelBounds; // нужна фабрика для прокидывания зависимости!!!
-        private IPool pool; // Переделать на подписку) 
-        
-        public void SetData(BulletConfiguration config)
+        [SerializeField] private Vector2 direction;
+        [SerializeField]private int damage;
+        [SerializeField]private float speed;
+        [SerializeField] private TeamType team = TeamType.None;
+        [SerializeField] private TransformBounds levelBounds;
+        [SerializeField] private IPool<Bullet> pool;
+        [SerializeField] private BulletConfiguration config;
+
+        private IFlickerVFX flickerVFX;
+
+        public void Initialize(BulletConfiguration config, IFlickerVFX flickerVFX)
         {
-            direction = config.Direction;
-            speed = config.Speed;
-            damage = config.Damage;
-            team = config.Team;
-            transform.position = config.Position;
-            transform.rotation = Quaternion.LookRotation(config.Direction, Vector3.forward);
-            gameObject.layer = LayerMask.NameToLayer(config.BulletNameMask); // Вынести в конфиг!! 
-            levelBounds = config.Bounds;
-            pool = config.Pool;
-            ShowVFX(team);
+            Debug.Log("Bullet initialized");
+            this.flickerVFX = flickerVFX;
+            this.config = config;
         }
-        
-        public TeamType GetTeam() => team;
 
-        private void ShowVFX(TeamType team)
+        public void SetBounds(TransformBounds levelBounds)
+        {Debug.Log("Bullet SetBounds");
+            this.levelBounds = levelBounds;
+        }
+
+        // индивидуальные настройки для пуль для игрока или для енеми
+        private void OnEnable()
         {
-            bool isPlayer = team == TeamType.Player ? true : false;
-
-            if (isPlayer)
-            {
-                blueVFX.SetActive(true);
-                redVFX.SetActive(false);
-            }
-            else
-            {
-                blueVFX.SetActive(false);
-                redVFX.SetActive(true);
+            if (config != null)
+            {Debug.Log("Bullet OnEnable");
+                speed = config.Speed;
+                damage = config.Damage;
+                team = config.Team;
+                gameObject.layer = LayerMask.NameToLayer(config.BulletNameMask); // Вынести в конфиг!! 
             }
         }
+
+        /// <summary>
+        /// конфигурируется конкретным кораблём прям перед выстрелом.
+        /// </summary>
+        /// <param name="direction"></param>
+        /// <param name="position"></param>
+        /// <param name="pool"></param>
+        public void SetData(BulletNavigation navigation, IPool<Bullet> pool)
+        {Debug.Log("Bullet SetData");
+            direction = navigation.Direction;
+            transform.position = navigation.Position;
+            transform.rotation = Quaternion.LookRotation(direction, Vector3.forward); // это тоже передавать отдельно.
+            this.pool = pool;
+            // Instantiate(flickerVFX.GetFlickerVFX(team), transform.position, transform.rotation).transform
+            //     .SetParent(transform);
+        }
+
+        // public TeamType GetTeam() => team;
 
         private void FixedUpdate()
         {
@@ -53,28 +67,23 @@ namespace Game.Mechanics.BulletsSystem
 
             if (!levelBounds.InBounds(transform.position))
             {
-                gameObject.SetActive(false);
+                //gameObject.SetActive(false);
                 pool.Return(this);
             }
         }
-        
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (!other.TryGetComponent(out IHealth ship))
                 return;
-
-            bool wasDamage = TakeDamage(ship);
-            pool.Return(this, wasDamage);
+            TakeDamage(ship);
+            pool.Return(this);
         }
 
-        private bool TakeDamage(IHealth ship)
+        private void TakeDamage(IHealth ship)
         {
             if (damage > 0)
-            {
-               ship.SetDamage(damage);
-                return true;
-            }
-            return false;
+                ship.SetDamage(damage);
         }
     }
 }

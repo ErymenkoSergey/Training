@@ -1,45 +1,44 @@
 using System;
 using Game.Data;
-using Game.Enums;
 using Game.Interfaces;
 using Game.Mechanics.BulletsSystem;
 using Game.Mechanics.Configuration;
+using Modules.Utils;
+using Unity.Collections;
 using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
-    public abstract class BaseShip : MonoBehaviour, IHealth, IMovable, IShot
+    public class BaseShip : MonoBehaviour, IHealth, IMovable, IShot
     {
         public event Action<int> OnHealthChanged;
         public event Action OnDead;
 
         private IBulletSpawner iBulletSpawner;
-        // private IGameOver gameOver; // нарушение срп - зависит от геймовера
-        // protected bool isGameOver;
 
         [Header("Data")] [SerializeField] private ShipData config;
 
-        [Header("Health")]
-        [field: SerializeField]
-        public int CurrentHealth { get; set; }
+        [Header("Health")] [SerializeField, ReadOnly]
+        private int currentHealth;
 
-        public int DeadValueHealth { get; private set; } = 0;
+        private const int DEAD_VALUE_HEALTH = 0;
 
         public int CurrentMaxHealth => config.Health;
         private Vector3 moveDirection;
 
         [Header("Combat")] [SerializeField] private Transform firePoint;
-        protected Transform FirePoint => firePoint;
-        protected float fireTime = 0f;
+        public Transform FirePoint => firePoint;
+        public float fireTime = 0f;
+
+        [SerializeField] private TransformBounds _playerArea;
 
         [Header("Movement")] [SerializeField] private Engine engine;
         [Header("Visual")] [SerializeField] private VisualConfiguration visual;
         [Header("Sound")] [SerializeField] private SoundConfiguration sound;
 
-        public void Construct(IBulletSpawner iBulletSpawner, IGameLoop gameLoop)
+        public void Construct(IBulletSpawner iBulletSpawner)
         {
             this.iBulletSpawner = iBulletSpawner;
-            this.gameOver = gameLoop;
             StartShip();
         }
 
@@ -49,29 +48,24 @@ namespace Game.Mechanics.Ship
             visual.VisualStart();
         }
 
-        private void OnDisable()
-        {
-            gameOver.OnGameOver -= SetGameOver;
-        }
-
         private void LateUpdate()
         {
-            if (CurrentHealth <= DeadValueHealth || isGameOver)
+            if (currentHealth <= DEAD_VALUE_HEALTH)
                 return;
             visual.AnimateMovement(Time.deltaTime, moveDirection); // изуал - в отдельную часть корабля!!
+
+            if (_playerArea != null)
+                transform.position = _playerArea.ClampInBounds(transform.position);
         }
 
         public void ResetData()
         {
-            CurrentHealth = config.Health;
-            gameOver.OnGameOver += SetGameOver;
+            currentHealth = config.Health;
         }
-
-        private void SetGameOver(bool isOver) => isGameOver = isOver;
 
         public void ChangeDirection(Vector2 direction)
         {
-            if (CurrentHealth <= DeadValueHealth || isGameOver)
+            if (currentHealth <= DEAD_VALUE_HEALTH)
                 return;
             moveDirection = direction;
             engine.MoveStep(moveDirection);
@@ -81,11 +75,11 @@ namespace Game.Mechanics.Ship
         public void Fire(Vector3 direction)
         {
             float time = Time.time;
-            if (time - fireTime < config.FireCooldown || CurrentHealth <= DeadValueHealth || isGameOver)
+            if (time - fireTime < config.FireCooldown || currentHealth <= DEAD_VALUE_HEALTH)
                 return;
 
             ShowEffectFire();
-            iBulletSpawner.Spawn(GetBulletConfiguration(config.Team, direction));
+            iBulletSpawner.Spawn(GetBulletConfiguration(direction));
             fireTime = time;
         }
 
@@ -97,29 +91,33 @@ namespace Game.Mechanics.Ship
 
         public void SetDamage(int damage)
         {
-            // if (isGameOver)
-            //     return;
+            currentHealth = Mathf.Clamp(currentHealth - damage, DEAD_VALUE_HEALTH, CurrentMaxHealth);
 
-            CurrentHealth = Mathf.Clamp(CurrentHealth - damage, DeadValueHealth, CurrentMaxHealth);
-            
-            if (CurrentHealth <= DeadValueHealth)
-                NotifyAboutDead();
-            
-            visual.AnimateDamage();
-            sound.PlayDamageSFX();
-            OnHealthChanged?.Invoke(CurrentHealth);
+            if (currentHealth <= DEAD_VALUE_HEALTH)
+                Dead();
+            else
+                Damage();
         }
 
-        public void NotifyAboutDead() => OnDead?.Invoke();
-
-        private BulletConfiguration GetBulletConfiguration(TeamType type, Vector3 direction)
+        public void Dead()
         {
-            BulletConfiguration bulletConfiguration = new BulletConfiguration();
+            visual.AnimateDead();
+            sound.PlayDeadSFX();
+            OnDead?.Invoke();
+        }
+
+        private void Damage()
+        {
+            visual.AnimateDamage();
+            sound.PlayDamageSFX();
+            OnHealthChanged?.Invoke(currentHealth);
+        }
+
+        private BulletNavigation GetBulletConfiguration(Vector3 direction)
+        {
+            BulletNavigation bulletConfiguration = new BulletNavigation();
             bulletConfiguration.Position = firePoint.position;
             bulletConfiguration.Direction = direction;
-            bulletConfiguration.Speed = config.BulletSpeed;
-            bulletConfiguration.Damage = config.BulletDamage;
-            bulletConfiguration.Team = type;
             return bulletConfiguration;
         }
     }

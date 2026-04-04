@@ -19,11 +19,5 @@ namespace Game.Data
 
         [field: SerializeField]
         public float FireCooldown { get; private set; } = 0.25f;
-        
-        // [SerializeField] private float bulletSpeed;
-        // public float BulletSpeed => bulletSpeed;
-        //
-        // [SerializeField] private int bulletDamage;
-        // public int BulletDamage => bulletDamage;
     }
 }

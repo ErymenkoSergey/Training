@@ -1,41 +1,43 @@
+using Game.Data.VFX;
 using Game.Enums;
+using Modules.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Mechanics.BulletsSystem.Data
 {
-    [CreateAssetMenu(menuName = "Game/AmmoData", order = 2)]
+    [CreateAssetMenu(menuName = "Game/BulletSystemConfig", order = 2)]
     public sealed class BulletSystemConfig : ScriptableObject
     {
-        [SerializeField] private Bullet _prefab;
-        public Bullet Prefab => _prefab;
-        
-        [Tooltip("The number of bullets in the pool at the start of the games")]
-        [SerializeField, Range(1, 100)] private int startSizePool = 15;
+        [SerializeField] private Bullet prefab;
+        [SerializeField] private BulletConfiguration enemyConfig;
+        [SerializeField] private BulletConfiguration playerConfig;
+        [SerializeField] private VFXData vfxData;
+
+        [Tooltip("The number of bullets in the pool at the start of the games")] [SerializeField, Range(1, 100)]
+        private int startSizePool = 15;
+
         public int SizePool => startSizePool;
         
-        [Header("Слои взаимодействия")]
-        [SerializeField] private string playerMask = "PlayerBullet";
-        public string PlayerMask => playerMask;
-        
-        [SerializeField] private string enemyMask = "EnemyBullet";
-        public string EnemyMask => enemyMask;
-        
-        
-        public string GetBulletType(TeamType team)
+        public Bullet CreateBullet(TeamType team)
+        {
+            var bullet = prefab;
+            var config = GetBulletConfiguration(team);
+            bullet.Initialize(config, vfxData);
+            return bullet;
+        }
+
+        private BulletConfiguration GetBulletConfiguration(TeamType team)
         {
             switch (team)
             {
                 case TeamType.Player:
-                    return PlayerMask;
+                    return playerConfig;
                 case TeamType.Enemy:
-                    return EnemyMask;
-                case TeamType.None:
+                    return enemyConfig;
                 default:
-                    Debug.LogError($"Spawn bullet => team: {team}");
-                    break;
+                    return enemyConfig;
             }
-
-            return string.Empty;
         }
     }
 }

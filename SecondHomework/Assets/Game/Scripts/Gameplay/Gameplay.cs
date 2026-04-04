@@ -11,12 +11,12 @@ namespace Game.Core
 {
     public sealed class Gameplay : MonoBehaviour, IGameLoop // Нарушает срп 
     
-    // вынести отдельный класс гейм луп
+    // вынести отдельный класс гейм луп (для этого OnGameOver)
     // 
     {
         public event Action<bool> OnGameOver;
         
-        [SerializeField] private PlayerShip playerShip;
+        [SerializeField] private BaseShip playerShip;
         private Transform target => playerShip.transform;
         private IMovable iMovable => playerShip;
         private IShot iShot => playerShip;
@@ -38,7 +38,7 @@ namespace Game.Core
 
         private void SetRef() // отдельный компонент гейм инсталлер с этой логикой.  
         {
-            playerShip.Construct(IBulletSpawner, this);
+            playerShip.Construct(IBulletSpawner);
             input.Construct(iMovable, iShot, this);
             enemyController.Construct(IBulletSpawner, target, iScore, this);
         }

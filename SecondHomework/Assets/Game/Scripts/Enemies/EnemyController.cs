@@ -11,7 +11,7 @@ using Random = UnityEngine.Random;
 namespace Game.Mechanics.Spawner
 {
     public sealed class EnemyController : MonoBehaviour, IEnemyRespawn
-    {
+    { 
         private IBulletSpawner iBulletSpawner;
         private Transform target;
         private IScore iScore;
@@ -36,7 +36,7 @@ namespace Game.Mechanics.Spawner
 
         [SerializeField] private Transform _container;
 
-        private readonly Queue<Enemy> pool = new(); // логика идет в общий класс
+        private readonly Queue<Enemy> pool = new();
 
         [Header("Points")] [SerializeField] private Transform[] _spawnPositions;
 

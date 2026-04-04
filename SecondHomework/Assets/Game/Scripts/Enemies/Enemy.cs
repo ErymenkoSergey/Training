@@ -4,10 +4,12 @@ using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
-    public sealed class Enemy : BaseShip // тут должно быть не наследование а дилигирование
+    public sealed class Enemy : MonoBehaviour // тут должно быть не наследование а дилигирование
+                                         // (он должен говрить что должен делать базовый корабль)
     {
         private IEnemyRespawn respawn;
         private Vector2 destination;
+        [SerializeField] private BaseShip ship;
 
         [SerializeField] private WaypointMoveble waypointMoveble;
         [SerializeField] private ShootingOnCooldown cooldown;
@@ -17,26 +19,28 @@ namespace Game.Mechanics.Ship
             transform.position = config.SpawnPosition;
             destination = config.AttackPosition;
             respawn = config.Respawn;
-            cooldown.SetData(FirePoint, config.Target, fireTime, this);
-            base.Construct(config.BulletSpawner, config.GameLoop);
-            base.OnDead += OnCharacterDead;
+            cooldown.SetData(ship.FirePoint, config.Target, ship.fireTime, ship);
+            ship.Construct(config.BulletSpawner);
+            // ship.OnDead += OnCharacterDead;
         }
 
-        private void OnDisable() => OnDead -= OnCharacterDead;
+        // private void OnDisable() => OnDead -= OnCharacterDead;
 
         private void FixedUpdate()
         {
-            if (isGameOver)
-                return;
+            // if (isGameOver)
+            //     return;
 
             var info = waypointMoveble.MoveShipToWaypoint(destination);
 
             if (info.Item2)
-                ChangeDirection(info.Item1.normalized);
+                ship.ChangeDirection(info.Item1.normalized);
             else
                 cooldown.ShootingCooldown();
         }
 
-        private void OnCharacterDead() => respawn.Respawn(this);
+        public void ResetData() => ship.ResetData();
+
+        // private void OnCharacterDead() => respawn.Respawn(this);
     }
 }

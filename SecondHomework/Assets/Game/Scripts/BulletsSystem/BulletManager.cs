@@ -14,55 +14,62 @@ namespace Game.Mechanics.BulletsSystem
         [FormerlySerializedAs("ammoData")]
         [Header("Data")]
         [SerializeField] private BulletSystemConfig bulletSystemConfig;
-        [SerializeField] private ExplosionVFXData _configView;
+        // [SerializeField] private VFXData vFXData;
 
-        [SerializeField] private Transform container;
+        [SerializeField] private Transform container; 
         [SerializeField] private TransformBounds levelBounds;
 
-        private readonly Stack<Bullet> bulletPool = new(); // Сделать универсальный пул! отв-ть пула
+        private Pool<Bullet> pool;
+        
+        private IPool<Bullet> bulletPool;
 
         public void Awake()
         {
-            if (bulletSystemConfig == null || _configView == null)
+            if (bulletSystemConfig == null)
             {
                 Debug.LogError("No Data Configuration SO");
                 return;
             }
 
+            pool = new Pool<Bullet>();
+            bulletPool = pool;
             for (var i = 0; i < bulletSystemConfig.SizePool; i++)
             {
-                Bullet bullet = Instantiate(bulletSystemConfig.Prefab, container);
+                Bullet bullet = Instantiate(bulletSystemConfig.CreateBullet(TeamType.Player), container);
                 bullet.gameObject.SetActive(false);
-                bulletPool.Push(bullet);
+                bullet.SetBounds(levelBounds);
+                bulletPool.Return(bullet);
             }
         }
 
-        public void Spawn(BulletConfiguration config)
+        public void Spawn(BulletNavigation config)
         {
-            if (config.Team == TeamType.None)
-            {
-                Debug.LogError($"Spawn bullet => team: {config.Team}");
-                return;
-            }
+            // if (config.Team == TeamType.None)
+            // {
+            //     Debug.LogError($"Spawn bullet => team: {config.Team}");
+            //     return;
+            // }
 
-            if (bulletPool.TryPop(out Bullet bullet))
+            // if (pool.TryPop(out Bullet bullet))
+            if (bulletPool.GetFreeObject(out Bullet bullet))
                 bullet.gameObject.SetActive(true);
             else
-                bullet = Instantiate(bulletSystemConfig.Prefab, container);
-
-            config.BulletNameMask = bulletSystemConfig.GetBulletType(config.Team);
-            config.Bounds = levelBounds;
-            config.Pool = this;
-
-            bullet.SetData(config);
+            {
+                bullet = Instantiate(bulletSystemConfig.CreateBullet(config.Team), container);
+                bullet.SetBounds(levelBounds);
+            }
+            
+            bullet.SetData(config, bulletPool);
         }
         
         public void ReturnToPool(Bullet bullet, bool isUseVfx = false)
         {
             bullet.gameObject.SetActive(false);
-            bulletPool.Push(bullet);
-            if (isUseVfx)
-                _configView.SpawnVFX(bullet.transform, bullet.GetTeam());
+            // bulletPool.Push(bullet);
+            bulletPool.Return(bullet);
+            // if (isUseVfx)
+            //     vFXData.SpawnVFX(bullet.transform, bullet.GetTeam());
         }
+        
     }
 }

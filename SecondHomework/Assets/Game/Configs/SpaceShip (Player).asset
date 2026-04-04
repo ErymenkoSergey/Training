@@ -16,5 +16,4 @@ MonoBehaviour:
   <Health>k__BackingField: 10
   <MoveSpeed>k__BackingField: 7
   <FireCooldown>k__BackingField: 0.25
-  bulletSpeed: 7
-  bulletDamage: 1
+  visualConfig: {fileID: 11400000, guid: 9298f762411724a389beae656b1dfcaa, type: 2}
