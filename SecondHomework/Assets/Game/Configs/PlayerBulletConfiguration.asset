@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: PlayerBulletConfiguration
   m_EditorClassIdentifier: Game::Game.Mechanics.BulletsSystem.BulletConfiguration
   Speed: 7
-  Damage: 2
+  Damage: 1
   Team: 1
   BulletNameMask: PlayerBullet

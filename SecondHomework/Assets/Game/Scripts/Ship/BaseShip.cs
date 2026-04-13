@@ -13,28 +13,26 @@ namespace Game.Mechanics.Ship
     {
         public event Action<int> OnHealthChanged;
         public event Action OnDead;
+        
+        [Header("Data")]
+        [SerializeField] private ShipData config;
 
-        private IBulletSpawner iBulletSpawner;
-
-        [Header("Data")] [SerializeField] private ShipData config;
-
-        [Header("Health")] [SerializeField, ReadOnly]
         private int currentHealth;
-
+        private int maxHealth => config.Health;
         private const int DEAD_VALUE_HEALTH = 0;
-
-        public int CurrentMaxHealth => config.Health;
-        private Vector3 moveDirection;
-
-        [Header("Combat")] [SerializeField] private Transform firePoint;
+        
+        [Header("Combat")] 
+        [SerializeField] private Transform firePoint;
         public Transform FirePoint => firePoint;
         public float fireTime = 0f;
-
-        [SerializeField] private TransformBounds _playerArea;
-
+        
         [Header("Movement")] [SerializeField] private Engine engine;
         [Header("Visual")] [SerializeField] private VisualConfiguration visual;
         [Header("Sound")] [SerializeField] private SoundConfiguration sound;
+        
+        private Vector3 moveDirection;
+        
+        private IBulletSpawner iBulletSpawner;
 
         public void Construct(IBulletSpawner iBulletSpawner)
         {
@@ -53,15 +51,9 @@ namespace Game.Mechanics.Ship
             if (currentHealth <= DEAD_VALUE_HEALTH)
                 return;
             visual.AnimateMovement(Time.deltaTime, moveDirection); // изуал - в отдельную часть корабля!!
-
-            if (_playerArea != null)
-                transform.position = _playerArea.ClampInBounds(transform.position);
         }
 
-        public void ResetData()
-        {
-            currentHealth = config.Health;
-        }
+        public void ResetData() => currentHealth = config.Health;
 
         public void ChangeDirection(Vector2 direction)
         {
@@ -91,7 +83,7 @@ namespace Game.Mechanics.Ship
 
         public void SetDamage(int damage)
         {
-            currentHealth = Mathf.Clamp(currentHealth - damage, DEAD_VALUE_HEALTH, CurrentMaxHealth);
+            currentHealth = Mathf.Clamp(currentHealth - damage, DEAD_VALUE_HEALTH, maxHealth);
 
             if (currentHealth <= DEAD_VALUE_HEALTH)
                 Dead();
@@ -99,7 +91,7 @@ namespace Game.Mechanics.Ship
                 Damage();
         }
 
-        public void Dead()
+        private void Dead()
         {
             visual.AnimateDead();
             sound.PlayDeadSFX();
@@ -116,6 +108,7 @@ namespace Game.Mechanics.Ship
         private BulletNavigation GetBulletConfiguration(Vector3 direction)
         {
             BulletNavigation bulletConfiguration = new BulletNavigation();
+            bulletConfiguration.Team = config.Team;
             bulletConfiguration.Position = firePoint.position;
             bulletConfiguration.Direction = direction;
             return bulletConfiguration;

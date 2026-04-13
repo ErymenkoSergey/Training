@@ -1,4 +1,5 @@
 using Game.Interfaces;
+using Game.Mechanics.Ship;
 using UnityEngine;
 
 namespace Game.Mechanics.Config
@@ -8,8 +9,7 @@ namespace Game.Mechanics.Config
       public Vector3 SpawnPosition;
       public Vector3 AttackPosition;
       public Transform Target;
-      public IEnemyRespawn Respawn;
+      public IPool<Enemy> Respawn;
       public IBulletSpawner BulletSpawner;
-      public IGameLoop GameLoop;
    }
 }

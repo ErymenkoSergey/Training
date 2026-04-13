@@ -40,7 +40,7 @@ namespace Game.Core
         {
             playerShip.Construct(IBulletSpawner);
             input.Construct(iMovable, iShot, this);
-            enemyController.Construct(IBulletSpawner, target, iScore, this);
+            enemyController.Construct(IBulletSpawner, target, iScore);
         }
         
         private void OnEnable()
@@ -57,7 +57,7 @@ namespace Game.Core
 
         private void ChangeHealth(int health)
         {
-            iViewHealth.ChangeHealth(health, playerShip.CurrentMaxHealth);
+            //iViewHealth.ChangeHealth(health, playerShip.CurrentMaxHealth);
         }
 
         private void GameOver()

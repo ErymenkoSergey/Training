@@ -10,84 +10,53 @@ using Random = UnityEngine.Random;
 
 namespace Game.Mechanics.Spawner
 {
-    public sealed class EnemyController : MonoBehaviour, IEnemyRespawn
+    public sealed class EnemyController : MonoBehaviour, IPool<Enemy>
     { 
-        private IBulletSpawner iBulletSpawner;
-        private Transform target;
-        private IScore iScore;
-
-        #region Logic Cooldown
-
         [Header("Spawn Settings")]
         [SerializeField]
         private float minSpawnCooldown = 2;
 
         [SerializeField] 
         private float maxSpawnCooldown = 3;
-
         private float spawnCooldown;
         private float spawnTime;
 
-        #endregion
-
-        // logic spawn 
         [SerializeField]
         private Enemy prefab;
 
-        [SerializeField] private Transform _container;
-
-        private readonly Queue<Enemy> pool = new();
-
-        [Header("Points")] [SerializeField] private Transform[] _spawnPositions;
-
-        [SerializeField] private Transform[] _attackPositions;
+        [SerializeField] private Transform container;
+       
+        [Header("Points")] [SerializeField] private Transform[] spawnPositions;
+        [SerializeField] private Transform[] attackPositions;
 
         private int spawnIndex;
         private int attackIndex;
-
         private int destroyedEnemies;
+        
+        private readonly Queue<Enemy> pool = new();
+        
+        private IBulletSpawner iBulletSpawner;
+        private Transform target;
+        private IScore iScore;
 
-        private IGameLoop iGameLoop;
-        private bool isGameOver;
-
-        public void Construct(IBulletSpawner iBulletSpawner, Transform target, IScore iScore, IGameLoop gameLoop)
+        public void Construct(IBulletSpawner iBulletSpawner, Transform target, IScore iScore)
         {
             this.iBulletSpawner = iBulletSpawner;
             this.target = target;
             this.iScore = iScore;
-            iGameLoop = gameLoop;
-            iGameLoop.OnGameOver += SetGameLoop;
             StartSystem();
         }
 
         private void StartSystem()
         {
-            _spawnPositions.Shuffle();
-            _attackPositions.Shuffle();
+            spawnPositions.Shuffle();
+            attackPositions.Shuffle();
             iScore.ChangeScore(destroyedEnemies);
             ResetSpawnCooldown();
         }
         
-        private void OnDisable()
-        {
-            if (iGameLoop != null)
-                iGameLoop.OnGameOver -= SetGameLoop;
-        }
-
-        private void SetGameLoop(bool isOver) => isGameOver = isOver;
-        
-        public void Respawn(Enemy enemy)
-        {
-            destroyedEnemies++;
-            iScore.ChangeScore(destroyedEnemies);
-            StartCoroutine(DespawnInNextFrame(enemy));
-        }
-
         private void FixedUpdate()
         {
-            if (isGameOver)
-                return;
-
             float time = Time.fixedTime;
             if (time - spawnTime < spawnCooldown)
                 return;
@@ -100,7 +69,7 @@ namespace Game.Mechanics.Spawner
             if (pool.TryDequeue(out Enemy enemy))
                 enemy.gameObject.SetActive(true);
             else
-                enemy = Instantiate(prefab, _container);
+                enemy = Instantiate(prefab, container);
 
             enemy.SetData(GetConfiguration());
 
@@ -115,7 +84,6 @@ namespace Game.Mechanics.Spawner
             config.Target = target;
             config.Respawn = this;
             config.BulletSpawner = iBulletSpawner;
-            config.GameLoop = iGameLoop;
             return config;
         }
 
@@ -135,24 +103,31 @@ namespace Game.Mechanics.Spawner
 
         private Vector3 NextSpawnPosition()
         {
-            if (spawnIndex >= _spawnPositions.Length)
+            if (spawnIndex >= spawnPositions.Length)
             {
-                _spawnPositions.Shuffle();
+                spawnPositions.Shuffle();
                 spawnIndex = 0;
             }
 
-            return _spawnPositions[spawnIndex++].position;
+            return spawnPositions[spawnIndex++].position;
         }
 
         private Vector3 NextDestination()
         {
-            if (attackIndex >= _attackPositions.Length)
+            if (attackIndex >= attackPositions.Length)
             {
-                _attackPositions.Shuffle();
+                attackPositions.Shuffle();
                 attackIndex = 0;
             }
 
-            return _attackPositions[attackIndex++].position;
+            return attackPositions[attackIndex++].position;
+        }
+
+        public void Return(Enemy obj)
+        {
+            destroyedEnemies++;
+            iScore.ChangeScore(destroyedEnemies);
+            StartCoroutine(DespawnInNextFrame(obj));
         }
     }
 }

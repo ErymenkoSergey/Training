@@ -1,8 +1,9 @@
+using System.Collections.Generic;
 using Game.Data.VFX;
 using Game.Enums;
+using Game.Interfaces;
 using Modules.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.Mechanics.BulletsSystem.Data
 {
@@ -13,21 +14,28 @@ namespace Game.Mechanics.BulletsSystem.Data
         [SerializeField] private BulletConfiguration enemyConfig;
         [SerializeField] private BulletConfiguration playerConfig;
         [SerializeField] private VFXData vfxData;
+        public VFXData VFXData => vfxData;
+        private TransformBounds levelBounds;
 
+        private Ivfx Iflicker;
         [Tooltip("The number of bullets in the pool at the start of the games")] [SerializeField, Range(1, 100)]
         private int startSizePool = 15;
 
         public int SizePool => startSizePool;
         
-        public Bullet CreateBullet(TeamType team)
+        public void SetReferences(TransformBounds levelBounds)
+        {
+            this.levelBounds = levelBounds;
+        }
+        
+        public Bullet CreateBullet()
         {
             var bullet = prefab;
-            var config = GetBulletConfiguration(team);
-            bullet.Initialize(config, vfxData);
+            bullet.Initialize(levelBounds); 
             return bullet;
         }
 
-        private BulletConfiguration GetBulletConfiguration(TeamType team)
+        public BulletConfiguration GetBulletConfiguration(TeamType team)
         {
             switch (team)
             {

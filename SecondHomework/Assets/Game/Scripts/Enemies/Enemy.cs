@@ -7,7 +7,7 @@ namespace Game.Mechanics.Ship
     public sealed class Enemy : MonoBehaviour // тут должно быть не наследование а дилигирование
                                          // (он должен говрить что должен делать базовый корабль)
     {
-        private IEnemyRespawn respawn;
+        private IPool<Enemy> respawn;
         private Vector2 destination;
         [SerializeField] private BaseShip ship;
 
@@ -21,18 +21,14 @@ namespace Game.Mechanics.Ship
             respawn = config.Respawn;
             cooldown.SetData(ship.FirePoint, config.Target, ship.fireTime, ship);
             ship.Construct(config.BulletSpawner);
-            // ship.OnDead += OnCharacterDead;
+            ship.OnDead += OnCharacterDead;
         }
 
-        // private void OnDisable() => OnDead -= OnCharacterDead;
+         private void OnDisable() => ship.OnDead -= OnCharacterDead;
 
         private void FixedUpdate()
         {
-            // if (isGameOver)
-            //     return;
-
             var info = waypointMoveble.MoveShipToWaypoint(destination);
-
             if (info.Item2)
                 ship.ChangeDirection(info.Item1.normalized);
             else
@@ -40,7 +36,6 @@ namespace Game.Mechanics.Ship
         }
 
         public void ResetData() => ship.ResetData();
-
-        // private void OnCharacterDead() => respawn.Respawn(this);
+        private void OnCharacterDead() => respawn.Return(this);
     }
 }

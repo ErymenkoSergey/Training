@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52a26d1b73cc3bf41b6cf0eb881ad170, type: 3}
   m_Name: EnemyBulletConfiguration
   m_EditorClassIdentifier: Game::Game.Mechanics.BulletsSystem.BulletConfiguration
-  Speed: 5
+  Speed: 3
   Damage: 1
   Team: 2
   BulletNameMask: EnemyBullet

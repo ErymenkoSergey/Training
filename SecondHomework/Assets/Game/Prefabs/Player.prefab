@@ -9,10 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5706750963508843440}
-  - component: {fileID: 328849090417711829}
   - component: {fileID: 4575139502811685103}
   - component: {fileID: 4075764219798992963}
   - component: {fileID: 8141832910989862937}
+  - component: {fileID: 6462933697798340409}
+  - component: {fileID: 4371779886103847004}
   m_Layer: 10
   m_Name: Player
   m_TagString: Untagged
@@ -37,34 +38,6 @@ Transform:
   - {fileID: 1249406481267314197}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &328849090417711829
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4109394316656653739}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aab487c3ce89407b8153f9c2ff593bc3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Game::Game.PlayerShip
-  config: {fileID: 11400000, guid: 0b9a4576e5f0a4babb44b3c82e6480d0, type: 2}
-  <CurrentHealth>k__BackingField: 0
-  firePoint: {fileID: 8503432944885784460}
-  engine:
-    rigidbody: {fileID: 4575139502811685103}
-    speed: 7
-  visual:
-    visualConfig: {fileID: 11400000, guid: 9298f762411724a389beae656b1dfcaa, type: 2}
-    _renderer: {fileID: 795037679980988590}
-    _viewTransform: {fileID: 1249406481267314197}
-    _fireVFX: {fileID: 375007784130398055}
-  sound:
-    _audioSource: {fileID: 8141832910989862937}
-    _fireSFX: {fileID: 8300000, guid: 4b0fadb8fc7bdaf489e9f7879d3c71bb, type: 3}
-    _damageSFX: {fileID: 8300000, guid: 9d2f129290cb1a6489928f3dde8dbb39, type: 3}
-  _playerArea: {fileID: 0}
 --- !u!50 &4575139502811685103
 Rigidbody2D:
   serializedVersion: 5
@@ -225,6 +198,47 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &6462933697798340409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4109394316656653739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 558b312fd53c491ab69f3e55255aae3c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Game.Mechanics.Ship.BaseShip
+  config: {fileID: 11400000, guid: 0b9a4576e5f0a4babb44b3c82e6480d0, type: 2}
+  currentHealth: 10
+  firePoint: {fileID: 8503432944885784460}
+  fireTime: 0.2
+  engine:
+    rigidbody: {fileID: 4575139502811685103}
+    speed: 7
+  visual:
+    visualConfig: {fileID: 11400000, guid: 9298f762411724a389beae656b1dfcaa, type: 2}
+    _renderer: {fileID: 795037679980988590}
+    _viewTransform: {fileID: 1249406481267314197}
+    _fireVFX: {fileID: 7685873786875163854}
+  sound:
+    audioSource: {fileID: 8141832910989862937}
+    soundData: {fileID: 11400000, guid: 0769d70b8417ead4dac74079955c7bc7, type: 2}
+--- !u!114 &4371779886103847004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4109394316656653739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aab487c3ce89407b8153f9c2ff593bc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Game.Mechanics.Ship.PlayerShip
+  ship: {fileID: 6462933697798340409}
+  bounds: {fileID: 0}
 --- !u!1 &7932017922939402051
 GameObject:
   m_ObjectHideFlags: 0
@@ -436,11 +450,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b1ede0eef436590479b9282c69418d53, type: 3}
---- !u!198 &375007784130398055 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 198297418966626338, guid: b1ede0eef436590479b9282c69418d53, type: 3}
-  m_PrefabInstance: {fileID: 573142307838670661}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &568698703434600221 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4602080443070552, guid: b1ede0eef436590479b9282c69418d53, type: 3}
@@ -526,5 +535,10 @@ PrefabInstance:
 --- !u!4 &7527921141712940038 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4604023365360802, guid: 41eac07628561874e8fd3c1649c10b47, type: 3}
+  m_PrefabInstance: {fileID: 7523499784951902372}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &7685873786875163854 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 198547944166065258, guid: 41eac07628561874e8fd3c1649c10b47, type: 3}
   m_PrefabInstance: {fileID: 7523499784951902372}
   m_PrefabAsset: {fileID: 0}
