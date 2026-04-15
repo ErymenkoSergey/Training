@@ -47,10 +47,5 @@ namespace Game.Mechanics.Configuration
                     visualConfig.HitAnimationCurve.Evaluate(progress))
             ).SetLink(_renderer.gameObject);
         }
-
-        public void AnimateDead()
-        {
-            AnimateDamage(); // пока такой же 
-        }
     }
 }

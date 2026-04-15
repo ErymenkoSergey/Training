@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using Game.Data.VFX;
 using Game.Enums;
-using Game.Interfaces;
 using Modules.Utils;
 using UnityEngine;
 
@@ -16,17 +14,12 @@ namespace Game.Mechanics.BulletsSystem.Data
         [SerializeField] private VFXData vfxData;
         public VFXData VFXData => vfxData;
         private TransformBounds levelBounds;
-
-        private Ivfx Iflicker;
         [Tooltip("The number of bullets in the pool at the start of the games")] [SerializeField, Range(1, 100)]
         private int startSizePool = 15;
 
         public int SizePool => startSizePool;
         
-        public void SetReferences(TransformBounds levelBounds)
-        {
-            this.levelBounds = levelBounds;
-        }
+        public void SetReferences(TransformBounds levelBounds) => this.levelBounds = levelBounds;
         
         public Bullet CreateBullet()
         {

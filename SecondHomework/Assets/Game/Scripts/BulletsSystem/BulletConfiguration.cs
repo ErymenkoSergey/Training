@@ -1,4 +1,3 @@
-using Game.Enums;
 using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem
@@ -8,7 +7,6 @@ namespace Game.Mechanics.BulletsSystem
     {
         public float Speed;
         public int Damage;
-        public TeamType Team;
         public string BulletNameMask;
     }
 }

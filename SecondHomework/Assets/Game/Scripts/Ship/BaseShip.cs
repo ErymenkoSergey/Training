@@ -3,8 +3,6 @@ using Game.Data;
 using Game.Interfaces;
 using Game.Mechanics.BulletsSystem;
 using Game.Mechanics.Configuration;
-using Modules.Utils;
-using Unity.Collections;
 using UnityEngine;
 
 namespace Game.Mechanics.Ship
@@ -18,20 +16,19 @@ namespace Game.Mechanics.Ship
         [SerializeField] private ShipData config;
 
         private int currentHealth;
-        private int maxHealth => config.Health;
         private const int DEAD_VALUE_HEALTH = 0;
         
         [Header("Combat")] 
         [SerializeField] private Transform firePoint;
         public Transform FirePoint => firePoint;
-        public float fireTime = 0f;
+        public float FireTime = 0f;
+        public int CurrentMaxHealth => config.Health;
         
         [Header("Movement")] [SerializeField] private Engine engine;
         [Header("Visual")] [SerializeField] private VisualConfiguration visual;
         [Header("Sound")] [SerializeField] private SoundConfiguration sound;
         
         private Vector3 moveDirection;
-        
         private IBulletSpawner iBulletSpawner;
 
         public void Construct(IBulletSpawner iBulletSpawner)
@@ -50,7 +47,8 @@ namespace Game.Mechanics.Ship
         {
             if (currentHealth <= DEAD_VALUE_HEALTH)
                 return;
-            visual.AnimateMovement(Time.deltaTime, moveDirection); // изуал - в отдельную часть корабля!!
+            
+            visual.AnimateMovement(Time.deltaTime, moveDirection);
         }
 
         public void ResetData() => currentHealth = config.Health;
@@ -59,6 +57,7 @@ namespace Game.Mechanics.Ship
         {
             if (currentHealth <= DEAD_VALUE_HEALTH)
                 return;
+            
             moveDirection = direction;
             engine.MoveStep(moveDirection);
             engine.FixedUpdate();
@@ -67,12 +66,12 @@ namespace Game.Mechanics.Ship
         public void Fire(Vector3 direction)
         {
             float time = Time.time;
-            if (time - fireTime < config.FireCooldown || currentHealth <= DEAD_VALUE_HEALTH)
+            if (time - FireTime < config.FireCooldown || currentHealth <= DEAD_VALUE_HEALTH)
                 return;
 
             ShowEffectFire();
             iBulletSpawner.Spawn(GetBulletConfiguration(direction));
-            fireTime = time;
+            FireTime = time;
         }
 
         private void ShowEffectFire()
@@ -83,26 +82,22 @@ namespace Game.Mechanics.Ship
 
         public void SetDamage(int damage)
         {
-            currentHealth = Mathf.Clamp(currentHealth - damage, DEAD_VALUE_HEALTH, maxHealth);
-
+            currentHealth = Mathf.Clamp(currentHealth - damage, DEAD_VALUE_HEALTH, CurrentMaxHealth);
+            
+            OnHealthChanged?.Invoke(currentHealth);
+            visual.AnimateDamage();
+            
             if (currentHealth <= DEAD_VALUE_HEALTH)
                 Dead();
             else
-                Damage();
+                sound.PlayDamageSFX();
         }
 
         private void Dead()
         {
-            visual.AnimateDead();
             sound.PlayDeadSFX();
             OnDead?.Invoke();
-        }
-
-        private void Damage()
-        {
-            visual.AnimateDamage();
-            sound.PlayDamageSFX();
-            OnHealthChanged?.Invoke(currentHealth);
+            config.VFXData.SpawnShipExplosionVFX(transform);
         }
 
         private BulletNavigation GetBulletConfiguration(Vector3 direction)

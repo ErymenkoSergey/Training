@@ -1220,7 +1220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d9dc11bfefa5a3458fd2019fcc873ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::Game.Core.Gameplay
-  playerShip: {fileID: 4414282821800802397}
+  player: {fileID: 4414282821800802398}
   input: {fileID: 1879759790}
   uiHandler: {fileID: 177601769}
   enemyController: {fileID: 562298205}
@@ -3256,17 +3256,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5706750963508843440, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
   m_PrefabInstance: {fileID: 3559832809919233303}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4414282821800802397 stripped
+--- !u!114 &4414282821800802398 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6462933697798340409, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
+  m_CorrespondingSourceObject: {fileID: 4371779886103847004, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
   m_PrefabInstance: {fileID: 3559832809919233303}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 558b312fd53c491ab69f3e55255aae3c, type: 3}
+  m_Script: {fileID: 11500000, guid: aab487c3ce89407b8153f9c2ff593bc3, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Game::Game.Mechanics.Ship.BaseShip
+  m_EditorClassIdentifier: Game::Game.Mechanics.Ship.PlayerShip
 --- !u!1 &4788406047096451828
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,30 +4,48 @@ using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
-    public sealed class Enemy : MonoBehaviour // тут должно быть не наследование а дилигирование
-                                         // (он должен говрить что должен делать базовый корабль)
+    public sealed class Enemy : MonoBehaviour
     {
-        private IPool<Enemy> respawn;
-        private Vector2 destination;
         [SerializeField] private BaseShip ship;
-
         [SerializeField] private WaypointMoveble waypointMoveble;
         [SerializeField] private ShootingOnCooldown cooldown;
 
+        private IPool<Enemy> respawn;
+        private Vector2 destination;
+        private ITarget target;
+        private bool isFinished;
+
         public void SetData(EnemyConfiguration config)
         {
+            if (ship == null)
+                Debug.LogError($"Enemy Ship ref is null");
+
+            target = config.Target;
             transform.position = config.SpawnPosition;
             destination = config.AttackPosition;
             respawn = config.Respawn;
-            cooldown.SetData(ship.FirePoint, config.Target, ship.fireTime, ship);
+            cooldown.SetData(ship.FirePoint, target.GetTransform(), ship.FireTime, ship);
             ship.Construct(config.BulletSpawner);
             ship.OnDead += OnCharacterDead;
+            target.OnDestroyed += TargetDestroyed;
         }
 
-         private void OnDisable() => ship.OnDead -= OnCharacterDead;
+        private void TargetDestroyed()
+        {
+            isFinished = true;
+        }
+
+        private void OnDisable()
+        {
+            ship.OnDead -= OnCharacterDead;
+            target.OnDestroyed -= TargetDestroyed;
+        }
 
         private void FixedUpdate()
         {
+            if (ship == null || isFinished)
+                return;
+
             var info = waypointMoveble.MoveShipToWaypoint(destination);
             if (info.Item2)
                 ship.ChangeDirection(info.Item1.normalized);

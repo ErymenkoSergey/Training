@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 198423008863891152}
   - component: {fileID: 199125936871100382}
   - component: {fileID: 1685931968893374684}
+  - component: {fileID: 580785399058154839}
   m_Layer: 0
   m_Name: ExplosionVFX (Big)
   m_TagString: Untagged
@@ -5018,6 +5019,19 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &580785399058154839
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101452535904402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb4459c15f78d994da940b31171fb41e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::BulletExplosion
+  timeDestroy: 5
 --- !u!1 &1128182871618688
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,26 +1,26 @@
-using System.Collections.Generic;
 using Game.Enums;
-using Game.Interfaces;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Data.VFX
 {
     [CreateAssetMenu(fileName = "ExplosionVFXData", menuName = "Game/New ExplosionVFXData", order = 1)]
-    public sealed class VFXData : ScriptableObject, Ivfx//, IPool<BulletExplosion>
+    public sealed class VFXData : ScriptableObject, Ivfx
     {
         [Header("Explosions")] [SerializeField]
         private float timeReturn = 3f;
-        [SerializeField] private GameObject enemyExplosionVFX;
-        [SerializeField] private GameObject playerExplosionVFX;
-        
-        [Header("Bullet view")]
-        [SerializeField] private GameObject blueVFX; 
+
+        [FormerlySerializedAs("enemyExplosionVFX")] [SerializeField]
+        private GameObject bulletExplosionVFX;
+
+        [FormerlySerializedAs("playerExplosionVFX")] [SerializeField]
+        private GameObject shipExplosionVFX;
+
+        [Header("Bullet view")] [SerializeField]
+        private GameObject blueVFX;
+
         [SerializeField] private GameObject redVFX;
-        
-        
-        // private readonly Stack<BulletExplosion> explosionPool = new();
-        
-        
+
         public GameObject GetFlickerVFX(TeamType team)
         {
             switch (team)
@@ -30,28 +30,26 @@ namespace Game.Data.VFX
                 case TeamType.Enemy:
                     return redVFX;
             }
-            
+
             return null;
         }
-        
-        public void SpawnVFX(Transform point, TeamType team)
+
+        public void SpawnBulletExplosionVFX(Transform point)
         {
-            GameObject prefab = team == TeamType.Enemy ? playerExplosionVFX : enemyExplosionVFX;
-            //prefab.SetData(this, timeReturn);
+            GameObject prefab = bulletExplosionVFX;
             Instantiate(prefab, point.position, prefab.transform.rotation);
         }
-        
-        
-        // public void Return(BulletExplosion obj)
-        // {
-        //     explosionPool.Push(obj);
-        //     obj.gameObject.SetActive(false);
-        // }
+
+        public void SpawnShipExplosionVFX(Transform point)
+        {
+            GameObject prefab = shipExplosionVFX;
+            Instantiate(prefab, point.position, prefab.transform.rotation);
+        }
     }
 
     public interface Ivfx
     {
         GameObject GetFlickerVFX(TeamType team);
-        void SpawnVFX(Transform point, TeamType team);
+        void SpawnBulletExplosionVFX(Transform point);
     }
 }

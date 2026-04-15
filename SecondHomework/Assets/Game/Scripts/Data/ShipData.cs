@@ -1,3 +1,4 @@
+using Game.Data.VFX;
 using Game.Enums;
 using UnityEngine;
 
@@ -19,5 +20,8 @@ namespace Game.Data
 
         [field: SerializeField]
         public float FireCooldown { get; private set; } = 0.25f;
+        
+        [SerializeField] private VFXData vfxData;
+        public VFXData VFXData => vfxData;
     }
 }

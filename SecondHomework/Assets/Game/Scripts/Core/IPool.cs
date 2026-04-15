@@ -2,6 +2,6 @@ namespace Game.Interfaces
 {
     public interface IPool<T>
     {
-        void Return(T obj);
+        void Return(T enemy);
     }
 }

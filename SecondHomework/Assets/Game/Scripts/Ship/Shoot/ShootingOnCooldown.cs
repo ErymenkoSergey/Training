@@ -11,7 +11,6 @@ namespace Game.Mechanics.Ship
         private Transform target;
         private Transform firePoint;
         private float fireTime;
-
         private IShot iShot;
 
         public void SetData(Transform firePoint, Transform target, float fireTime, IShot iShot)

@@ -10,16 +10,14 @@ using UnityEngine.Serialization;
 namespace Game.Core
 {
     public sealed class Gameplay : MonoBehaviour, IGameLoop // Нарушает срп 
-    
-    // вынести отдельный класс гейм луп (для этого OnGameOver)
-    // 
     {
-        public event Action<bool> OnGameOver;
+        public event Action OnFinished; 
         
-        [SerializeField] private BaseShip playerShip;
-        private Transform target => playerShip.transform;
-        private IMovable iMovable => playerShip;
-        private IShot iShot => playerShip;
+        [SerializeField] private PlayerShip player;
+        private BaseShip playerShip;
+        private ITarget target => player;
+        private IMovable iMovable;
+        private IShot iShot;
 
         [SerializeField] private PlayerInput input;
         [SerializeField] private UIHandler uiHandler;
@@ -29,6 +27,7 @@ namespace Game.Core
         [SerializeField] private EnemyController enemyController;
 
         [FormerlySerializedAs("manager")] [SerializeField] private BulletManager bulletManager;
+       
         private IBulletSpawner IBulletSpawner => bulletManager;
         
         private void Awake()
@@ -38,6 +37,10 @@ namespace Game.Core
 
         private void SetRef() // отдельный компонент гейм инсталлер с этой логикой.  
         {
+            playerShip = player.Ship;
+            iMovable = playerShip;
+            iShot = playerShip;
+            
             playerShip.Construct(IBulletSpawner);
             input.Construct(iMovable, iShot, this);
             enemyController.Construct(IBulletSpawner, target, iScore);
@@ -57,12 +60,12 @@ namespace Game.Core
 
         private void ChangeHealth(int health)
         {
-            //iViewHealth.ChangeHealth(health, playerShip.CurrentMaxHealth);
+            iViewHealth.ChangeHealth(health, playerShip.CurrentMaxHealth);
         }
 
         private void GameOver()
         {
-            OnGameOver?.Invoke(true);
+            OnFinished?.Invoke();
             uiHandler.GameOver();
             playerShip.gameObject.SetActive(false);
         }

@@ -16,4 +16,4 @@ MonoBehaviour:
   <Health>k__BackingField: 10
   <MoveSpeed>k__BackingField: 7
   <FireCooldown>k__BackingField: 0.25
-  visualConfig: {fileID: 11400000, guid: 9298f762411724a389beae656b1dfcaa, type: 2}
+  vfxData: {fileID: 11400000, guid: f2107b212e6a245009f8ae9313cc81bb, type: 2}

@@ -97,6 +97,6 @@ namespace Game.Mechanics.BulletsSystem
                 ship.SetDamage(damage);
         }
 
-        private void SpawnExplosion() => ivfx.SpawnVFX(transform, team);
+        private void SpawnExplosion() => ivfx.SpawnBulletExplosionVFX(transform);
     }
 }

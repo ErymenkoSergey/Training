@@ -16,5 +16,4 @@ MonoBehaviour:
   <Health>k__BackingField: 2
   <MoveSpeed>k__BackingField: 3
   <FireCooldown>k__BackingField: 0.25
-  bulletSpeed: 3
-  bulletDamage: 1
+  vfxData: {fileID: 11400000, guid: f2107b212e6a245009f8ae9313cc81bb, type: 2}

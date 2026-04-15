@@ -8,7 +8,7 @@ namespace Game.Mechanics.Config
    {
       public Vector3 SpawnPosition;
       public Vector3 AttackPosition;
-      public Transform Target;
+      public ITarget Target;
       public IPool<Enemy> Respawn;
       public IBulletSpawner BulletSpawner;
    }

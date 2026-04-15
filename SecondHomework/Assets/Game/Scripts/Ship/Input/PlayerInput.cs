@@ -8,27 +8,27 @@ namespace Game.Mechanics.Inputs
         private IMovable iMovable;
         private IShot iShot;
         private IGameLoop iGameLoop;
-        
-        private bool isGameOver;
+
+        private bool isFinished;
         
         public void Construct(IMovable movable, IShot shot, IGameLoop gameLoop)
         {
             iMovable = movable;
             iShot = shot;
             iGameLoop = gameLoop;
-            iGameLoop.OnGameOver += SetGameLoop;
+            iGameLoop.OnFinished += SetGameLoop;
         }
 
         private void OnDisable()
         {
-            iGameLoop.OnGameOver -= SetGameLoop;
+            iGameLoop.OnFinished -= SetGameLoop;
         }
 
-        private void SetGameLoop(bool isOver) => isGameOver = isOver;
+        private void SetGameLoop() => isFinished = true;
 
         public void Update()
         {
-            if (isGameOver)
+            if (isFinished)
                 return;
 
             if (Input.GetKeyDown(KeyCode.Space))

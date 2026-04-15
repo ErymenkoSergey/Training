@@ -5,7 +5,6 @@ using Game.Mechanics.Config;
 using Game.Mechanics.Ship;
 using Modules.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace Game.Mechanics.Spawner
@@ -36,10 +35,11 @@ namespace Game.Mechanics.Spawner
         private readonly Queue<Enemy> pool = new();
         
         private IBulletSpawner iBulletSpawner;
-        private Transform target;
+        private ITarget target;
         private IScore iScore;
+        private IGameLoop gameLoop;
 
-        public void Construct(IBulletSpawner iBulletSpawner, Transform target, IScore iScore)
+        public void Construct(IBulletSpawner iBulletSpawner, ITarget target, IScore iScore)
         {
             this.iBulletSpawner = iBulletSpawner;
             this.target = target;
@@ -54,7 +54,7 @@ namespace Game.Mechanics.Spawner
             iScore.ChangeScore(destroyedEnemies);
             ResetSpawnCooldown();
         }
-        
+
         private void FixedUpdate()
         {
             float time = Time.fixedTime;
@@ -92,15 +92,7 @@ namespace Game.Mechanics.Spawner
             spawnCooldown = Random.Range(minSpawnCooldown, maxSpawnCooldown);
             spawnTime = Time.fixedTime;
         }
-
-        private IEnumerator DespawnInNextFrame(Enemy enemy)
-        {
-            yield return null;
-            enemy.gameObject.SetActive(false);
-            enemy.ResetData();
-            pool.Enqueue(enemy);
-        }
-
+        
         private Vector3 NextSpawnPosition()
         {
             if (spawnIndex >= spawnPositions.Length)
@@ -123,11 +115,19 @@ namespace Game.Mechanics.Spawner
             return attackPositions[attackIndex++].position;
         }
 
-        public void Return(Enemy obj)
+        public void Return(Enemy enemy)
         {
             destroyedEnemies++;
             iScore.ChangeScore(destroyedEnemies);
-            StartCoroutine(DespawnInNextFrame(obj));
+            StartCoroutine(DespawnInNextFrame(enemy));
+        }
+        
+        private IEnumerator DespawnInNextFrame(Enemy enemy)
+        {
+            yield return null;
+            enemy.gameObject.SetActive(false);
+            enemy.ResetData();
+            pool.Enqueue(enemy);
         }
     }
 }

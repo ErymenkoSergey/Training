@@ -41,10 +41,10 @@ namespace Game.Mechanics.BulletsSystem
             bullet.SetData(this, bulletSystemConfig.VFXData, config);
         }
         
-        public void Return(Bullet bullet)
+        public void Return(Bullet enemy)
         {
-            bullet.gameObject.SetActive(false);
-            bulletPool.Push(bullet);
+            enemy.gameObject.SetActive(false);
+            bulletPool.Push(enemy);
         }
     }
 }
