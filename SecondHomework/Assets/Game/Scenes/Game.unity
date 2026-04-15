@@ -1181,6 +1181,7 @@ GameObject:
   m_Component:
   - component: {fileID: 739865810}
   - component: {fileID: 739865811}
+  - component: {fileID: 739865812}
   m_Layer: 0
   m_Name: '[GameContext]'
   m_TagString: Untagged
@@ -1220,11 +1221,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d9dc11bfefa5a3458fd2019fcc873ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::Game.Core.Gameplay
-  player: {fileID: 4414282821800802398}
+  gameLoop: {fileID: 739865812}
   input: {fileID: 1879759790}
-  uiHandler: {fileID: 177601769}
   enemyController: {fileID: 562298205}
   bulletManager: {fileID: 363245578}
+  player: {fileID: 4414282821800802398}
+--- !u!114 &739865812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 739865809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97ef61d27c0155d49b38cc6e5d67a060, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Game::Game.Core.GameLoop
+  uiHandler: {fileID: 177601769}
 --- !u!1 &770582453
 GameObject:
   m_ObjectHideFlags: 0

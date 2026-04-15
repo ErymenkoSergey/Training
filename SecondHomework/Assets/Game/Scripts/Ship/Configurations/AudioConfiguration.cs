@@ -16,7 +16,7 @@ namespace Game.Mechanics.Configuration
         public void PlayFireSFX()
         {
             if (soundData)
-                PlaySound(soundData.FireSFX); // перенести в метод эффекты. и  вызывать их от туда
+                PlaySound(soundData.FireSFX);
         }
 
         public void PlayDamageSFX()

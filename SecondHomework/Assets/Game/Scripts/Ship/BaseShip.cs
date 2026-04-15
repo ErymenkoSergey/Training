@@ -7,9 +7,9 @@ using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
-    public class BaseShip : MonoBehaviour, IHealth, IMovable, IShot
+    public class BaseShip : MonoBehaviour, IHealth, IMovable, IShot, IShipStatus
     {
-        public event Action<int> OnHealthChanged;
+        public event Action<int, int> OnHealthChanged;
         public event Action OnDead;
         
         [Header("Data")]
@@ -17,19 +17,19 @@ namespace Game.Mechanics.Ship
 
         private int currentHealth;
         private const int DEAD_VALUE_HEALTH = 0;
-        
-        [Header("Combat")] 
-        [SerializeField] private Transform firePoint;
+
+        [Header("Combat")] [SerializeField] private Transform firePoint;
         public Transform FirePoint => firePoint;
         public float FireTime = 0f;
         public int CurrentMaxHealth => config.Health;
-        
+
         [Header("Movement")] [SerializeField] private Engine engine;
         [Header("Visual")] [SerializeField] private VisualConfiguration visual;
         [Header("Sound")] [SerializeField] private SoundConfiguration sound;
-        
+
         private Vector3 moveDirection;
         private IBulletSpawner iBulletSpawner;
+        private IShipStatus shipStatusImplementation;
 
         public void Construct(IBulletSpawner iBulletSpawner)
         {
@@ -43,11 +43,11 @@ namespace Game.Mechanics.Ship
             visual.VisualStart();
         }
 
-        private void LateUpdate()
+        private void LateUpdate() //?
         {
             if (currentHealth <= DEAD_VALUE_HEALTH)
                 return;
-            
+
             visual.AnimateMovement(Time.deltaTime, moveDirection);
         }
 
@@ -57,7 +57,7 @@ namespace Game.Mechanics.Ship
         {
             if (currentHealth <= DEAD_VALUE_HEALTH)
                 return;
-            
+
             moveDirection = direction;
             engine.MoveStep(moveDirection);
             engine.FixedUpdate();
@@ -83,10 +83,9 @@ namespace Game.Mechanics.Ship
         public void SetDamage(int damage)
         {
             currentHealth = Mathf.Clamp(currentHealth - damage, DEAD_VALUE_HEALTH, CurrentMaxHealth);
-            
-            OnHealthChanged?.Invoke(currentHealth);
+            OnHealthChanged?.Invoke(currentHealth, CurrentMaxHealth);
             visual.AnimateDamage();
-            
+
             if (currentHealth <= DEAD_VALUE_HEALTH)
                 Dead();
             else
@@ -99,6 +98,8 @@ namespace Game.Mechanics.Ship
             OnDead?.Invoke();
             config.VFXData.SpawnShipExplosionVFX(transform);
         }
+        
+        public GameObject GetShip() => gameObject;
 
         private BulletNavigation GetBulletConfiguration(Vector3 direction)
         {

@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Game.Interfaces;
 using Game.Mechanics.Config;
@@ -10,34 +9,33 @@ using Random = UnityEngine.Random;
 namespace Game.Mechanics.Spawner
 {
     public sealed class EnemyController : MonoBehaviour, IPool<Enemy>
-    { 
-        [Header("Spawn Settings")]
-        [SerializeField]
+    {
+        [Header("Spawn Settings")] [SerializeField]
         private float minSpawnCooldown = 2;
 
-        [SerializeField] 
-        private float maxSpawnCooldown = 3;
+        [SerializeField] private float maxSpawnCooldown = 3;
         private float spawnCooldown;
         private float spawnTime;
 
-        [SerializeField]
-        private Enemy prefab;
+        [SerializeField] private Enemy prefab;
 
         [SerializeField] private Transform container;
-       
+
         [Header("Points")] [SerializeField] private Transform[] spawnPositions;
         [SerializeField] private Transform[] attackPositions;
 
         private int spawnIndex;
         private int attackIndex;
         private int destroyedEnemies;
-        
+
         private readonly Queue<Enemy> pool = new();
-        
+
         private IBulletSpawner iBulletSpawner;
         private ITarget target;
         private IScore iScore;
         private IGameLoop gameLoop;
+
+        private bool isTargetDestroyed;
 
         public void Construct(IBulletSpawner iBulletSpawner, ITarget target, IScore iScore)
         {
@@ -53,10 +51,14 @@ namespace Game.Mechanics.Spawner
             attackPositions.Shuffle();
             iScore.ChangeScore(destroyedEnemies);
             ResetSpawnCooldown();
+            target.OnDestroyed += TargetDestroy;
         }
 
         private void FixedUpdate()
         {
+            if (isTargetDestroyed)
+                return;
+
             float time = Time.fixedTime;
             if (time - spawnTime < spawnCooldown)
                 return;
@@ -92,7 +94,7 @@ namespace Game.Mechanics.Spawner
             spawnCooldown = Random.Range(minSpawnCooldown, maxSpawnCooldown);
             spawnTime = Time.fixedTime;
         }
-        
+
         private Vector3 NextSpawnPosition()
         {
             if (spawnIndex >= spawnPositions.Length)
@@ -119,15 +121,15 @@ namespace Game.Mechanics.Spawner
         {
             destroyedEnemies++;
             iScore.ChangeScore(destroyedEnemies);
-            StartCoroutine(DespawnInNextFrame(enemy));
-        }
-        
-        private IEnumerator DespawnInNextFrame(Enemy enemy)
-        {
-            yield return null;
             enemy.gameObject.SetActive(false);
             enemy.ResetData();
             pool.Enqueue(enemy);
+        }
+
+        private void TargetDestroy()
+        {
+            isTargetDestroyed = true;
+            target.OnDestroyed -= TargetDestroy;
         }
     }
 }

@@ -10,15 +10,15 @@ namespace Modules.Utils
         [SerializeField] private Vector3 _strength;
         [SerializeField] private int _vibrato;
         [SerializeField] private ShakeRandomnessMode _randomnessMode;
-        
-        private Tweener _tween;
+
+        private Tweener tween;
 
         public void Shake()
         {
-            if (_tween.IsActive()) 
-                _tween.Complete();
+            if (tween.IsActive())
+                tween.Complete();
 
-            _tween = _transform.DOShakePosition(_duration, _strength, _vibrato, randomnessMode: _randomnessMode)
+            tween = _transform.DOShakePosition(_duration, _strength, _vibrato, randomnessMode: _randomnessMode)
                 .SetLink(_transform.gameObject);
         }
     }

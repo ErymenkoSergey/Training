@@ -9,7 +9,7 @@ namespace Game.Mechanics.Configuration
     public sealed class VisualConfiguration
     {
         [SerializeField] private VisualConfig visualConfig;
-        [SerializeField] private Renderer _renderer; // ссылки на корабле... // а логику можн перенести в другой класс!
+        [SerializeField] private Renderer _renderer;
         [SerializeField] private Transform _viewTransform;
         [SerializeField] private ParticleSystem _fireVFX;
         private Material _material;
@@ -20,10 +20,10 @@ namespace Game.Mechanics.Configuration
             _material = new Material(visualConfig.MaterialPrefab);
             _renderer.material = _material;
         }
-        
+
         public void ShowFireVFX() => _fireVFX?.Play();
 
-        public void AnimateMovement(float deltaTime, Vector3 moveDirection) // логику в другой класс (анимации ) 
+        public void AnimateMovement(float deltaTime, Vector3 moveDirection)
         {
             Vector3 shipAngles = _viewTransform.localEulerAngles;
             shipAngles.x = visualConfig.MoveRotationAngle * moveDirection.y;

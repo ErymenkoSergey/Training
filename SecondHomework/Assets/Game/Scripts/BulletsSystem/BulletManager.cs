@@ -8,9 +8,8 @@ namespace Game.Mechanics.BulletsSystem
 {
     public sealed class BulletManager : MonoBehaviour, IBulletSpawner, IPool<Bullet>
     {
-        [Header("Data")]
-        [SerializeField] private BulletSystemConfig bulletSystemConfig;
-        [SerializeField] private Transform container; 
+        [Header("Data")] [SerializeField] private BulletSystemConfig bulletSystemConfig;
+        [SerializeField] private Transform container;
         [SerializeField] private TransformBounds levelBounds;
         private readonly Stack<Bullet> bulletPool = new();
 
@@ -21,9 +20,9 @@ namespace Game.Mechanics.BulletsSystem
                 Debug.LogError("No Data Configuration SO");
                 return;
             }
-            
+
             bulletSystemConfig.SetReferences(levelBounds);
-            
+
             for (var i = 0; i < bulletSystemConfig.SizePool; i++)
             {
                 Bullet bullet = Instantiate(bulletSystemConfig.CreateBullet(), container);
@@ -40,7 +39,7 @@ namespace Game.Mechanics.BulletsSystem
                 bullet = Instantiate(bulletSystemConfig.CreateBullet(), container);
             bullet.SetData(this, bulletSystemConfig.VFXData, config);
         }
-        
+
         public void Return(Bullet enemy)
         {
             enemy.gameObject.SetActive(false);
