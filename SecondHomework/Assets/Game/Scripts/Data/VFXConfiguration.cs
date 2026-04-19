@@ -4,8 +4,8 @@ using UnityEngine.Serialization;
 
 namespace Game.Data.VFX
 {
-    [CreateAssetMenu(fileName = "ExplosionVFXData", menuName = "Game/New ExplosionVFXData", order = 1)]
-    public sealed class VFXData : ScriptableObject, Ivfx
+    [CreateAssetMenu(fileName = "VFXConfiguration", menuName = "Game/New VFXConfiguration", order = 1)]
+    public sealed class VFXConfiguration : ScriptableObject, Ivfx
     {
         [Header("Explosions")] [SerializeField]
         private float timeReturn = 3f;

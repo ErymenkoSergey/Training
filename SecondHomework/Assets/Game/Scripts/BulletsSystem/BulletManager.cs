@@ -3,29 +3,30 @@ using Modules.Utils;
 using UnityEngine;
 using System.Collections.Generic;
 using Game.Interfaces;
+using UnityEngine.Serialization;
 
 namespace Game.Mechanics.BulletsSystem
 {
     public sealed class BulletManager : MonoBehaviour, IBulletSpawner, IPool<Bullet>
     {
-        [Header("Data")] [SerializeField] private BulletSystemConfig bulletSystemConfig;
+        [FormerlySerializedAs("bulletSystemConfig")] [Header("Data")] [SerializeField] private BulletSystemConfiguration bulletSystemConfiguration;
         [SerializeField] private Transform container;
         [SerializeField] private TransformBounds levelBounds;
         private readonly Stack<Bullet> bulletPool = new();
 
         public void Awake()
         {
-            if (bulletSystemConfig == null)
+            if (bulletSystemConfiguration == null)
             {
                 Debug.LogError("No Data Configuration SO");
                 return;
             }
 
-            bulletSystemConfig.SetReferences(levelBounds);
+            bulletSystemConfiguration.SetReferences(levelBounds);
 
-            for (var i = 0; i < bulletSystemConfig.SizePool; i++)
+            for (var i = 0; i < bulletSystemConfiguration.SizePool; i++)
             {
-                Bullet bullet = Instantiate(bulletSystemConfig.CreateBullet(), container);
+                Bullet bullet = Instantiate(bulletSystemConfiguration.CreateBullet(), container);
                 bullet.gameObject.SetActive(false);
                 bulletPool.Push(bullet);
             }
@@ -36,8 +37,8 @@ namespace Game.Mechanics.BulletsSystem
             if (bulletPool.TryPop(out Bullet bullet))
                 bullet.gameObject.SetActive(true);
             else
-                bullet = Instantiate(bulletSystemConfig.CreateBullet(), container);
-            bullet.SetData(this, bulletSystemConfig.VFXData, config);
+                bullet = Instantiate(bulletSystemConfiguration.CreateBullet(), container);
+            bullet.SetData(this, bulletSystemConfiguration.VFXConfiguration, config);
         }
 
         public void Return(Bullet enemy)

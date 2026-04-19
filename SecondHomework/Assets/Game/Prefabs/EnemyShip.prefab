@@ -132,21 +132,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Game::Game.Mechanics.Ship.BaseShip
   config: {fileID: 11400000, guid: 342eb63e507d644daae6ffc27bd8fc71, type: 2}
-  currentHealth: 2
-  firePoint: {fileID: 3195880656587174614}
-  fireTime: 2
-  _playerArea: {fileID: 0}
-  engine:
+  engineComponent:
     rigidbody: {fileID: 659620479434099170}
-    speed: 3
+    speed: 2
   visual:
-    visualConfig: {fileID: 11400000, guid: f6ecf0b3d1d004b3893cc42c64995303, type: 2}
+    visualConfiguration: {fileID: 11400000, guid: f6ecf0b3d1d004b3893cc42c64995303, type: 2}
     _renderer: {fileID: 1333951631294404335}
     _viewTransform: {fileID: 2570692159425164225}
     _fireVFX: {fileID: 5248985236346848164}
   sound:
     audioSource: {fileID: 4560017961611896118}
-    soundData: {fileID: 11400000, guid: 0769d70b8417ead4dac74079955c7bc7, type: 2}
+    soundConfiguration: {fileID: 11400000, guid: 0769d70b8417ead4dac74079955c7bc7, type: 2}
+  weapon:
+    firePoint: {fileID: 3195880656587174614}
 --- !u!82 &4560017961611896118
 AudioSource:
   m_ObjectHideFlags: 0

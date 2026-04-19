@@ -27,7 +27,7 @@ namespace Game.Core
         {
             playerShip = player.Ship;
             iMovable = playerShip;
-            iShot = playerShip;
+            iShot = playerShip.IShot;
             iShipStatus = playerShip;
 
             gameLoop.SetPlayerStatus(iShipStatus);

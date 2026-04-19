@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Game.Mechanics.Ship
 {
     [Serializable]
-    public sealed class Engine
+    public sealed class EngineComponent
     {
         [SerializeField] private Rigidbody2D rigidbody;
         [SerializeField] private float speed;

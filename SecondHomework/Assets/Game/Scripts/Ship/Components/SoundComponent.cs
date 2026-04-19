@@ -3,32 +3,32 @@ using Game.Data;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace Game.Mechanics.Configuration
+namespace Game.Mechanics.Components
 {
     [Serializable]
-    public sealed class SoundConfiguration
+    public sealed class SoundComponent
     {
         [FormerlySerializedAs("_audioSource")] [SerializeField]
         private AudioSource audioSource;
 
-        [SerializeField] private SoundData soundData;
+        [FormerlySerializedAs("soundData")] [SerializeField] private SoundConfiguration soundConfiguration;
         
         public void PlayFireSFX()
         {
-            if (soundData)
-                PlaySound(soundData.FireSFX);
+            if (soundConfiguration)
+                PlaySound(soundConfiguration.FireSFX);
         }
 
         public void PlayDamageSFX()
         {
-            if (soundData)
-                PlaySound(soundData.DamageSFX);
+            if (soundConfiguration)
+                PlaySound(soundConfiguration.DamageSFX);
         }
 
         public void PlayDeadSFX()
         {
-            if (soundData)
-                PlaySound(soundData.DeadSFX);
+            if (soundConfiguration)
+                PlaySound(soundConfiguration.DeadSFX);
         }
 
         private void PlaySound(AudioClip clip) => audioSource?.PlayOneShot(clip);

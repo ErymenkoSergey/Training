@@ -13,11 +13,11 @@ namespace Game.Mechanics.Ship
         private float fireTime;
         private IShot iShot;
 
-        public void SetData(Transform firePoint, Transform target, float fireTime, IShot iShot)
+        public void SetData(Transform target, IShot iShot)
         {
-            this.firePoint = firePoint;
+            this.firePoint = iShot.FirePoint;
             this.target = target;
-            this.fireTime = fireTime;
+            this.fireTime = iShot.FireTime;
             this.iShot = iShot;
         }
 

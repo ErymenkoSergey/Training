@@ -597,7 +597,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fc7ba463742f5c4f9f0e58dbf9be45f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::BulletField
-  bulletSystemConfig: {fileID: 11400000, guid: 2b6d79ed1dfe127479b71efcd37a96b5, type: 2}
+  bulletSystemConfiguration: {fileID: 11400000, guid: 2b6d79ed1dfe127479b71efcd37a96b5, type: 2}
   container: {fileID: 363245576}
   levelBounds: {fileID: 2572952653776768186}
 --- !u!1 &404085825
@@ -2433,6 +2433,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1498479407}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1632079880 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8503432944885784460, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
+  m_PrefabInstance: {fileID: 3559832809919233303}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1736145931
 GameObject:
   m_ObjectHideFlags: 0
@@ -3213,6 +3218,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6462933697798340409, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
+      propertyPath: weapon.firePoint
+      value: 
+      objectReference: {fileID: 1632079880}
+    - target: {fileID: 6462933697798340409, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
+      propertyPath: engineComponent.speed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6462933697798340409, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
+      propertyPath: engineComponent.rigidbody
+      value: 
+      objectReference: {fileID: 4414282821800802402}
+    - target: {fileID: 6462933697798340409, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
+      propertyPath: visual.visualConfiguration
+      value: 
+      objectReference: {fileID: 11400000, guid: 9298f762411724a389beae656b1dfcaa, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3281,6 +3302,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aab487c3ce89407b8153f9c2ff593bc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Game::Game.Mechanics.Ship.PlayerShip
+--- !u!50 &4414282821800802402 stripped
+Rigidbody2D:
+  m_CorrespondingSourceObject: {fileID: 4575139502811685103, guid: 0446acb84a7c9424d841676cef3b1d04, type: 3}
+  m_PrefabInstance: {fileID: 3559832809919233303}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &4788406047096451828
 GameObject:
   m_ObjectHideFlags: 0

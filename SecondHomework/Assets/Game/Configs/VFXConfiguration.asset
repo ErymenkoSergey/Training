@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9717fc32aa01448e80c6888f7df05926, type: 3}
-  m_Name: BulletView
+  m_Name: VFXConfiguration
   m_EditorClassIdentifier: Game::Game.BulletConfigView
   enemyExplosionVFX: {fileID: 1101452535904402, guid: 742ae5c3589574c4195065193e9181b5, type: 3}
   playerExplosionVFX: {fileID: 1101452535904402, guid: 91acdbd2820f9ce418996a0a24d91079, type: 3}

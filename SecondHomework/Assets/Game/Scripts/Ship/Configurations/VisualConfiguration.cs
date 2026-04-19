@@ -1,51 +1,28 @@
-using System;
-using DG.Tweening;
-using Game.Data;
 using UnityEngine;
 
-namespace Game.Mechanics.Configuration
+namespace Game.Data
 {
-    [Serializable]
-    public sealed class VisualConfiguration
+    [CreateAssetMenu(menuName = "Game/VisualConfig", order = 0)]
+    public sealed class VisualConfiguration : ScriptableObject
     {
-        [SerializeField] private VisualConfig visualConfig;
-        [SerializeField] private Renderer _renderer;
-        [SerializeField] private Transform _viewTransform;
-        [SerializeField] private ParticleSystem _fireVFX;
-        private Material _material;
-        private Tweener _damageAnimation;
+        [field: SerializeField] public Material MaterialPrefab { get; private set; }
 
-        public void VisualStart()
-        {
-            _material = new Material(visualConfig.MaterialPrefab);
-            _renderer.material = _material;
-        }
+        [Header("Damage")]
+        [field: SerializeField]
+        public AnimationCurve HitAnimationCurve { get; private set; }
 
-        public void ShowFireVFX() => _fireVFX?.Play();
+        [field: SerializeField] public string HitPropertyName { get; private set; } = "_HitBlend";
 
-        public void AnimateMovement(float deltaTime, Vector3 moveDirection)
-        {
-            Vector3 shipAngles = _viewTransform.localEulerAngles;
-            shipAngles.x = visualConfig.MoveRotationAngle * moveDirection.y;
-            shipAngles.y = visualConfig.MoveRotationAngle / 2 * moveDirection.x * -1f;
+        [field: SerializeField] public float HitDuration { get; private set; } = 0.2f;
 
-            Quaternion shipRotation = Quaternion.Euler(shipAngles);
-            float t = visualConfig.MoveSpeed * deltaTime;
-            _viewTransform.localRotation = Quaternion.Lerp(_viewTransform.localRotation, shipRotation, t);
-        }
+        [Header("Move")]
+        [field: SerializeField]
+        public float MoveRotationAngle { get; private set; } = 30f;
 
-        public void AnimateDamage()
-        {
-            if (_damageAnimation.IsActive())
-                _damageAnimation.Kill();
+        [field: SerializeField] public float MoveSpeed { get; private set; } = 5;
 
-            _damageAnimation = DOVirtual.Float(
-                0f,
-                1f,
-                visualConfig.HitDuration,
-                progress => _material?.SetFloat(visualConfig.HitPropertyName,
-                    visualConfig.HitAnimationCurve.Evaluate(progress))
-            ).SetLink(_renderer.gameObject);
-        }
+        [Header("Destroy")]
+        [field: SerializeField]
+        public ParticleSystem DestroyEffectPrefab { get; private set; }
     }
 }

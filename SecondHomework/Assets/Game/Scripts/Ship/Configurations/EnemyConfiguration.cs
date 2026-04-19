@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Mechanics.Config
 {
-   public class EnemyConfiguration
+   public class EnemyConfiguration // Args!
    {
       public Vector3 SpawnPosition;
       public Vector3 AttackPosition;

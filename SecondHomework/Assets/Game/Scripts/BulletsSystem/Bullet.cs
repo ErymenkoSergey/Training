@@ -4,6 +4,7 @@ using Game.Interfaces;
 using Game.Mechanics.BulletsSystem.Data;
 using Modules.Utils;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Mechanics.BulletsSystem
 {
@@ -14,7 +15,7 @@ namespace Game.Mechanics.BulletsSystem
         private float speed;
         private TeamType team = TeamType.None;
 
-        [SerializeField] private BulletSystemConfig config;
+        [FormerlySerializedAs("config")] [SerializeField] private BulletSystemConfiguration configuration;
         [SerializeField] private TransformBounds levelBounds;
         private GameObject currentFlicker;
 
@@ -41,7 +42,7 @@ namespace Game.Mechanics.BulletsSystem
         {
             if (team != TeamType.None)
             {
-                var data = config.GetBulletConfiguration(team);
+                var data = configuration.GetBulletConfiguration(team);
                 speed = data.Speed;
                 damage = data.Damage;
                 gameObject.layer = LayerMask.NameToLayer(data.BulletNameMask);

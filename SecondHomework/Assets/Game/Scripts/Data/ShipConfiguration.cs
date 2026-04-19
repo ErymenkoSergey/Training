@@ -1,11 +1,12 @@
 using Game.Data.VFX;
 using Game.Enums;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Data
 {
     [CreateAssetMenu(menuName = "Game/ShipData", order = 0)]
-    public class ShipData : ScriptableObject
+    public class ShipConfiguration : ScriptableObject
     {
         [Header("Core")]
         
@@ -21,7 +22,7 @@ namespace Game.Data
         [field: SerializeField]
         public float FireCooldown { get; private set; } = 0.25f;
         
-        [SerializeField] private VFXData vfxData;
-        public VFXData VFXData => vfxData;
+        [FormerlySerializedAs("vfxData")] [SerializeField] private VFXConfiguration vfxConfiguration;
+        public VFXConfiguration VFXConfiguration => vfxConfiguration;
     }
 }

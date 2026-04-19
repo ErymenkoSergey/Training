@@ -2,34 +2,26 @@ using System;
 using Game.Data;
 using Game.Interfaces;
 using Game.Mechanics.BulletsSystem;
-using Game.Mechanics.Configuration;
+using Game.Mechanics.Components;
 using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
-    public class BaseShip : MonoBehaviour, IHealth, IMovable, IShot, IShipStatus
+    public class BaseShip : MonoBehaviour, IMovable, IHealth, IShipStatus
     {
         public event Action<int, int> OnHealthChanged;
         public event Action OnDead;
         
-        [Header("Data")]
-        [SerializeField] private ShipData config;
-
-        private int currentHealth;
-        private const int DEAD_VALUE_HEALTH = 0;
-
-        [Header("Combat")] [SerializeField] private Transform firePoint;
-        public Transform FirePoint => firePoint;
-        public float FireTime = 0f;
-        public int CurrentMaxHealth => config.Health;
-
-        [Header("Movement")] [SerializeField] private Engine engine;
-        [Header("Visual")] [SerializeField] private VisualConfiguration visual;
-        [Header("Sound")] [SerializeField] private SoundConfiguration sound;
+        [Header("Data")] [SerializeField] private ShipConfiguration config;
+        [Header("Engine")] [SerializeField] private EngineComponent engineComponent;
+        [Header("Health")] [SerializeField] private HealthComponent health;
+        [Header("Visual")] [SerializeField] private VisualComponent visual;
+        [Header("Sound")] [SerializeField] private SoundComponent sound;
+        [Header("Weapon")] [SerializeField] private WeaponComponent weapon;
+        public IShot IShot => weapon;
 
         private Vector3 moveDirection;
         private IBulletSpawner iBulletSpawner;
-        private IShipStatus shipStatusImplementation;
 
         public void Construct(IBulletSpawner iBulletSpawner)
         {
@@ -40,38 +32,41 @@ namespace Game.Mechanics.Ship
         private void StartShip()
         {
             ResetData();
+            IShot.OnShot += FireEffect;
             visual.VisualStart();
         }
 
-        private void LateUpdate() //?
+        private void LateUpdate()
         {
-            if (currentHealth <= DEAD_VALUE_HEALTH)
+            if (health.IsDead)
                 return;
 
             visual.AnimateMovement(Time.deltaTime, moveDirection);
         }
 
-        public void ResetData() => currentHealth = config.Health;
+        public void ResetData()
+        {
+            health.SetHealth(config.Health);
+            health.SetHealthMax(config.Health);
+        }
 
         public void ChangeDirection(Vector2 direction)
         {
-            if (currentHealth <= DEAD_VALUE_HEALTH)
+            if (health.IsDead)
                 return;
 
             moveDirection = direction;
-            engine.MoveStep(moveDirection);
-            engine.FixedUpdate();
+            engineComponent.MoveStep(moveDirection);
+            engineComponent.FixedUpdate();
         }
 
-        public void Fire(Vector3 direction)
+        private void FireEffect(Vector3 direction)
         {
-            float time = Time.time;
-            if (time - FireTime < config.FireCooldown || currentHealth <= DEAD_VALUE_HEALTH)
+            if (health.IsDead)
                 return;
-
+            
             ShowEffectFire();
             iBulletSpawner.Spawn(GetBulletConfiguration(direction));
-            FireTime = time;
         }
 
         private void ShowEffectFire()
@@ -82,11 +77,11 @@ namespace Game.Mechanics.Ship
 
         public void SetDamage(int damage)
         {
-            currentHealth = Mathf.Clamp(currentHealth - damage, DEAD_VALUE_HEALTH, CurrentMaxHealth);
-            OnHealthChanged?.Invoke(currentHealth, CurrentMaxHealth);
+            health.TakeDamage(damage);
+            OnHealthChanged?.Invoke(health.CurrentHealth, health.CurrentMaxHealth);
             visual.AnimateDamage();
 
-            if (currentHealth <= DEAD_VALUE_HEALTH)
+            if (health.IsDead)
                 Dead();
             else
                 sound.PlayDamageSFX();
@@ -96,7 +91,8 @@ namespace Game.Mechanics.Ship
         {
             sound.PlayDeadSFX();
             OnDead?.Invoke();
-            config.VFXData.SpawnShipExplosionVFX(transform);
+            IShot.OnShot -= FireEffect;
+            config.VFXConfiguration.SpawnShipExplosionVFX(transform);
         }
         
         public GameObject GetShip() => gameObject;
@@ -105,7 +101,7 @@ namespace Game.Mechanics.Ship
         {
             BulletNavigation bulletConfiguration = new BulletNavigation();
             bulletConfiguration.Team = config.Team;
-            bulletConfiguration.Position = firePoint.position;
+            bulletConfiguration.Position = weapon.FirePoint.position;
             bulletConfiguration.Direction = direction;
             return bulletConfiguration;
         }

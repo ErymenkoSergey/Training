@@ -24,7 +24,7 @@ namespace Game.Mechanics.Ship
             transform.position = config.SpawnPosition;
             destination = config.AttackPosition;
             respawn = config.Respawn;
-            cooldown.SetData(ship.FirePoint, target.GetTransform(), ship.FireTime, ship);
+            cooldown.SetData(target.GetTransform(), ship.IShot);
             ship.Construct(config.BulletSpawner);
             ship.OnDead += OnCharacterDead;
             target.OnDestroyed += TargetDestroyed;
