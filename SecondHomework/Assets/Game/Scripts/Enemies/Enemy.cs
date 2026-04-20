@@ -15,7 +15,7 @@ namespace Game.Mechanics.Ship
         private ITarget target;
         private bool isFinished;
 
-        public void SetData(EnemyConfiguration config)
+        public void SetData(EnemyArgs config)
         {
             if (ship == null)
                 Debug.LogError($"Enemy Ship ref is null");

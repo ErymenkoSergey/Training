@@ -1,3 +1,4 @@
+using System;
 using Game.Data.VFX;
 using Game.Enums;
 using Game.Interfaces;
@@ -10,6 +11,8 @@ namespace Game.Mechanics.BulletsSystem
 {
     public sealed class Bullet : MonoBehaviour
     {
+        public event Action<Bullet> OnDestroy;
+        
         private Vector2 direction;
         private int damage;
         private float speed;
@@ -19,19 +22,17 @@ namespace Game.Mechanics.BulletsSystem
         [SerializeField] private TransformBounds levelBounds;
         private GameObject currentFlicker;
 
-        private IPool<Bullet> pool;
         private Ivfx ivfx;
 
-        public void Initialize(TransformBounds levelBounds) => this.levelBounds = levelBounds;
+        public void Construct(TransformBounds levelBounds) => this.levelBounds = levelBounds; // сделать монобеховскую фабрику
 
-        public void SetData(IPool<Bullet> pool, Ivfx ivfx, BulletNavigation navigation)
+        public void SetArgs(Ivfx ivfx, BulletArgs args)
         {
-            this.pool = pool;
             this.ivfx = ivfx;
 
-            team = navigation.Team;
-            direction = navigation.Direction;
-            transform.position = navigation.Position;
+            team = args.Team;
+            direction = args.Direction;
+            transform.position = args.Position;
             transform.rotation = Quaternion.LookRotation(direction, Vector3.forward);
 
             FlickerEffect(true);
@@ -53,7 +54,7 @@ namespace Game.Mechanics.BulletsSystem
         {
             if (ivfx == null)
                 return;
-
+            
             if (isCreate)
             {
                 var vfxPrefab = ivfx.GetFlickerVFX(team);
@@ -89,7 +90,7 @@ namespace Game.Mechanics.BulletsSystem
         private void ReturnBullet()
         {
             FlickerEffect(false);
-            pool.Return(this);
+            OnDestroy?.Invoke(this);
         }
 
         private void TakeDamage(IHealth ship)

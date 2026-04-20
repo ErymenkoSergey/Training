@@ -25,7 +25,7 @@ namespace Game.Mechanics.BulletsSystem.Data
         public Bullet CreateBullet()
         {
             var bullet = prefab;
-            bullet.Initialize(levelBounds); 
+            bullet.Construct(levelBounds); 
             return bullet;
         }
 

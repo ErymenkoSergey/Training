@@ -7,12 +7,12 @@ using UnityEngine.Serialization;
 
 namespace Game.Mechanics.BulletsSystem
 {
-    public sealed class BulletManager : MonoBehaviour, IBulletSpawner, IPool<Bullet>
+    public sealed class BulletManager : MonoBehaviour, IBulletSpawner
     {
         [FormerlySerializedAs("bulletSystemConfig")] [Header("Data")] [SerializeField] private BulletSystemConfiguration bulletSystemConfiguration;
         [SerializeField] private Transform container;
         [SerializeField] private TransformBounds levelBounds;
-        private readonly Stack<Bullet> bulletPool = new();
+        private readonly Stack<Bullet> bulletPool = new(); // Сделать универсальный пул 
 
         public void Awake()
         {
@@ -32,19 +32,21 @@ namespace Game.Mechanics.BulletsSystem
             }
         }
 
-        public void Spawn(BulletNavigation config)
+        public void Spawn(BulletArgs config)
         {
             if (bulletPool.TryPop(out Bullet bullet))
                 bullet.gameObject.SetActive(true);
             else
                 bullet = Instantiate(bulletSystemConfiguration.CreateBullet(), container);
-            bullet.SetData(this, bulletSystemConfiguration.VFXConfiguration, config);
+            bullet.SetArgs(bulletSystemConfiguration.VFXConfiguration, config);
+            bullet.OnDestroy += Return;
         }
 
-        public void Return(Bullet enemy)
+        private void Return(Bullet bullet)
         {
-            enemy.gameObject.SetActive(false);
-            bulletPool.Push(enemy);
+            bullet.OnDestroy -= Return;
+            bullet.gameObject.SetActive(false);
+            bulletPool.Push(bullet);
         }
     }
 }

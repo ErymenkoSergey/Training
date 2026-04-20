@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Game.Interfaces;
+using Game.Mechanics.Components;
 using Game.Mechanics.Config;
 using Game.Mechanics.Ship;
 using Modules.Utils;
@@ -18,17 +19,13 @@ namespace Game.Mechanics.Spawner
         private float spawnTime;
 
         [SerializeField] private Enemy prefab;
-
         [SerializeField] private Transform container;
 
-        [Header("Points")] [SerializeField] private Transform[] spawnPositions;
-        [SerializeField] private Transform[] attackPositions;
-
-        private int spawnIndex;
-        private int attackIndex;
         private int destroyedEnemies;
-
         private readonly Queue<Enemy> pool = new();
+        
+        [Header("Enemy Positions")]
+        [SerializeField] private EnemyPositions positions;
 
         private IBulletSpawner iBulletSpawner;
         private ITarget target;
@@ -47,8 +44,7 @@ namespace Game.Mechanics.Spawner
 
         private void StartSystem()
         {
-            spawnPositions.Shuffle();
-            attackPositions.Shuffle();
+            positions.Construct();
             iScore.ChangeScore(destroyedEnemies);
             ResetSpawnCooldown();
             target.OnDestroyed += TargetDestroy;
@@ -73,16 +69,16 @@ namespace Game.Mechanics.Spawner
             else
                 enemy = Instantiate(prefab, container);
 
-            enemy.SetData(GetConfiguration());
+            enemy.SetData(GetArgs());
 
             ResetSpawnCooldown();
         }
 
-        private EnemyConfiguration GetConfiguration()
+        private EnemyArgs GetArgs()
         {
-            EnemyConfiguration config = new EnemyConfiguration();
-            config.SpawnPosition = NextSpawnPosition();
-            config.AttackPosition = NextDestination();
+            EnemyArgs config = new EnemyArgs();
+            config.SpawnPosition = positions.NextSpawnPosition();
+            config.AttackPosition = positions.NextDestination();
             config.Target = target;
             config.Respawn = this;
             config.BulletSpawner = iBulletSpawner;
@@ -94,29 +90,7 @@ namespace Game.Mechanics.Spawner
             spawnCooldown = Random.Range(minSpawnCooldown, maxSpawnCooldown);
             spawnTime = Time.fixedTime;
         }
-
-        private Vector3 NextSpawnPosition()
-        {
-            if (spawnIndex >= spawnPositions.Length)
-            {
-                spawnPositions.Shuffle();
-                spawnIndex = 0;
-            }
-
-            return spawnPositions[spawnIndex++].position;
-        }
-
-        private Vector3 NextDestination()
-        {
-            if (attackIndex >= attackPositions.Length)
-            {
-                attackPositions.Shuffle();
-                attackIndex = 0;
-            }
-
-            return attackPositions[attackIndex++].position;
-        }
-
+        
         public void Return(Enemy enemy)
         {
             destroyedEnemies++;

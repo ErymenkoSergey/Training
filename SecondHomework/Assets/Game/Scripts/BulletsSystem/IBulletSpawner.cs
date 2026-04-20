@@ -4,6 +4,6 @@ namespace Game.Interfaces
 {
     public interface IBulletSpawner
     {
-        void Spawn(BulletNavigation config);
+        void Spawn(BulletArgs config);
     }
 }

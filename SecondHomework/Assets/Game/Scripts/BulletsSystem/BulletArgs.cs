@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Mechanics.BulletsSystem
 {
-    public class BulletNavigation
+    public class BulletArgs
     {
         public TeamType Team;
         public Vector3 Direction;

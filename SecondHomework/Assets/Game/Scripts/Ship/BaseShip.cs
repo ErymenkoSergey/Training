@@ -97,9 +97,9 @@ namespace Game.Mechanics.Ship
         
         public GameObject GetShip() => gameObject;
 
-        private BulletNavigation GetBulletConfiguration(Vector3 direction)
+        private BulletArgs GetBulletConfiguration(Vector3 direction)
         {
-            BulletNavigation bulletConfiguration = new BulletNavigation();
+            BulletArgs bulletConfiguration = new BulletArgs();
             bulletConfiguration.Team = config.Team;
             bulletConfiguration.Position = weapon.FirePoint.position;
             bulletConfiguration.Direction = direction;
