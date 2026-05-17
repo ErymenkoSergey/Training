@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game.Mechanics.Ship
 {
-    public sealed class PlayerShip : MonoBehaviour, ITarget
+    public sealed class PlayerShip : MonoBehaviour, ITarget // нужен отдельный контроллер для этого клампа позиций  11:00
     {
         public event Action OnDestroyed;
 

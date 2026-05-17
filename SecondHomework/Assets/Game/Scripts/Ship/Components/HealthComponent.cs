@@ -13,9 +13,12 @@ namespace Game.Mechanics.Components
         [SerializeField,ReadOnly] public int CurrentMaxHealth;
         public int CurrentHealth => currentHealth;
         public bool IsDead { get; private set; }
-        
-        public void SetHealth(int health) => currentHealth = health;
-        public void SetHealthMax(int maxHealth) => CurrentMaxHealth = maxHealth;
+
+        public void ResetDataHealth(int health)
+        {
+            CurrentMaxHealth = currentHealth = health;
+            IsDead = false;
+        }
         
         public void TakeDamage(int damage)
         {

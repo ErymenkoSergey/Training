@@ -14,7 +14,10 @@ namespace Game.Core
         [SerializeField] private EnemyController enemyController;
         [SerializeField] private BulletManager bulletManager;
         [SerializeField] private PlayerShip player;
+        [SerializeField] private Score score;
+        
         private BaseShip playerShip;
+        
         private ITarget target => player;
         private IMovable iMovable;
         private IShot iShot;
@@ -33,7 +36,7 @@ namespace Game.Core
             gameLoop.SetPlayerStatus(iShipStatus);
             playerShip.Construct(IBulletSpawner);
             input.Construct(iMovable, iShot, gameLoop);
-            enemyController.Construct(IBulletSpawner, target, gameLoop);
+            enemyController.Construct(target, score, IBulletSpawner);
         }
     }
 }

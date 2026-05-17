@@ -10,20 +10,21 @@ namespace Game.Mechanics.Ship
         [SerializeField] private float _fireCooldown = 1.25f;
         private Transform target;
         private Transform firePoint;
-        private float fireTime;
+        [SerializeField] private float fireTime;
         private IShot iShot;
 
         public void SetData(Transform target, IShot iShot)
         {
             this.firePoint = iShot.FirePoint;
             this.target = target;
-            this.fireTime = iShot.FireTime;
+            this.fireTime = iShot.FireTime = 0f;
             this.iShot = iShot;
         }
 
         public void ShootingCooldown()
         {
             float time = Time.time;
+          
             if (time - fireTime >= _fireCooldown)
             {
                 iShot.Fire(GetTarget());

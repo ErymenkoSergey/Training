@@ -26,16 +26,16 @@ namespace Game.Mechanics.Ship
         public void Construct(IBulletSpawner iBulletSpawner)
         {
             this.iBulletSpawner = iBulletSpawner;
-            StartShip();
+            ResetData();
         }
 
-        private void StartShip()
+        public void ResetData()
         {
-            ResetData();
+            health.ResetDataHealth(config.Health);
             IShot.OnShot += FireEffect;
             visual.VisualStart();
         }
-
+        
         private void LateUpdate()
         {
             if (health.IsDead)
@@ -43,13 +43,7 @@ namespace Game.Mechanics.Ship
 
             visual.AnimateMovement(Time.deltaTime, moveDirection);
         }
-
-        public void ResetData()
-        {
-            health.SetHealth(config.Health);
-            health.SetHealthMax(config.Health);
-        }
-
+        
         public void ChangeDirection(Vector2 direction)
         {
             if (health.IsDead)

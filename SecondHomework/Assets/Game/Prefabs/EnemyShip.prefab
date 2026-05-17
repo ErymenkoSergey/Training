@@ -119,6 +119,8 @@ MonoBehaviour:
     _stoppingDistance: 0.25
   cooldown:
     _fireCooldown: 1.25
+    fireTime: 0
+  viewShip: {fileID: 1074127585690423075}
 --- !u!114 &5462646203519853770
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,6 +137,9 @@ MonoBehaviour:
   engineComponent:
     rigidbody: {fileID: 659620479434099170}
     speed: 2
+  health:
+    currentHealth: 0
+    CurrentMaxHealth: 0
   visual:
     visualConfiguration: {fileID: 11400000, guid: f6ecf0b3d1d004b3893cc42c64995303, type: 2}
     _renderer: {fileID: 1333951631294404335}

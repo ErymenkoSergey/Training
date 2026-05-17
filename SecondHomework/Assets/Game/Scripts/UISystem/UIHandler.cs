@@ -24,7 +24,7 @@ namespace Game.Mechanics.Ship
 
         private void OnDestroy()
         {
-            iGameUIStatus.OnChangeScore -= ChangeScore;
+            iGameUIStatus.OnChangeScore -= ChangeScore; //?
             iGameUIStatus.OnChangeHealth -= ChangeHealth;
             iGameUIStatus.OnShowGameOverPanel -= GameOver;
         }

@@ -2,62 +2,52 @@ using System;
 using Game.Data.VFX;
 using Game.Enums;
 using Game.Interfaces;
-using Game.Mechanics.BulletsSystem.Data;
 using Modules.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.Mechanics.BulletsSystem
 {
     public sealed class Bullet : MonoBehaviour
     {
         public event Action<Bullet> OnDestroy;
-        
+
         private Vector2 direction;
         private int damage;
         private float speed;
-        private TeamType team = TeamType.None;
+        public TeamType Team { get; private set; } = TeamType.None;
 
-        [FormerlySerializedAs("config")] [SerializeField] private BulletSystemConfiguration configuration;
-        [SerializeField] private TransformBounds levelBounds;
+        private TransformBounds levelBounds;
         private GameObject currentFlicker;
+        private VFXConfiguration ivfx;
 
-        private Ivfx ivfx;
-
-        public void Construct(TransformBounds levelBounds) => this.levelBounds = levelBounds; // сделать монобеховскую фабрику
-
-        public void SetArgs(Ivfx ivfx, BulletArgs args)
+        public void Construct(TeamType team, TransformBounds levelBounds, VFXConfiguration ivfx,
+            BulletConfiguration config)
         {
+            Team = team;
+            this.levelBounds = levelBounds;
             this.ivfx = ivfx;
+            speed = config.Speed;
+            damage = config.Damage;
+            gameObject.layer = LayerMask.NameToLayer(config.BulletNameMask);
+        }
 
-            team = args.Team;
+        public void SetArgs(BulletArgs args)
+        {
             direction = args.Direction;
             transform.position = args.Position;
             transform.rotation = Quaternion.LookRotation(direction, Vector3.forward);
 
             FlickerEffect(true);
-            ConfigurationBullet();
-        }
-
-        private void ConfigurationBullet()
-        {
-            if (team != TeamType.None)
-            {
-                var data = configuration.GetBulletConfiguration(team);
-                speed = data.Speed;
-                damage = data.Damage;
-                gameObject.layer = LayerMask.NameToLayer(data.BulletNameMask);
-            }
         }
 
         private void FlickerEffect(bool isCreate)
         {
             if (ivfx == null)
                 return;
-            
+
             if (isCreate)
             {
-                var vfxPrefab = ivfx.GetFlickerVFX(team);
+                var vfxPrefab = ivfx.GetFlickerVFX(Team);
                 currentFlicker = Instantiate(vfxPrefab, transform);
                 currentFlicker.transform.SetParent(transform);
             }

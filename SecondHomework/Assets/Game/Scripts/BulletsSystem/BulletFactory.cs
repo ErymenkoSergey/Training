@@ -2,34 +2,28 @@ using Game.Data.VFX;
 using Game.Enums;
 using Modules.Utils;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Game.Mechanics.BulletsSystem.Data
 {
-    [CreateAssetMenu(menuName = "Game/BulletSystemConfiguration", order = 2)]
-    public sealed class BulletSystemConfiguration : ScriptableObject
+    public sealed class BulletFactory : MonoBehaviour
     {
         [SerializeField] private Bullet prefab;
         [SerializeField] private BulletConfiguration enemyConfig;
         [SerializeField] private BulletConfiguration playerConfig;
-        [FormerlySerializedAs("vfxData")] [SerializeField] private VFXConfiguration vfxConfiguration;
-        public VFXConfiguration VFXConfiguration => vfxConfiguration;
-        private TransformBounds levelBounds;
+        [SerializeField] private VFXConfiguration vfxConfiguration;
+        [SerializeField] private TransformBounds levelBounds;
         [Tooltip("The number of bullets in the pool at the start of the games")] [SerializeField, Range(1, 100)]
         private int startSizePool = 15;
-
         public int SizePool => startSizePool;
         
-        public void SetReferences(TransformBounds levelBounds) => this.levelBounds = levelBounds;
-        
-        public Bullet CreateBullet()
+        public Bullet CreateBullet(TeamType team)
         {
             var bullet = prefab;
-            bullet.Construct(levelBounds); 
+            bullet.Construct(team, levelBounds, vfxConfiguration, GetBulletConfiguration(team)); 
             return bullet;
         }
 
-        public BulletConfiguration GetBulletConfiguration(TeamType team)
+        private BulletConfiguration GetBulletConfiguration(TeamType team)
         {
             switch (team)
             {

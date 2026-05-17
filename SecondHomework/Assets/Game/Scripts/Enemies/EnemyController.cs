@@ -1,108 +1,52 @@
-using System.Collections.Generic;
 using Game.Interfaces;
-using Game.Mechanics.Components;
-using Game.Mechanics.Config;
 using Game.Mechanics.Ship;
-using Modules.Utils;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Game.Mechanics.Spawner
 {
     public sealed class EnemyController : MonoBehaviour, IPool<Enemy>
     {
-        [Header("Spawn Settings")] [SerializeField]
-        private float minSpawnCooldown = 2;
-
-        [SerializeField] private float maxSpawnCooldown = 3;
-        private float spawnCooldown;
-        private float spawnTime;
-
-        [SerializeField] private Enemy prefab;
-        [SerializeField] private Transform container;
-
-        private int destroyedEnemies;
-        private readonly Queue<Enemy> pool = new();
+        [SerializeField] private EnemySpawnController spawnController;
+        [SerializeField] private EnemyFactory factory;
         
-        [Header("Enemy Positions")]
-        [SerializeField] private EnemyPositions positions;
-
-        private IBulletSpawner iBulletSpawner;
+        private int destroyedEnemies;
         private ITarget target;
-        private IScore iScore;
+        private IScore score;
         private IGameLoop gameLoop;
 
-        private bool isTargetDestroyed;
-
-        public void Construct(IBulletSpawner iBulletSpawner, ITarget target, IScore iScore)
+        public void Construct(ITarget target, IScore score, IBulletSpawner bulletSpawner)
         {
-            this.iBulletSpawner = iBulletSpawner;
             this.target = target;
-            this.iScore = iScore;
+            this.score = score;
+            factory.Construct(target,this, bulletSpawner);
             StartSystem();
         }
 
-        private void StartSystem()
+        public void StartSystem() // запускать в евента on start game 
         {
-            positions.Construct();
-            iScore.ChangeScore(destroyedEnemies);
-            ResetSpawnCooldown();
+            spawnController.Construct();
+            score.ChangeScore(destroyedEnemies);
             target.OnDestroyed += TargetDestroy;
         }
 
-        private void FixedUpdate()
-        {
-            if (isTargetDestroyed)
-                return;
-
-            float time = Time.fixedTime;
-            if (time - spawnTime < spawnCooldown)
-                return;
-
-            CreateEnemy();
-        }
-
-        private void CreateEnemy()
-        {
-            if (pool.TryDequeue(out Enemy enemy))
-                enemy.gameObject.SetActive(true);
-            else
-                enemy = Instantiate(prefab, container);
-
-            enemy.SetData(GetArgs());
-
-            ResetSpawnCooldown();
-        }
-
-        private EnemyArgs GetArgs()
-        {
-            EnemyArgs config = new EnemyArgs();
-            config.SpawnPosition = positions.NextSpawnPosition();
-            config.AttackPosition = positions.NextDestination();
-            config.Target = target;
-            config.Respawn = this;
-            config.BulletSpawner = iBulletSpawner;
-            return config;
-        }
-
-        private void ResetSpawnCooldown()
-        {
-            spawnCooldown = Random.Range(minSpawnCooldown, maxSpawnCooldown);
-            spawnTime = Time.fixedTime;
-        }
+        private void FixedUpdate() => spawnController.FixedUpdate();
         
         public void Return(Enemy enemy)
         {
-            destroyedEnemies++;
-            iScore.ChangeScore(destroyedEnemies);
+            UpdateScore();
             enemy.gameObject.SetActive(false);
-            enemy.ResetData();
-            pool.Enqueue(enemy);
+            spawnController.ReturnShip(enemy);
+        }
+
+        private void UpdateScore()
+        {
+            destroyedEnemies++;
+            score.ChangeScore(destroyedEnemies);
         }
 
         private void TargetDestroy()
         {
-            isTargetDestroyed = true;
+            spawnController.SetTargetDestroyed();
             target.OnDestroyed -= TargetDestroy;
         }
     }

@@ -7,7 +7,7 @@ namespace Game.Interfaces
     {
         event Action<Vector3> OnShot;
         void Fire(Vector3 direction);
-        float FireTime { get; }
+        float FireTime { get; set; }
         Transform FirePoint { get; }
     }
 }
